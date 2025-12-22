@@ -1,0 +1,20 @@
+{
+  "recommendations": [
+    "ms-dotnettools.csdevkit",
+    "ms-dotnettools.csharp",
+    "ms-dotnettools.vscode-dotnet-runtime",
+    "ms-azuretools.vscode-docker",
+    "ms-vscode-remote.remote-containers",
+    "humao.rest-client",
+    "EditorConfig.EditorConfig",
+    "sonarsource.sonarlint-vscode",
+    "github.copilot",
+    "github.copilot-chat",
+    "eamodio.gitlens",
+    "visualstudioexptteam.vscodeintellicode",
+    "formulahendry.dotnet-test-explorer",
+    "jchannon.csharpextensions",
+    "kreativ-software.csharpextensions",
+    "patcx.vscode-nuget-gallery"
+  ]
+}

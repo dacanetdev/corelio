@@ -6,8 +6,12 @@ project.lock.json
 *.pyc
 nupkg/
 
-# Visual Studio Code
-.vscode/
+# Visual Studio Code (allow workspace settings, ignore personal settings)
+.vscode/*
+!.vscode/settings.json
+!.vscode/extensions.json
+!.vscode/launch.json
+!.vscode/tasks.json
 
 # Rider
 .idea/

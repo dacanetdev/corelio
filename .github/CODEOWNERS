@@ -1,0 +1,62 @@
+# Corelio Code Owners
+#
+# This file defines individuals or teams responsible for code in this repository.
+# Code owners are automatically requested for review when someone opens a pull request.
+#
+# More info: https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/customizing-your-repository/about-code-owners
+
+# Default owners for everything in the repo
+*       @dacanetdev
+
+# Documentation
+/docs/                    @dacanetdev
+README.md                 @dacanetdev
+CONTRIBUTING.md           @dacanetdev
+
+# CI/CD and Infrastructure
+/.github/                 @dacanetdev
+/docker-compose.yml       @dacanetdev
+Dockerfile                @dacanetdev
+.editorconfig             @dacanetdev
+
+# Domain Layer (requires architect review)
+/src/Core/Corelio.Domain/                @dacanetdev
+
+# Application Layer (CQRS)
+/src/Core/Corelio.Application/           @dacanetdev
+
+# Infrastructure (database, external services)
+/src/Infrastructure/Corelio.Infrastructure/  @dacanetdev
+
+# API
+/src/Presentation/Corelio.WebAPI/        @dacanetdev
+
+# Blazor UI
+/src/Presentation/Corelio.BlazorApp/     @dacanetdev
+
+# Tests
+/tests/                   @dacanetdev
+
+# Database Migrations (requires special attention)
+/src/Infrastructure/Corelio.Infrastructure/Migrations/  @dacanetdev
+
+# Multi-Tenancy Critical Files (requires security review)
+**/MultiTenancy/          @dacanetdev
+**/*TenantService.cs      @dacanetdev
+**/*TenantInterceptor.cs  @dacanetdev
+**/*TenantMiddleware.cs   @dacanetdev
+
+# CFDI Critical Files (requires CFDI specialist review)
+**/CFDI/                  @dacanetdev
+**/*CfdiService.cs        @dacanetdev
+**/*InvoiceService.cs     @dacanetdev
+
+# Security Critical Files
+**/Identity/              @dacanetdev
+**/*AuthService.cs        @dacanetdev
+**/*JwtTokenGenerator.cs  @dacanetdev
+**/Security/              @dacanetdev
+
+# Configuration Files
+appsettings*.json         @dacanetdev
+*.config                  @dacanetdev
