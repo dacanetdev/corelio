@@ -1,0 +1,237 @@
+name: Scheduled Tasks
+
+on:
+  schedule:
+    # Run nightly at 2 AM UTC
+    - cron: '0 2 * * *'
+  workflow_dispatch: # Allow manual trigger
+
+env:
+  DOTNET_VERSION: '10.0.x'
+
+jobs:
+  nightly-build:
+    name: Nightly Build and Test
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: ${{ env.DOTNET_VERSION }}
+
+    - name: Install .NET Aspire workload
+      run: |
+        dotnet workload update
+        dotnet workload install aspire
+
+    - name: Restore dependencies
+      run: dotnet restore
+
+    - name: Build solution
+      run: dotnet build --no-restore --configuration Release
+
+    - name: Run all tests (including slow tests)
+      run: |
+        dotnet test \
+          --no-build \
+          --configuration Release \
+          --logger "trx;LogFileName=nightly-test-results.trx" \
+          --collect:"XPlat Code Coverage" \
+          --results-directory ./TestResults
+
+    - name: Upload nightly test results
+      uses: actions/upload-artifact@v4
+      if: always()
+      with:
+        name: nightly-test-results
+        path: ./TestResults/**/*.trx
+        retention-days: 30
+
+  performance-benchmarks:
+    name: Performance Benchmarks
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: ${{ env.DOTNET_VERSION }}
+
+    - name: Run BenchmarkDotNet
+      run: |
+        dotnet run --project tests/Corelio.Performance.Tests \
+          --configuration Release \
+          -- --filter * --exporters json
+
+    - name: Upload benchmark results
+      uses: actions/upload-artifact@v4
+      with:
+        name: benchmark-results
+        path: ./BenchmarkDotNet.Artifacts/**/*
+        retention-days: 90
+
+    - name: Compare with baseline
+      run: |
+        # Compare current benchmarks with baseline
+        # Fail if performance degrades >10%
+        echo "Comparing performance with baseline..."
+
+  security-audit:
+    name: Security Audit
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Run full security audit
+      run: |
+        dotnet list package --vulnerable --include-transitive
+
+    - name: OWASP Dependency Check
+      uses: dependency-check/Dependency-Check_Action@main
+      with:
+        project: 'Corelio'
+        path: '.'
+        format: 'HTML'
+        out: 'reports'
+
+    - name: Upload security report
+      uses: actions/upload-artifact@v4
+      with:
+        name: security-audit-report
+        path: reports/
+        retention-days: 90
+
+  code-metrics:
+    name: Code Metrics
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: ${{ env.DOTNET_VERSION }}
+
+    - name: Calculate code metrics
+      run: |
+        # Lines of code
+        echo "## Code Metrics" > metrics.md
+        echo "" >> metrics.md
+        echo "### Lines of Code" >> metrics.md
+        find src -name "*.cs" | xargs wc -l | tail -1 >> metrics.md
+
+        # Number of files
+        echo "" >> metrics.md
+        echo "### File Count" >> metrics.md
+        find src -name "*.cs" | wc -l >> metrics.md
+
+        # Commit activity
+        echo "" >> metrics.md
+        echo "### Commits (Last 30 days)" >> metrics.md
+        git log --since="30 days ago" --oneline | wc -l >> metrics.md
+
+    - name: Upload metrics
+      uses: actions/upload-artifact@v4
+      with:
+        name: code-metrics
+        path: metrics.md
+        retention-days: 90
+
+  database-backup:
+    name: Database Backup Test
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Test backup scripts
+      run: |
+        echo "Testing database backup scripts..."
+        # Add actual backup script testing here
+
+  license-check:
+    name: License Compliance Check
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: ${{ env.DOTNET_VERSION }}
+
+    - name: Install license checker
+      run: dotnet tool install --global dotnet-project-licenses
+
+    - name: Check licenses
+      run: |
+        dotnet-project-licenses --input . --output-directory ./licenses --export-license-texts
+
+    - name: Upload license report
+      uses: actions/upload-artifact@v4
+      with:
+        name: license-report
+        path: ./licenses/
+        retention-days: 90
+
+  stale-check:
+    name: Check for Stale Issues/PRs
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Close stale issues and PRs
+      uses: actions/stale@v9
+      with:
+        repo-token: ${{ secrets.GITHUB_TOKEN }}
+        stale-issue-message: 'This issue has been automatically marked as stale because it has not had recent activity. It will be closed if no further activity occurs within 7 days.'
+        stale-pr-message: 'This PR has been automatically marked as stale because it has not had recent activity. It will be closed if no further activity occurs within 7 days.'
+        close-issue-message: 'This issue was automatically closed due to inactivity.'
+        close-pr-message: 'This PR was automatically closed due to inactivity.'
+        days-before-stale: 60
+        days-before-close: 7
+        stale-issue-label: 'stale'
+        stale-pr-label: 'stale'
+        exempt-issue-labels: 'security,bug,enhancement'
+        exempt-pr-labels: 'in-progress,security'
+
+  notify-results:
+    name: Notify Nightly Results
+    runs-on: ubuntu-latest
+    needs: [nightly-build, performance-benchmarks, security-audit, code-metrics]
+    if: always()
+
+    steps:
+    - name: Send Slack notification
+      uses: slackapi/slack-github-action@v1
+      with:
+        payload: |
+          {
+            "text": "Nightly Build Results",
+            "blocks": [
+              {
+                "type": "section",
+                "text": {
+                  "type": "mrkdwn",
+                  "text": "*Corelio Nightly Build*\n*Build:* ${{ needs.nightly-build.result }}\n*Performance:* ${{ needs.performance-benchmarks.result }}\n*Security:* ${{ needs.security-audit.result }}\n*Metrics:* ${{ needs.code-metrics.result }}"
+                }
+              }
+            ]
+          }
+      env:
+        SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}

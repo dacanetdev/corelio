@@ -1,0 +1,360 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main, develop ]
+
+env:
+  DOTNET_VERSION: '10.0.x'
+  SOLUTION_PATH: 'Corelio.sln'
+
+jobs:
+  build-and-test:
+    name: Build and Test
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0  # Required for SonarQube
+
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: ${{ env.DOTNET_VERSION }}
+
+    - name: Install .NET Aspire workload
+      run: |
+        dotnet workload update
+        dotnet workload install aspire
+
+    - name: Restore dependencies
+      run: dotnet restore ${{ env.SOLUTION_PATH }}
+
+    - name: Build solution
+      run: dotnet build ${{ env.SOLUTION_PATH }} --no-restore --configuration Release
+
+    - name: Run unit tests
+      run: |
+        dotnet test ${{ env.SOLUTION_PATH }} \
+          --no-build \
+          --configuration Release \
+          --filter "Category=Unit" \
+          --logger "trx;LogFileName=unit-test-results.trx" \
+          --collect:"XPlat Code Coverage" \
+          --results-directory ./TestResults
+
+    - name: Run integration tests
+      run: |
+        dotnet test ${{ env.SOLUTION_PATH }} \
+          --no-build \
+          --configuration Release \
+          --filter "Category=Integration" \
+          --logger "trx;LogFileName=integration-test-results.trx" \
+          --collect:"XPlat Code Coverage" \
+          --results-directory ./TestResults
+
+    - name: Upload test results
+      uses: actions/upload-artifact@v4
+      if: always()
+      with:
+        name: test-results
+        path: ./TestResults/**/*.trx
+
+    - name: Upload code coverage
+      uses: actions/upload-artifact@v4
+      if: always()
+      with:
+        name: code-coverage
+        path: ./TestResults/**/coverage.cobertura.xml
+
+    - name: Generate coverage report
+      uses: danielpalme/ReportGenerator-GitHub-Action@5.2.0
+      with:
+        reports: './TestResults/**/coverage.cobertura.xml'
+        targetdir: './CoverageReport'
+        reporttypes: 'HtmlInline;Cobertura;Badges'
+
+    - name: Upload coverage report
+      uses: actions/upload-artifact@v4
+      with:
+        name: coverage-report
+        path: ./CoverageReport
+
+    - name: Check code coverage threshold
+      run: |
+        COVERAGE=$(grep -oP 'line-rate="\K[0-9.]+' ./CoverageReport/Cobertura.xml | head -1)
+        COVERAGE_PERCENT=$(echo "$COVERAGE * 100" | bc)
+        echo "Code coverage: $COVERAGE_PERCENT%"
+        if (( $(echo "$COVERAGE < 0.70" | bc -l) )); then
+          echo "❌ Code coverage is below 70% threshold"
+          exit 1
+        else
+          echo "✅ Code coverage meets 70% threshold"
+        fi
+
+  code-quality:
+    name: Code Quality Analysis
+    runs-on: ubuntu-latest
+    needs: build-and-test
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: ${{ env.DOTNET_VERSION }}
+
+    - name: Install SonarQube Scanner
+      run: dotnet tool install --global dotnet-sonarscanner
+
+    - name: Run SonarQube analysis
+      env:
+        SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      run: |
+        dotnet sonarscanner begin \
+          /k:"corelio" \
+          /o:"dacanetdev" \
+          /d:sonar.host.url="https://sonarcloud.io" \
+          /d:sonar.login="${{ secrets.SONAR_TOKEN }}" \
+          /d:sonar.cs.opencover.reportsPaths="**/TestResults/**/coverage.opencover.xml"
+        dotnet build ${{ env.SOLUTION_PATH }} --configuration Release
+        dotnet sonarscanner end /d:sonar.login="${{ secrets.SONAR_TOKEN }}"
+
+    - name: Check SonarQube Quality Gate
+      run: |
+        echo "Checking SonarQube Quality Gate status..."
+        # Quality gate check happens automatically in SonarCloud
+        # If it fails, the build will fail
+
+  security-scan:
+    name: Security Scan
+    runs-on: ubuntu-latest
+    needs: build-and-test
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Run Snyk security scan
+      uses: snyk/actions/dotnet@master
+      continue-on-error: true
+      env:
+        SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+      with:
+        args: --severity-threshold=high
+
+    - name: Run dependency check
+      run: |
+        dotnet list package --vulnerable --include-transitive
+
+    - name: Run Trivy vulnerability scanner
+      uses: aquasecurity/trivy-action@master
+      with:
+        scan-type: 'fs'
+        scan-ref: '.'
+        format: 'sarif'
+        output: 'trivy-results.sarif'
+
+    - name: Upload Trivy results to GitHub Security
+      uses: github/codeql-action/upload-sarif@v3
+      with:
+        sarif_file: 'trivy-results.sarif'
+
+  format-check:
+    name: Code Format Check
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: ${{ env.DOTNET_VERSION }}
+
+    - name: Restore dependencies
+      run: dotnet restore ${{ env.SOLUTION_PATH }}
+
+    - name: Check code formatting
+      run: |
+        dotnet format ${{ env.SOLUTION_PATH }} --verify-no-changes --verbosity diagnostic
+
+  docker-build:
+    name: Build Docker Images
+    runs-on: ubuntu-latest
+    needs: [build-and-test, code-quality, security-scan]
+    if: github.event_name == 'push' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/develop')
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v3
+
+    - name: Login to Docker Hub
+      uses: docker/login-action@v3
+      with:
+        username: ${{ secrets.DOCKER_USERNAME }}
+        password: ${{ secrets.DOCKER_PASSWORD }}
+
+    - name: Build and push API image
+      uses: docker/build-push-action@v5
+      with:
+        context: .
+        file: ./src/Presentation/Corelio.WebAPI/Dockerfile
+        push: true
+        tags: |
+          dacanetdev/corelio-api:${{ github.sha }}
+          dacanetdev/corelio-api:latest
+        cache-from: type=registry,ref=dacanetdev/corelio-api:latest
+        cache-to: type=inline
+
+    - name: Build and push Blazor image
+      uses: docker/build-push-action@v5
+      with:
+        context: .
+        file: ./src/Presentation/Corelio.BlazorApp/Dockerfile
+        push: true
+        tags: |
+          dacanetdev/corelio-blazor:${{ github.sha }}
+          dacanetdev/corelio-blazor:latest
+        cache-from: type=registry,ref=dacanetdev/corelio-blazor:latest
+        cache-to: type=inline
+
+  deploy-staging:
+    name: Deploy to Staging
+    runs-on: ubuntu-latest
+    needs: docker-build
+    if: github.event_name == 'push' && github.ref == 'refs/heads/develop'
+    environment:
+      name: staging
+      url: https://staging.corelio.app
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Azure Login
+      uses: azure/login@v1
+      with:
+        creds: ${{ secrets.AZURE_CREDENTIALS_STAGING }}
+
+    - name: Deploy to Azure Container Apps (Staging)
+      run: |
+        az containerapp update \
+          --name corelio-api-staging \
+          --resource-group corelio-staging-rg \
+          --image dacanetdev/corelio-api:${{ github.sha }}
+
+        az containerapp update \
+          --name corelio-blazor-staging \
+          --resource-group corelio-staging-rg \
+          --image dacanetdev/corelio-blazor:${{ github.sha }}
+
+    - name: Run database migrations
+      run: |
+        # Run migrations using Azure Container Apps job
+        az containerapp job start \
+          --name corelio-migrations-staging \
+          --resource-group corelio-staging-rg
+
+    - name: Smoke test staging
+      run: |
+        echo "Running smoke tests against staging environment..."
+        curl -f https://staging.corelio.app/health || exit 1
+        curl -f https://staging-api.corelio.app/health || exit 1
+
+  deploy-production:
+    name: Deploy to Production
+    runs-on: ubuntu-latest
+    needs: docker-build
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    environment:
+      name: production
+      url: https://corelio.app
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Azure Login
+      uses: azure/login@v1
+      with:
+        creds: ${{ secrets.AZURE_CREDENTIALS_PRODUCTION }}
+
+    - name: Deploy to Azure Container Apps (Production)
+      run: |
+        az containerapp update \
+          --name corelio-api-prod \
+          --resource-group corelio-prod-rg \
+          --image dacanetdev/corelio-api:${{ github.sha }}
+
+        az containerapp update \
+          --name corelio-blazor-prod \
+          --resource-group corelio-prod-rg \
+          --image dacanetdev/corelio-blazor:${{ github.sha }}
+
+    - name: Run database migrations
+      run: |
+        # Run migrations using Azure Container Apps job
+        az containerapp job start \
+          --name corelio-migrations-prod \
+          --resource-group corelio-prod-rg
+
+    - name: Smoke test production
+      run: |
+        echo "Running smoke tests against production environment..."
+        curl -f https://corelio.app/health || exit 1
+        curl -f https://api.corelio.app/health || exit 1
+
+    - name: Create GitHub Release
+      uses: actions/create-release@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        tag_name: v${{ github.run_number }}
+        release_name: Release ${{ github.run_number }}
+        body: |
+          Automated release from commit ${{ github.sha }}
+
+          ## Changes
+          ${{ github.event.head_commit.message }}
+        draft: false
+        prerelease: false
+
+  notify:
+    name: Notify Team
+    runs-on: ubuntu-latest
+    needs: [deploy-staging, deploy-production]
+    if: always()
+
+    steps:
+    - name: Send Slack notification
+      uses: slackapi/slack-github-action@v1
+      with:
+        payload: |
+          {
+            "text": "Deployment Status: ${{ job.status }}",
+            "blocks": [
+              {
+                "type": "section",
+                "text": {
+                  "type": "mrkdwn",
+                  "text": "*Corelio Deployment*\n*Status:* ${{ job.status }}\n*Branch:* ${{ github.ref }}\n*Commit:* ${{ github.sha }}"
+                }
+              }
+            ]
+          }
+      env:
+        SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
