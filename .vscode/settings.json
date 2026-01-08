@@ -5,14 +5,15 @@
     "source.organizeImports": "explicit",
     "source.fixAll": "explicit"
   },
-  "editor.rulers": [120],
+  "editor.rulers": [
+    120
+  ],
   "editor.tabSize": 4,
   "editor.insertSpaces": true,
   "editor.detectIndentation": false,
   "files.trimTrailingWhitespace": true,
   "files.insertFinalNewline": true,
   "files.trimFinalNewlines": true,
-
   // .NET / C# Settings
   "dotnet.defaultSolution": "Corelio.sln",
   "[csharp]": {
@@ -24,13 +25,11 @@
   "omnisharp.enableEditorConfigSupport": true,
   "omnisharp.enableRoslynAnalyzers": true,
   "omnisharp.organizeImportsOnFormat": true,
-
   // File Associations
   "files.associations": {
     "*.razor": "html",
     "*.cshtml": "html"
   },
-
   // Exclude from Search/Explorer
   "files.exclude": {
     "**/.git": true,
@@ -46,32 +45,25 @@
     "**/node_modules": true,
     "**/.vs": true
   },
-
   // Git Settings
   "git.autofetch": true,
   "git.confirmSync": false,
   "git.enableSmartCommit": true,
-
   // Docker Settings
   "docker.showStartPage": false,
-
   // Terminal Settings
   "terminal.integrated.defaultProfile.windows": "PowerShell",
   "terminal.integrated.defaultProfile.linux": "bash",
-
   // Test Explorer
   "dotnet-test-explorer.testProjectPath": "**/*Tests.csproj",
-
   // SonarLint
   "sonarlint.rules": {
     "csharpsquid:S125": {
       "level": "on"
     }
   },
-
   // EditorConfig
   "editorconfig.enable": true,
-
   // JSON Settings
   "[json]": {
     "editor.defaultFormatter": "vscode.json-language-features",
@@ -81,31 +73,25 @@
     "editor.defaultFormatter": "vscode.json-language-features",
     "editor.tabSize": 2
   },
-
   // YAML Settings
   "[yaml]": {
     "editor.tabSize": 2,
     "editor.insertSpaces": true
   },
-
   // Markdown Settings
   "[markdown]": {
     "files.trimTrailingWhitespace": false,
     "editor.wordWrap": "on"
   },
-
   // IntelliCode
   "vsintellicode.modify.editor.suggestSelection": "automaticallyOverrodeDefaultValue",
-
   // C# Specific
   "csharp.referencesCodeLens.enabled": true,
   "csharp.format.enable": true,
   "csharp.suppressDotnetRestoreNotification": true,
-
   // Recommended for Clean Architecture
   "workbench.tree.indent": 12,
   "explorer.compactFolders": false,
-
   // Performance
   "files.watcherExclude": {
     "**/.git/objects/**": true,
@@ -113,5 +99,6 @@
     "**/node_modules/**": true,
     "**/bin/**": true,
     "**/obj/**": true
-  }
+  },
+  "dotnet.codeLens.enableReferencesCodeLens": true
 }

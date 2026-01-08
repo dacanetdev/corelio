@@ -46,6 +46,20 @@
 - **Certificates:** Azure Key Vault (CSD for CFDI)
 - **CFDI:** 4.0 compliance with PAC integration
 
+### Localization & Language Standards
+- **Code Language:** All code (classes, methods, variables) in **English**
+- **UI Language:** Blazor UI in **Spanish (es-MX)** - labels, buttons, messages
+- **Localization:** Use `IStringLocalizer<T>` for all user-facing strings
+- **Resource Files:** `*.es-MX.resx` for all localizable strings
+- **Date Format:** Mexican locale (`dd/MM/yyyy`)
+- **Currency Format:** Mexican peso (`$1,234.56 MXN`)
+
+### API Style
+- **Approach:** Minimal APIs with extension methods per endpoint group
+- **No Controllers:** Use endpoint classes with `Map*Endpoints()` extension methods
+- **Organization:** One file per resource (e.g., `ProductEndpoints.cs`, `CustomerEndpoints.cs`)
+- **Aggregator:** Use `MapAllEndpoints()` in Program.cs for clean registration
+
 ---
 
 ## Setup Standards
@@ -429,32 +443,94 @@ public async Task GetProducts_OnlyReturnsTenantProducts()
 }
 ```
 
-### 9. API Development
+### 9. API Development (Minimal APIs)
 
-**Controller Guidelines:**
-- Keep controllers thin (delegate to MediatR)
-- Use attribute routing
+**Endpoint Guidelines:**
+- Use Minimal APIs with extension methods (no Controllers)
+- One endpoint class per resource
+- Delegate to MediatR for business logic
 - Return `Result<T>` pattern
 - Always validate input with FluentValidation
 
-**Example:**
-```csharp
-[ApiController]
-[Route("api/v1/[controller]")]
-[Authorize]
-public class ProductsController(IMediator mediator) : ControllerBase
-{
-    [HttpPost]
-    public async Task<IActionResult> Create([FromBody] CreateProductRequest request)
-    {
-        var command = new CreateProductCommand(request.Name, request.Price);
-        var result = await mediator.Send(command);
+**Endpoint Structure:**
+```
+src/Presentation/Corelio.WebAPI/
+├── Endpoints/
+│   ├── ProductEndpoints.cs       # MapProductEndpoints()
+│   ├── CustomerEndpoints.cs      # MapCustomerEndpoints()
+│   ├── SaleEndpoints.cs          # MapSaleEndpoints()
+│   └── EndpointExtensions.cs     # MapAllEndpoints() aggregator
+```
 
+**Example Endpoint:**
+```csharp
+// Endpoints/ProductEndpoints.cs
+public static class ProductEndpoints
+{
+    public static IEndpointRouteBuilder MapProductEndpoints(this IEndpointRouteBuilder app)
+    {
+        var group = app.MapGroup("/api/v1/products")
+            .WithTags("Products")
+            .RequireAuthorization()
+            .AddEndpointFilter<ValidationFilter>();
+
+        group.MapGet("/", GetAll).WithName("GetProducts");
+        group.MapGet("/{id:guid}", GetById).WithName("GetProductById");
+        group.MapPost("/", Create).WithName("CreateProduct");
+        group.MapPut("/{id:guid}", Update).WithName("UpdateProduct");
+        group.MapDelete("/{id:guid}", Delete).WithName("DeleteProduct");
+
+        return app;
+    }
+
+    private static async Task<IResult> Create(
+        CreateProductCommand command,
+        ISender mediator,
+        CancellationToken ct)
+    {
+        var result = await mediator.Send(command, ct);
         return result.IsSuccess
-            ? CreatedAtAction(nameof(GetById), new { id = result.Value }, result.Value)
-            : BadRequest(result.Error);
+            ? Results.Created($"/api/v1/products/{result.Value}", result.Value)
+            : Results.BadRequest(result.Error);
+    }
+
+    private static async Task<IResult> GetById(
+        Guid id,
+        ISender mediator,
+        CancellationToken ct)
+    {
+        var query = new GetProductByIdQuery(id);
+        var result = await mediator.Send(query, ct);
+        return result.IsSuccess
+            ? Results.Ok(result.Value)
+            : Results.NotFound();
     }
 }
+
+// Endpoints/EndpointExtensions.cs
+public static class EndpointExtensions
+{
+    public static IEndpointRouteBuilder MapAllEndpoints(this IEndpointRouteBuilder app)
+    {
+        app.MapProductEndpoints();
+        app.MapCustomerEndpoints();
+        app.MapSaleEndpoints();
+        // ... other endpoints
+        return app;
+    }
+}
+
+// Program.cs - Clean and minimal
+var builder = WebApplication.CreateBuilder(args);
+builder.AddServiceDefaults();
+builder.Services.AddApplicationServices();
+builder.Services.AddInfrastructureServices(builder.Configuration);
+
+var app = builder.Build();
+app.UseAuthentication();
+app.UseAuthorization();
+app.MapAllEndpoints();  // Single line to register all endpoints
+app.Run();
 ```
 
 ### 10. Blazor UI Development
@@ -469,12 +545,54 @@ Pages/
 Components/
   Shared/
     DataGrid.razor         # Reusable components
+Resources/
+  SharedResource.es-MX.resx  # Spanish translations
 ```
 
 **State Management:**
 - Use Blazor's built-in state container
 - API calls via HttpClient wrapper
 - SignalR for real-time updates (future)
+
+**Localization (Spanish UI):**
+All UI text must use localization - never hardcode Spanish strings directly.
+
+```csharp
+// Resources/SharedResource.es-MX.resx example keys:
+// ProductName = Nombre del Producto
+// Save = Guardar
+// Cancel = Cancelar
+// Required = Este campo es requerido
+// ProductNotFound = Producto no encontrado
+
+// Blazor component with localization
+@inject IStringLocalizer<SharedResource> L
+
+<MudTextField Label="@L["ProductName"]" @bind-Value="product.Name" />
+<MudNumericField Label="@L["Price"]" @bind-Value="product.Price"
+    Format="C" Culture="@(new CultureInfo("es-MX"))" />
+
+<MudButton Color="Color.Primary" OnClick="Save">@L["Save"]</MudButton>
+<MudButton OnClick="Cancel">@L["Cancel"]</MudButton>
+
+@if (error != null)
+{
+    <MudAlert Severity="Severity.Error">@L[error]</MudAlert>
+}
+```
+
+**Date/Currency Formatting:**
+```csharp
+// Always use Mexican culture for formatting
+@inject IStringLocalizer<SharedResource> L
+
+<MudDatePicker Label="@L["Date"]" @bind-Date="saleDate"
+    Culture="@(new CultureInfo("es-MX"))"
+    DateFormat="dd/MM/yyyy" />
+
+<MudText>@sale.Total.ToString("C", new CultureInfo("es-MX"))</MudText>
+// Output: $1,234.56
+```
 
 ### 11. Performance Optimization
 
@@ -531,8 +649,18 @@ Before merging:
 - [ ] No security vulnerabilities (use SonarQube)
 - [ ] Performance considerations (caching, indexes)
 
-### 15. Development Workflow
+### Git Workflow
+1. **Branch Creation**: Always create feature branch from `main` before starting work
+2. **Branch Naming**: `feature/US-X.X-TASK-Y-description`
+3. **Commits**: Make incremental commits with clear messages
+4. **Pull Requests**: One PR per task, use PR template
+5. **Auto-Merge**: PRs auto-merge when CI passes (build + tests)
+6. **Branch Cleanup**: Delete feature branch after merge
 
+### Commit Convention
+Format: `[US-X.X] TASK Y: Short description`
+
+### 15. Development Workflow
 1. **Create Feature Branch**
    ```bash
    git checkout -b feature/product-management
