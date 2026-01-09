@@ -66,8 +66,7 @@ ScaffoldingReadMe.txt
 *.sqlite
 *.sqlite3
 
-# Aspire
-*.AppHost/
+# Aspire artifacts (not source code)
 **/appsettings.Development.json
 **/appsettings.Local.json
 
