@@ -1,0 +1,16 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <RootNamespace>Corelio.BlazorApp</RootNamespace>
+    <AssemblyName>Corelio.BlazorApp</AssemblyName>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="MudBlazor" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\Aspire\Corelio.ServiceDefaults\Corelio.ServiceDefaults.csproj" />
+  </ItemGroup>
+
+</Project>

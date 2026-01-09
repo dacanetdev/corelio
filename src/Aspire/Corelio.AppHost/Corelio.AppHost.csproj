@@ -1,0 +1,25 @@
+<Project Sdk="Aspire.AppHost.Sdk/9.1.0">
+
+  <PropertyGroup>
+    <RootNamespace>Corelio.AppHost</RootNamespace>
+    <AssemblyName>Corelio.AppHost</AssemblyName>
+    <OutputType>Exe</OutputType>
+    <UserSecretsId>4dc0af50-ab27-424a-a6d8-1bd2ceb2f13c</UserSecretsId>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <ManagePackageVersionsCentrally>false</ManagePackageVersionsCentrally>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Aspire.Hosting.AppHost" Version="9.1.0" />
+    <PackageReference Include="Aspire.Hosting.PostgreSQL" Version="9.1.0" />
+    <PackageReference Include="Aspire.Hosting.Redis" Version="9.1.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\Presentation\Corelio.WebAPI\Corelio.WebAPI.csproj" />
+    <ProjectReference Include="..\..\Presentation\Corelio.BlazorApp\Corelio.BlazorApp.csproj" />
+  </ItemGroup>
+
+</Project>
