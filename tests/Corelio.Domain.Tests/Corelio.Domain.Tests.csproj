@@ -5,6 +5,8 @@
     <AssemblyName>Corelio.Domain.Tests</AssemblyName>
     <IsPackable>false</IsPackable>
     <IsTestProject>true</IsTestProject>
+    <!-- Suppress code analysis rules not applicable to test projects -->
+    <NoWarn>$(NoWarn);CA1707;CA1852</NoWarn>
   </PropertyGroup>
 
   <ItemGroup>
