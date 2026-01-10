@@ -62,6 +62,17 @@
 
 ---
 
+### Key Principles
+
+1. **Dependencies flow inward** - Core has ZERO dependencies
+2. **Each layer has its own DI registration** - `DependencyInjection.cs` in each layer
+3. **Use interfaces from Core** - Infrastructure implements them
+4. **Organize endpoints by feature** - Separate files in `src/NL2SQL.API/Endpoints/`
+5. **Use C# 14 features** - Primary constructors, collection expressions, records
+6. **Follow .NET 10 best practices** - Minimal APIs, Native AOT-ready, TimeProvider
+
+---
+
 ## Setup Standards
 
 ### Code Style
@@ -652,7 +663,7 @@ Before merging:
 ### Git Workflow
 1. **Branch Creation**: Always create feature branch from `main` before starting work
 2. **Branch Naming**: `feature/US-X.X-TASK-Y-description`
-3. **Commits**: Make incremental commits with clear messages
+3. **Commits**: Make incremental commits with clear messages, make sure that Sprint and User Story Status are updated and commit that too
 4. **Pull Requests**: One PR per task, use PR template
 5. **Auto-Merge**: PRs auto-merge when CI passes (build + tests)
 6. **Branch Cleanup**: Delete feature branch after merge

@@ -264,3 +264,8 @@ dotnet_naming_style.camel_case_with_underscore.required_prefix = _
 dotnet_naming_style.camel_case_with_underscore.required_suffix =
 dotnet_naming_style.camel_case_with_underscore.word_separator =
 dotnet_naming_style.camel_case_with_underscore.capitalization = camel_case
+
+# Test project files
+[*Tests/**/*.cs]
+# Allow underscores in test method names (BDD/AAA naming convention)
+dotnet_diagnostic.CA1707.severity = none
