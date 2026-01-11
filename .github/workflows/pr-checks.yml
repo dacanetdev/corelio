@@ -96,7 +96,8 @@ jobs:
 
     - name: Run all tests
       run: |
-        dotnet test \
+        # Run tests only on test projects (exclude AppHost which doesn't support VSTest)
+        dotnet test tests/**/*.csproj \
           --no-build \
           --configuration Release \
           --logger "trx;LogFileName=test-results.trx" \

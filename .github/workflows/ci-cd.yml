@@ -39,7 +39,8 @@ jobs:
 
     - name: Run unit tests
       run: |
-        dotnet test ${{ env.SOLUTION_PATH }} \
+        # Run tests only on test projects (exclude AppHost which doesn't support VSTest)
+        dotnet test tests/**/*.csproj \
           --no-build \
           --configuration Release \
           --filter "Category=Unit" \
@@ -49,7 +50,8 @@ jobs:
 
     - name: Run integration tests
       run: |
-        dotnet test ${{ env.SOLUTION_PATH }} \
+        # Run tests only on test projects (exclude AppHost which doesn't support VSTest)
+        dotnet test tests/**/*.csproj \
           --no-build \
           --configuration Release \
           --filter "Category=Integration" \
