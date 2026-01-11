@@ -10,6 +10,7 @@ namespace Corelio.Infrastructure.Tests.Persistence.Interceptors;
 /// <summary>
 /// Unit tests for AuditInterceptor.
 /// </summary>
+[Trait("Category", "Unit")]
 public class AuditInterceptorTests
 {
     private readonly Mock<ICurrentUserProvider> _currentUserProviderMock;

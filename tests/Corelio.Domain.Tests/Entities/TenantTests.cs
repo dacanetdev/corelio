@@ -4,6 +4,7 @@ using FluentAssertions;
 
 namespace Corelio.Domain.Tests.Entities;
 
+[Trait("Category", "Unit")]
 public class TenantTests
 {
     [Fact]

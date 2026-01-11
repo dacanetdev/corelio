@@ -3,6 +3,7 @@ using FluentAssertions;
 
 namespace Corelio.Domain.Tests.Common;
 
+[Trait("Category", "Unit")]
 public class BaseEntityTests
 {
     private class TestEntity : BaseEntity { }

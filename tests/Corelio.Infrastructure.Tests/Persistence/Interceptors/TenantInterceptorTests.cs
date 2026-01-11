@@ -10,6 +10,7 @@ namespace Corelio.Infrastructure.Tests.Persistence.Interceptors;
 /// <summary>
 /// Unit tests for TenantInterceptor.
 /// </summary>
+[Trait("Category", "Unit")]
 public class TenantInterceptorTests
 {
     private readonly Mock<ITenantProvider> _tenantProviderMock;
