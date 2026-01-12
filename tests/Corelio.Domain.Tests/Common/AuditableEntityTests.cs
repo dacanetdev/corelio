@@ -3,6 +3,7 @@ using FluentAssertions;
 
 namespace Corelio.Domain.Tests.Common;
 
+[Trait("Category", "Unit")]
 public class AuditableEntityTests
 {
     private class TestAuditableEntity : AuditableEntity { }

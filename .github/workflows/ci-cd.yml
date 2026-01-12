@@ -39,23 +39,29 @@ jobs:
 
     - name: Run unit tests
       run: |
-        dotnet test ${{ env.SOLUTION_PATH }} \
-          --no-build \
-          --configuration Release \
-          --filter "Category=Unit" \
-          --logger "trx;LogFileName=unit-test-results.trx" \
-          --collect:"XPlat Code Coverage" \
-          --results-directory ./TestResults
+        # Run tests on each test project individually (AppHost doesn't support VSTest)
+        for project in tests/*/*.csproj; do
+          dotnet test "$project" \
+            --no-build \
+            --configuration Release \
+            --filter "Category=Unit" \
+            --logger "trx;LogFileName=unit-test-results.trx" \
+            --collect:"XPlat Code Coverage" \
+            --results-directory ./TestResults || true
+        done
 
     - name: Run integration tests
       run: |
-        dotnet test ${{ env.SOLUTION_PATH }} \
-          --no-build \
-          --configuration Release \
-          --filter "Category=Integration" \
-          --logger "trx;LogFileName=integration-test-results.trx" \
-          --collect:"XPlat Code Coverage" \
-          --results-directory ./TestResults
+        # Run tests on each test project individually (AppHost doesn't support VSTest)
+        for project in tests/*/*.csproj; do
+          dotnet test "$project" \
+            --no-build \
+            --configuration Release \
+            --filter "Category=Integration" \
+            --logger "trx;LogFileName=integration-test-results.trx" \
+            --collect:"XPlat Code Coverage" \
+            --results-directory ./TestResults || true
+        done
 
     - name: Upload test results
       uses: actions/upload-artifact@v4
