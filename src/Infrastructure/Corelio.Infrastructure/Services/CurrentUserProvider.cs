@@ -1,6 +1,6 @@
+using System.Security.Claims;
 using Corelio.Domain.Common.Interfaces;
 using Microsoft.AspNetCore.Http;
-using System.Security.Claims;
 
 namespace Corelio.Infrastructure.Services;
 
