@@ -1,14 +1,23 @@
 # Corelio - Sprint Status Tracking
 
-## Current Sprint: Sprint 1 - Foundation & Project Setup
+## Current Sprint: Sprint 2 - Multi-Tenancy & Auth
 
-**Sprint Start:** 2025-01-08
-**Sprint End:** 2026-01-10
-**Status:** 🟢 Completed
+**Sprint Start:** 2026-01-12
+**Sprint End:** 2026-01-17
+**Status:** 🟡 In Progress
 
 ---
 
-## Sprint 1 Progress
+## Sprint 2 Progress
+
+| User Story | Status | Progress | Notes |
+|------------|--------|----------|-------|
+| US-2.1: Multi-Tenancy Services Implementation | 🟢 Completed | 8/8 tasks | TenantService, TenantMiddleware, Redis caching, 12 unit tests |
+| US-2.2: Authentication & Authorization | 🔵 Not Started | 0/10 tasks | JWT auth, password hashing, role-based access |
+
+---
+
+## Sprint 1 Progress (Completed)
 
 | User Story | Status | Progress | Notes |
 |------------|--------|----------|-------|
@@ -31,7 +40,20 @@
 
 ---
 
-## Sprint Burndown
+## Sprint 2 Burndown
+
+| Day | Planned SP | Actual SP | Remaining SP |
+|-----|------------|-----------|--------------|
+| 1 | 34 | 13 | 21 |
+| 2 | 27 | - | - |
+| 3 | 20 | - | - |
+| 4 | 14 | - | - |
+| 5 | 7 | - | - |
+| 6 | 0 | - | - |
+
+---
+
+## Sprint 1 Burndown (Completed)
 
 | Day | Planned SP | Actual SP | Remaining SP |
 |-----|------------|-----------|--------------|
@@ -48,7 +70,7 @@
 | Sprint | Focus | Status | Story Points | Velocity | Dates |
 |--------|-------|--------|--------------|----------|-------|
 | Sprint 1 | Foundation & Project Setup | 🟢 Completed | 21 | 21 | 2025-01-08 - 2026-01-10 |
-| Sprint 2 | Multi-Tenancy & Auth | 🔵 Not Started | 34 | - | TBD |
+| Sprint 2 | Multi-Tenancy & Auth | 🟡 In Progress | 34 | - | 2026-01-12 - 2026-01-17 |
 | Sprint 3 | Products & Categories | 🔵 Not Started | 21 | - | TBD |
 | Sprint 4 | Inventory & Customers | 🔵 Not Started | 26 | - | TBD |
 | Sprint 5 | POS Backend & UI | 🔵 Not Started | 34 | - | TBD |
@@ -76,6 +98,7 @@
 | 2025-01-08 | Sprint 1 | US-1.2 | Configure Aspire | 0b79d82 | AppHost + ServiceDefaults |
 | 2026-01-09 | Sprint 1 | US-1.3 | Implement base domain entities | 1dde930 | 8 entities, 12 enums, 32 tests |
 | 2026-01-10 | Sprint 1 | US-1.4 | Configure EF Core with PostgreSQL | dbdb398, 325b263, d92cce6, 6073910, bb3676c, 9d43ada | DbContext, 9 configurations, interceptors, initial migration, CI fixes, line ending normalization |
+| 2026-01-12 | Sprint 2 | US-2.1 | Multi-Tenancy Services Implementation | TBD | ITenantService interface, TenantService impl, TenantMiddleware, Redis caching, DI registration, 12 unit tests |
 
 ---
 
@@ -132,7 +155,7 @@
 **Blockers:**
 - None
 
-### 2026-01-12
+### 2026-01-12 (Sprint 1 Completed)
 **Yesterday:**
 - Completed US-1.4 implementation
 
@@ -143,6 +166,27 @@
 - Updated .editorconfig and .gitattributes for consistent LF line endings
 - Sprint 1 officially completed - all 4 user stories done
 - Total tests: 44 (32 Domain + 12 Infrastructure, all passing)
+- **Sprint 2 started - Multi-Tenancy & Auth**
+
+**Blockers:**
+- None
+
+### 2026-01-12 (Sprint 2 - Day 1)
+**Yesterday:**
+- Completed Sprint 1 with all 4 user stories (21 SP)
+
+**Today:**
+- Starting Sprint 2: Multi-Tenancy & Auth (34 SP)
+- **Completed US-2.1: Multi-Tenancy Services Implementation (13 SP)**
+- Created ITenantService interface in Application layer
+- Implemented TenantService with tenant resolution from JWT, headers, and subdomain
+- Integrated Redis distributed cache for tenant data caching
+- Created TenantMiddleware for HTTP pipeline
+- Updated DI registration in Infrastructure (Aspire and non-Aspire)
+- Added Aspire.StackExchange.Redis and Microsoft.Extensions.Caching.StackExchangeRedis packages
+- Created 12 unit tests (passing)
+- Solution builds successfully
+- Total tests in project: 56 (44 from Sprint 1 + 12 new)
 
 **Blockers:**
 - None
@@ -184,4 +228,4 @@
 
 ---
 
-**Last Updated:** 2026-01-12 (Sprint 1 Completed)
+**Last Updated:** 2026-01-12 (Sprint 2 Started)
