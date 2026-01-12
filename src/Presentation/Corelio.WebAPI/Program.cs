@@ -1,4 +1,5 @@
 using Corelio.Infrastructure;
+using Corelio.Infrastructure.MultiTenancy;
 using Corelio.ServiceDefaults;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -21,6 +22,11 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+
+// Add tenant resolution middleware (after authentication, before authorization)
+// Note: Will work fully once JWT authentication is implemented in US-2.2
+// Currently supports header-based and subdomain-based resolution
+app.UseTenantResolution();
 
 // Map Aspire default endpoints (health checks, etc.)
 app.MapDefaultEndpoints();

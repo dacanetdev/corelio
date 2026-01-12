@@ -30,8 +30,27 @@ public static class DependencyInjection
         services.AddScoped<TenantProvider>();
         services.AddScoped<ITenantProvider>(sp => sp.GetRequiredService<TenantProvider>());
 
+        // Register tenant service
+        services.AddScoped<ITenantService, TenantService>();
+
         // Register current user provider
         services.AddScoped<ICurrentUserProvider, CurrentUserProvider>();
+
+        // Register distributed cache (for tenant caching)
+        // Note: For non-Aspire deployments, configure Redis connection string in appsettings.json
+        var redisConnection = configuration.GetConnectionString("redis");
+        if (!string.IsNullOrEmpty(redisConnection))
+        {
+            services.AddStackExchangeRedisCache(options =>
+            {
+                options.Configuration = redisConnection;
+            });
+        }
+        else
+        {
+            // Fallback to memory cache if Redis not configured
+            services.AddDistributedMemoryCache();
+        }
 
         // Register interceptors (injected into ApplicationDbContext via constructor)
         services.AddScoped<TenantInterceptor>();
@@ -73,12 +92,22 @@ public static class DependencyInjection
         builder.Services.AddScoped<TenantProvider>();
         builder.Services.AddScoped<ITenantProvider>(sp => sp.GetRequiredService<TenantProvider>());
 
+        // Register tenant service
+        builder.Services.AddScoped<ITenantService, TenantService>();
+
         // Register current user provider
         builder.Services.AddScoped<ICurrentUserProvider, CurrentUserProvider>();
 
         // Register interceptors (injected into ApplicationDbContext via constructor)
         builder.Services.AddScoped<TenantInterceptor>();
         builder.Services.AddScoped<AuditInterceptor>();
+
+        // Add Redis distributed cache with Aspire integration (for tenant caching)
+        builder.AddRedisClient("redis");
+        builder.Services.AddStackExchangeRedisCache(options =>
+        {
+            // Aspire will auto-configure the connection via service discovery
+        });
 
         // Add DbContext with Aspire PostgreSQL integration
         builder.AddNpgsqlDbContext<ApplicationDbContext>("corelioDb", configureDbContextOptions: options =>
