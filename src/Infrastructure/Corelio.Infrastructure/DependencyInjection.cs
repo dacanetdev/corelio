@@ -1,3 +1,4 @@
+using Corelio.Application.Common.Interfaces;
 using Corelio.Domain.Common.Interfaces;
 using Corelio.Infrastructure.MultiTenancy;
 using Corelio.Infrastructure.Persistence;
