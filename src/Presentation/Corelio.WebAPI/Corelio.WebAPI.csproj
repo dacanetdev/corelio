@@ -1,8 +1,9 @@
-<Project Sdk="Microsoft.NET.Sdk.Web">
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 
   <PropertyGroup>
     <RootNamespace>Corelio.WebAPI</RootNamespace>
     <AssemblyName>Corelio.WebAPI</AssemblyName>
+    <UserSecretsId>094fbd28-53da-43aa-8705-9867c2097c83</UserSecretsId>
   </PropertyGroup>
 
   <ItemGroup>

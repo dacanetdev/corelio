@@ -1,5 +1,9 @@
 using Corelio.Application.Common.Interfaces;
+using Corelio.Application.Common.Interfaces.Authentication;
+using Corelio.Application.Common.Interfaces.Email;
 using Corelio.Domain.Common.Interfaces;
+using Corelio.Infrastructure.Authentication;
+using Corelio.Infrastructure.Email;
 using Corelio.Infrastructure.MultiTenancy;
 using Corelio.Infrastructure.Persistence;
 using Corelio.Infrastructure.Persistence.Interceptors;
@@ -36,6 +40,15 @@ public static class DependencyInjection
 
         // Register current user provider
         services.AddScoped<ICurrentUserProvider, CurrentUserProvider>();
+
+        // Register authentication services
+        services.Configure<JwtSettings>(configuration.GetSection(JwtSettings.SectionName));
+        services.AddSingleton<IJwtTokenGenerator, JwtTokenGenerator>();
+        services.AddSingleton<IRefreshTokenGenerator, RefreshTokenGenerator>();
+        services.AddSingleton<IPasswordHasher, PasswordHasher>();
+
+        // Register email service (stub for MVP)
+        services.AddScoped<IEmailService, StubEmailService>();
 
         // Register distributed cache (for tenant caching)
         // Note: For non-Aspire deployments, configure Redis connection string in appsettings.json
@@ -98,6 +111,15 @@ public static class DependencyInjection
 
         // Register current user provider
         builder.Services.AddScoped<ICurrentUserProvider, CurrentUserProvider>();
+
+        // Register authentication services
+        builder.Services.Configure<JwtSettings>(builder.Configuration.GetSection(JwtSettings.SectionName));
+        builder.Services.AddSingleton<IJwtTokenGenerator, JwtTokenGenerator>();
+        builder.Services.AddSingleton<IRefreshTokenGenerator, RefreshTokenGenerator>();
+        builder.Services.AddSingleton<IPasswordHasher, PasswordHasher>();
+
+        // Register email service (stub for MVP)
+        builder.Services.AddScoped<IEmailService, StubEmailService>();
 
         // Register interceptors (injected into ApplicationDbContext via constructor)
         builder.Services.AddScoped<TenantInterceptor>();
