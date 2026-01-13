@@ -1,6 +1,6 @@
 using Corelio.Application.Authentication.Common;
 using Corelio.Application.Common.Models;
-using MediatR;
+using Corelio.SharedKernel.Messaging;
 
 namespace Corelio.Application.Authentication.Commands.Login;
 

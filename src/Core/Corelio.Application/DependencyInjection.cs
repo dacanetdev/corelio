@@ -1,5 +1,6 @@
-using System.Reflection;
 using Corelio.Application.Common.Behaviors;
+using System.Reflection;
+using Corelio.SharedKernel.Messaging;
 using FluentValidation;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -19,18 +20,47 @@ public static class DependencyInjection
     {
         var assembly = Assembly.GetExecutingAssembly();
 
-        // Register MediatR with all handlers from this assembly
-        services.AddMediatR(config =>
-        {
-            config.RegisterServicesFromAssembly(assembly);
+        // Register custom Mediator
+        services.AddScoped<IMediator, Mediator>();
 
-            // Register the validation pipeline behavior
-            config.AddOpenBehavior(typeof(ValidationBehavior<,>));
-        });
+        // Register all request handlers automatically
+        RegisterHandlers(services, assembly);
 
         // Register all FluentValidation validators from this assembly
         services.AddValidatorsFromAssembly(assembly);
 
+        // Register the validation pipeline behavior
+        services.AddScoped(typeof(IRequestPipelineBehavior<,>), typeof(ValidationBehavior<,>));
+
         return services;
     }
+
+    private static void RegisterHandlers(IServiceCollection services, Assembly assembly)
+    {
+        // Find all types that implement IRequestHandler<,>
+        var handlerInterfaceType = typeof(IRequestHandler<,>);
+
+        var handlerTypes = assembly.GetTypes()
+            .Where(t => t.IsClass && !t.IsAbstract)
+            .Select(t => new
+            {
+                ImplementationType = t,
+                Interfaces = t.GetInterfaces()
+                    .Where(i => i.IsGenericType &&
+                               i.GetGenericTypeDefinition() == handlerInterfaceType)
+                    .ToList()
+            })
+            .Where(t => t.Interfaces.Count > 0)
+            .ToList();
+
+        // Register each handler
+        foreach (var handlerType in handlerTypes)
+        {
+            foreach (var interfaceType in handlerType.Interfaces)
+            {
+                services.AddScoped(interfaceType, handlerType.ImplementationType);
+            }
+        }
+    }
 }
+

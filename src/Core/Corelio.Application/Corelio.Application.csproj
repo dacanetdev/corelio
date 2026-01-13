@@ -6,13 +6,13 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="MediatR" />
     <PackageReference Include="FluentValidation" />
     <PackageReference Include="FluentValidation.DependencyInjectionExtensions" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\Corelio.Domain\Corelio.Domain.csproj" />
+    <ProjectReference Include="..\Corelio.SharedKernel\Corelio.SharedKernel.csproj" />
   </ItemGroup>
 
 </Project>
