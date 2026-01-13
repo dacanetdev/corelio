@@ -1,0 +1,230 @@
+### Corelio Authentication Edge Cases & Error Scenarios
+### Base URL
+@baseUrl = https://localhost:5001
+@apiVersion = v1
+
+###############################################################################
+# Validation Errors
+###############################################################################
+
+### Invalid email format
+POST {{baseUrl}}/api/{{apiVersion}}/auth/login
+Content-Type: application/json
+
+{
+  "email": "not-an-email",
+  "password": "SecurePassword123!"
+}
+
+###
+
+### Password too short (less than 8 characters)
+POST {{baseUrl}}/api/{{apiVersion}}/auth/login
+Content-Type: application/json
+
+{
+  "email": "user@example.com",
+  "password": "short"
+}
+
+###
+
+### Missing required fields
+POST {{baseUrl}}/api/{{apiVersion}}/auth/login
+Content-Type: application/json
+
+{
+  "email": ""
+}
+
+###############################################################################
+# Authentication Errors
+###############################################################################
+
+### Invalid credentials (wrong password)
+POST {{baseUrl}}/api/{{apiVersion}}/auth/login
+Content-Type: application/json
+
+{
+  "email": "owner@testhardware.com",
+  "password": "WrongPassword123!",
+  "tenantSubdomain": "testhardware"
+}
+
+###
+
+### Non-existent user
+POST {{baseUrl}}/api/{{apiVersion}}/auth/login
+Content-Type: application/json
+
+{
+  "email": "nonexistent@example.com",
+  "password": "SomePassword123!"
+}
+
+###
+
+### Invalid refresh token
+POST {{baseUrl}}/api/{{apiVersion}}/auth/refresh
+Content-Type: application/json
+
+{
+  "refreshToken": "invalid-token-that-does-not-exist"
+}
+
+###############################################################################
+# Authorization Errors
+###############################################################################
+
+### Register user without authentication (should fail)
+POST {{baseUrl}}/api/{{apiVersion}}/auth/register
+Content-Type: application/json
+
+{
+  "email": "employee@testhardware.com",
+  "password": "EmployeePass123!",
+  "firstName": "Jane",
+  "lastName": "Smith",
+  "roleCodes": ["User"]
+}
+
+###
+
+### Register user with invalid token
+POST {{baseUrl}}/api/{{apiVersion}}/auth/register
+Content-Type: application/json
+Authorization: Bearer invalid-jwt-token
+
+{
+  "email": "employee@testhardware.com",
+  "password": "EmployeePass123!",
+  "firstName": "Jane",
+  "lastName": "Smith",
+  "roleCodes": ["User"]
+}
+
+###############################################################################
+# Duplicate Registration Errors
+###############################################################################
+
+### Register tenant with duplicate subdomain
+POST {{baseUrl}}/api/{{apiVersion}}/tenants/register
+Content-Type: application/json
+
+{
+  "tenantName": "Another Store",
+  "rfc": "YAYY020202000",
+  "subdomain": "testhardware",
+  "ownerEmail": "owner2@example.com",
+  "ownerPassword": "SecurePassword123!",
+  "ownerFirstName": "Alice",
+  "ownerLastName": "Williams"
+}
+
+###
+
+### Register tenant with duplicate owner email (same tenant)
+POST {{baseUrl}}/api/{{apiVersion}}/tenants/register
+Content-Type: application/json
+
+{
+  "tenantName": "New Store",
+  "rfc": "ZBZZ030303000",
+  "subdomain": "newstore",
+  "ownerEmail": "owner@testhardware.com",
+  "ownerPassword": "SecurePassword123!",
+  "ownerFirstName": "Bob",
+  "ownerLastName": "Johnson"
+}
+
+###############################################################################
+# Invalid RFC Formats (Mexican Tax ID)
+###############################################################################
+
+### Invalid RFC - too short
+POST {{baseUrl}}/api/{{apiVersion}}/tenants/register
+Content-Type: application/json
+
+{
+  "tenantName": "Invalid RFC Store",
+  "rfc": "ABC",
+  "subdomain": "invalidrfc",
+  "ownerEmail": "owner@invalid.com",
+  "ownerPassword": "SecurePassword123!",
+  "ownerFirstName": "Test",
+  "ownerLastName": "User"
+}
+
+###
+
+### Invalid RFC - invalid characters
+POST {{baseUrl}}/api/{{apiVersion}}/tenants/register
+Content-Type: application/json
+
+{
+  "tenantName": "Invalid RFC Store",
+  "rfc": "INVALID123456789",
+  "subdomain": "invalidrfc2",
+  "ownerEmail": "owner@invalid2.com",
+  "ownerPassword": "SecurePassword123!",
+  "ownerFirstName": "Test",
+  "ownerLastName": "User"
+}
+
+###############################################################################
+# Rate Limiting Tests (Future Implementation)
+###############################################################################
+
+### Multiple rapid login attempts (should trigger rate limiting when implemented)
+# @name rapidLogin1
+POST {{baseUrl}}/api/{{apiVersion}}/auth/login
+Content-Type: application/json
+
+{
+  "email": "owner@testhardware.com",
+  "password": "WrongPassword1!"
+}
+
+###
+
+# @name rapidLogin2
+POST {{baseUrl}}/api/{{apiVersion}}/auth/login
+Content-Type: application/json
+
+{
+  "email": "owner@testhardware.com",
+  "password": "WrongPassword2!"
+}
+
+###
+
+# @name rapidLogin3
+POST {{baseUrl}}/api/{{apiVersion}}/auth/login
+Content-Type: application/json
+
+{
+  "email": "owner@testhardware.com",
+  "password": "WrongPassword3!"
+}
+
+###
+
+# @name rapidLogin4
+POST {{baseUrl}}/api/{{apiVersion}}/auth/login
+Content-Type: application/json
+
+{
+  "email": "owner@testhardware.com",
+  "password": "WrongPassword4!"
+}
+
+###
+
+# @name rapidLogin5
+POST {{baseUrl}}/api/{{apiVersion}}/auth/login
+Content-Type: application/json
+
+{
+  "email": "owner@testhardware.com",
+  "password": "WrongPassword5!"
+}

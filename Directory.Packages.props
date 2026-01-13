@@ -53,10 +53,9 @@
     <PackageVersion Include="FluentValidation.AspNetCore" Version="11.3.0" />
     <PackageVersion Include="FluentValidation.DependencyInjectionExtensions" Version="11.11.0" />
   </ItemGroup>
-  <!-- Swagger / OpenAPI -->
+  <!-- Scalar / OpenAPI -->
   <ItemGroup>
-    <PackageVersion Include="Swashbuckle.AspNetCore" Version="7.2.0" />
-    <PackageVersion Include="Swashbuckle.AspNetCore.Annotations" Version="7.2.0" />
+    <PackageVersion Include="Scalar.AspNetCore" Version="1.2.42" />
   </ItemGroup>
   <!-- Logging -->
   <ItemGroup>

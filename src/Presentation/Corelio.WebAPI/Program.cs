@@ -4,6 +4,7 @@ using Corelio.Infrastructure.MultiTenancy;
 using Corelio.ServiceDefaults;
 using Corelio.WebAPI.Endpoints;
 using Corelio.WebAPI.Extensions;
+using Scalar.AspNetCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -19,17 +20,21 @@ builder.AddInfrastructureServices();
 // Add JWT authentication and authorization policies
 builder.Services.AddCorelioAuthorization(builder.Configuration);
 
-// Add Swagger for API documentation
-builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+// Add OpenAPI and Scalar for API documentation
+builder.Services.AddOpenApi();
 
 var app = builder.Build();
 
 // Configure the HTTP request pipeline
 if (app.Environment.IsDevelopment())
 {
-    app.UseSwagger();
-    app.UseSwaggerUI();
+    app.MapOpenApi();
+    app.MapScalarApiReference(options =>
+    {
+        options.Title = "Corelio API";
+        options.Theme = ScalarTheme.Purple;
+        options.ShowSidebar = true;
+    });
 }
 
 // Add authentication middleware (validates JWT tokens)
