@@ -64,7 +64,12 @@ if (!app.Environment.IsDevelopment())
 app.UseRequestLocalization();
 
 app.UseStatusCodePagesWithReExecute("/not-found", createScopeForStatusCodePages: true);
-app.UseHttpsRedirection();
+
+// Only use HTTPS redirection in production (not when running through Aspire)
+if (!app.Environment.IsDevelopment())
+{
+    app.UseHttpsRedirection();
+}
 
 app.UseAntiforgery();
 
