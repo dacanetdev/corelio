@@ -1,0 +1,39 @@
+@using Corelio.BlazorApp.Resources
+@using Microsoft.Extensions.Localization
+@inject IAuthService AuthService
+@inject NavigationManager NavigationManager
+@inject IStringLocalizer<SharedResource> L
+
+<AuthorizeView>
+    <Authorized>
+        <MudMenu Icon="@Icons.Material.Filled.Person" Color="Color.Inherit" AnchorOrigin="Origin.BottomRight" TransformOrigin="Origin.TopRight">
+            <ChildContent>
+                <MudText Typo="Typo.body2" Class="px-4 py-2">
+                    <strong>@_userInfo?.FullName</strong><br />
+                    <small>@_userInfo?.Email</small>
+                </MudText>
+                <MudDivider />
+                <MudMenuItem Icon="@Icons.Material.Filled.Logout" OnClick="HandleLogout">
+                    @L["Logout"]
+                </MudMenuItem>
+            </ChildContent>
+        </MudMenu>
+    </Authorized>
+    <NotAuthorized>
+        <MudIconButton Icon="@Icons.Material.Filled.Login" Color="Color.Inherit" Href="/auth/login" />
+    </NotAuthorized>
+</AuthorizeView>
+
+@code {
+    private Models.Authentication.UserInfo? _userInfo;
+
+    protected override async Task OnInitializedAsync()
+    {
+        _userInfo = await AuthService.GetCurrentUserAsync();
+    }
+
+    private void HandleLogout()
+    {
+        NavigationManager.NavigateTo("/auth/logout");
+    }
+}

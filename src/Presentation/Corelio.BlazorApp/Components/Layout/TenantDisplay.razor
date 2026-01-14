@@ -1,0 +1,25 @@
+@using Corelio.BlazorApp.Resources
+@using Microsoft.Extensions.Localization
+@inject IAuthService AuthService
+@inject IStringLocalizer<SharedResource> L
+
+<AuthorizeView>
+    <Authorized>
+        <MudText Typo="Typo.body2" Color="Color.Info">
+            <MudIcon Icon="@Icons.Material.Filled.Business" Size="Size.Small" /> @_tenantName
+        </MudText>
+    </Authorized>
+</AuthorizeView>
+
+@code {
+    private string _tenantName = string.Empty;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var userInfo = await AuthService.GetCurrentUserAsync();
+        if (userInfo is not null)
+        {
+            _tenantName = userInfo.TenantName;
+        }
+    }
+}

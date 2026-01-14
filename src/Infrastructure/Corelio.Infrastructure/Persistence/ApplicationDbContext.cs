@@ -10,14 +10,19 @@ namespace Corelio.Infrastructure.Persistence;
 /// </summary>
 public class ApplicationDbContext(
     DbContextOptions<ApplicationDbContext> options,
-    ITenantProvider tenantProvider,
-    TenantInterceptor tenantInterceptor,
-    AuditInterceptor auditInterceptor) : DbContext(options)
+    ITenantProvider? tenantProvider = null,
+    TenantInterceptor? tenantInterceptor = null,
+    AuditInterceptor? auditInterceptor = null) : DbContext(options)
 {
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
         base.OnConfiguring(optionsBuilder);
-        optionsBuilder.AddInterceptors(tenantInterceptor, auditInterceptor);
+
+        // Add interceptors only if provided (not during design-time/health checks)
+        if (tenantInterceptor != null && auditInterceptor != null)
+        {
+            optionsBuilder.AddInterceptors(tenantInterceptor, auditInterceptor);
+        }
     }
 
     // Core entities
@@ -48,6 +53,12 @@ public class ApplicationDbContext(
     /// </summary>
     private void ApplyTenantQueryFilters(ModelBuilder modelBuilder)
     {
+        // Only apply filters if tenant provider is available (runtime, not design-time)
+        if (tenantProvider == null)
+        {
+            return;
+        }
+
         // User - strict tenant isolation
         modelBuilder.Entity<User>()
             .HasQueryFilter(u => !tenantProvider.HasTenantContext || u.TenantId == tenantProvider.TenantId);

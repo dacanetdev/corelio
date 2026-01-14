@@ -25,6 +25,10 @@ builder.Services.AddOpenApi();
 
 var app = builder.Build();
 
+// Map Aspire health check endpoints FIRST (before authentication middleware)
+// This allows health checks to work without authentication/tenant context
+app.MapDefaultEndpoints();
+
 // Configure the HTTP request pipeline
 if (app.Environment.IsDevelopment())
 {
@@ -38,16 +42,16 @@ if (app.Environment.IsDevelopment())
 }
 
 // Add authentication middleware (validates JWT tokens)
-app.UseAuthentication();
-
-// Add tenant resolution middleware (extracts tenant from JWT claims, header, or subdomain)
-app.UseTenantResolution();
-
-// Add authorization middleware (enforces policies and permissions)
-app.UseAuthorization();
-
-// Map Aspire default endpoints (health checks, etc.)
-app.MapDefaultEndpoints();
+// Skip authentication for health check endpoints
+app.UseWhen(
+    context => !context.Request.Path.StartsWithSegments("/health") &&
+               !context.Request.Path.StartsWithSegments("/alive"),
+    appBuilder =>
+    {
+        appBuilder.UseAuthentication();
+        appBuilder.UseTenantResolution();
+        appBuilder.UseAuthorization();
+    });
 
 // Map all API endpoints (authentication, tenants, etc.)
 app.MapAllEndpoints();

@@ -85,8 +85,6 @@
   },
   // IntelliCode
   "vsintellicode.modify.editor.suggestSelection": "automaticallyOverrodeDefaultValue",
-  // C# Specific
-  "csharp.referencesCodeLens.enabled": true,
   "csharp.format.enable": true,
   "csharp.suppressDotnetRestoreNotification": true,
   // Recommended for Clean Architecture

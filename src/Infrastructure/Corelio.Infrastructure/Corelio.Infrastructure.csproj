@@ -3,6 +3,8 @@
   <PropertyGroup>
     <RootNamespace>Corelio.Infrastructure</RootNamespace>
     <AssemblyName>Corelio.Infrastructure</AssemblyName>
+    <!-- Suppress code analysis warnings temporarily for MVP -->
+    <NoWarn>$(NoWarn);CA1848;CA1822;CA1862;IDE0011</NoWarn>
   </PropertyGroup>
 
   <ItemGroup>
