@@ -61,7 +61,7 @@ public class TenantServiceTests
     public void GetCurrentTenantId_WhenNoHttpContext_ReturnsNull()
     {
         // Arrange
-        _httpContextAccessorMock.Setup(x => x.HttpContext).Returns((HttpContext?)null);
+        _httpContextAccessorMock.Setup(x => x.HttpContext).Returns((HttpContext)null!);
         _tenantProviderMock.Setup(x => x.HasTenantContext).Returns(false);
 
         // Act

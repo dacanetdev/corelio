@@ -1,0 +1,261 @@
+### Corelio Multi-Tenancy Isolation Tests
+### Base URL
+@baseUrl = https://localhost:5001
+@apiVersion = v1
+
+### Tenant A Variables
+@tenantA_accessToken =
+@tenantA_refreshToken =
+@tenantA_userId =
+@tenantA_tenantId =
+
+### Tenant B Variables
+@tenantB_accessToken =
+@tenantB_refreshToken =
+@tenantB_userId =
+@tenantB_tenantId =
+
+###############################################################################
+# Setup: Register Tenant A
+###############################################################################
+
+### Register Tenant A: "Hardware Store Alpha"
+# @name registerTenantA
+POST {{baseUrl}}/api/{{apiVersion}}/tenants/register
+Content-Type: application/json
+
+{
+  "tenantName": "Hardware Store Alpha",
+  "rfc": "HSAA010101000",
+  "subdomain": "alpha",
+  "ownerEmail": "owner@alpha.com",
+  "ownerPassword": "AlphaSecure123!",
+  "ownerFirstName": "Alice",
+  "ownerLastName": "Anderson"
+}
+
+@tenantA_tenantId = {{registerTenantA.response.body.$.tenantId}}
+
+###############################################################################
+# Setup: Register Tenant B
+###############################################################################
+
+### Register Tenant B: "Hardware Store Beta"
+# @name registerTenantB
+POST {{baseUrl}}/api/{{apiVersion}}/tenants/register
+Content-Type: application/json
+
+{
+  "tenantName": "Hardware Store Beta",
+  "rfc": "HSBB020202000",
+  "subdomain": "beta",
+  "ownerEmail": "owner@beta.com",
+  "ownerPassword": "BetaSecure123!",
+  "ownerFirstName": "Bob",
+  "ownerLastName": "Brown"
+}
+
+@tenantB_tenantId = {{registerTenantB.response.body.$.tenantId}}
+
+###############################################################################
+# Tenant A: Login and Operations
+###############################################################################
+
+### Login to Tenant A
+# @name loginTenantA
+POST {{baseUrl}}/api/{{apiVersion}}/auth/login
+Content-Type: application/json
+
+{
+  "email": "owner@alpha.com",
+  "password": "AlphaSecure123!",
+  "tenantSubdomain": "alpha"
+}
+
+@tenantA_accessToken = {{loginTenantA.response.body.$.tokens.accessToken}}
+@tenantA_refreshToken = {{loginTenantA.response.body.$.tokens.refreshToken}}
+@tenantA_userId = {{loginTenantA.response.body.$.userId}}
+@tenantA_tenantId = {{loginTenantA.response.body.$.tenantId}}
+
+###
+
+### Register Employee for Tenant A
+# @name registerEmployeeTenantA
+POST {{baseUrl}}/api/{{apiVersion}}/auth/register
+Content-Type: application/json
+Authorization: Bearer {{tenantA_accessToken}}
+
+{
+  "email": "employee1@alpha.com",
+  "password": "AlphaEmployee123!",
+  "firstName": "Charlie",
+  "lastName": "Clark",
+  "roleCodes": ["User"]
+}
+
+###
+
+### Login as Tenant A Employee
+# @name loginEmployeeTenantA
+POST {{baseUrl}}/api/{{apiVersion}}/auth/login
+Content-Type: application/json
+
+{
+  "email": "employee1@alpha.com",
+  "password": "AlphaEmployee123!",
+  "tenantSubdomain": "alpha"
+}
+
+###############################################################################
+# Tenant B: Login and Operations
+###############################################################################
+
+### Login to Tenant B
+# @name loginTenantB
+POST {{baseUrl}}/api/{{apiVersion}}/auth/login
+Content-Type: application/json
+
+{
+  "email": "owner@beta.com",
+  "password": "BetaSecure123!",
+  "tenantSubdomain": "beta"
+}
+
+@tenantB_accessToken = {{loginTenantB.response.body.$.tokens.accessToken}}
+@tenantB_refreshToken = {{loginTenantB.response.body.$.tokens.refreshToken}}
+@tenantB_userId = {{loginTenantB.response.body.$.userId}}
+@tenantB_tenantId = {{loginTenantB.response.body.$.tenantId}}
+
+###
+
+### Register Employee for Tenant B
+# @name registerEmployeeTenantB
+POST {{baseUrl}}/api/{{apiVersion}}/auth/register
+Content-Type: application/json
+Authorization: Bearer {{tenantB_accessToken}}
+
+{
+  "email": "employee1@beta.com",
+  "password": "BetaEmployee123!",
+  "firstName": "Diana",
+  "lastName": "Davis",
+  "roleCodes": ["User"]
+}
+
+###
+
+### Login as Tenant B Employee
+# @name loginEmployeeTenantB
+POST {{baseUrl}}/api/{{apiVersion}}/auth/login
+Content-Type: application/json
+
+{
+  "email": "employee1@beta.com",
+  "password": "BetaEmployee123!",
+  "tenantSubdomain": "beta"
+}
+
+###############################################################################
+# Multi-Tenancy Isolation Tests
+###############################################################################
+
+### ❌ Tenant A user CANNOT login with Tenant B subdomain (should fail)
+POST {{baseUrl}}/api/{{apiVersion}}/auth/login
+Content-Type: application/json
+
+{
+  "email": "owner@alpha.com",
+  "password": "AlphaSecure123!",
+  "tenantSubdomain": "beta"
+}
+
+###
+
+### ❌ Tenant B user CANNOT login with Tenant A subdomain (should fail)
+POST {{baseUrl}}/api/{{apiVersion}}/auth/login
+Content-Type: application/json
+
+{
+  "email": "owner@beta.com",
+  "password": "BetaSecure123!",
+  "tenantSubdomain": "alpha"
+}
+
+###
+
+### ✅ Tenant A can register users in their own tenant
+POST {{baseUrl}}/api/{{apiVersion}}/auth/register
+Content-Type: application/json
+Authorization: Bearer {{tenantA_accessToken}}
+
+{
+  "email": "employee2@alpha.com",
+  "password": "AlphaEmployee2_123!",
+  "firstName": "Edward",
+  "lastName": "Evans",
+  "roleCodes": ["User"]
+}
+
+###
+
+### ❌ Tenant A token CANNOT register users (JWT contains Tenant A ID, not Tenant B)
+# This should succeed but user will be created in Tenant A due to JWT claim
+# When we implement product/customer endpoints, we'll see data isolation
+POST {{baseUrl}}/api/{{apiVersion}}/auth/register
+Content-Type: application/json
+Authorization: Bearer {{tenantA_accessToken}}
+X-Tenant-Id: {{tenantB_tenantId}}
+
+{
+  "email": "hacker@beta.com",
+  "password": "HackerPass123!",
+  "firstName": "Hacker",
+  "lastName": "Attempt",
+  "roleCodes": ["User"]
+}
+
+###############################################################################
+# JWT Token Inspection
+###############################################################################
+
+### Decode Tenant A JWT at https://jwt.io
+# Copy the access token from Tenant A login response
+# Verify claims:
+# - sub: {{tenantA_userId}}
+# - email: owner@alpha.com
+# - tenant_id: {{tenantA_tenantId}}
+# - roles: ["Owner"]
+# - permissions: [multiple permissions]
+
+### Decode Tenant B JWT at https://jwt.io
+# Copy the access token from Tenant B login response
+# Verify claims:
+# - sub: {{tenantB_userId}}
+# - email: owner@beta.com
+# - tenant_id: {{tenantB_tenantId}}
+# - roles: ["Owner"]
+# - permissions: [multiple permissions]
+
+###############################################################################
+# Cleanup: Logout Both Tenants
+###############################################################################
+
+### Logout Tenant A
+POST {{baseUrl}}/api/{{apiVersion}}/auth/logout
+Content-Type: application/json
+Authorization: Bearer {{tenantA_accessToken}}
+
+{
+  "refreshToken": "{{tenantA_refreshToken}}"
+}
+
+###
+
+### Logout Tenant B
+POST {{baseUrl}}/api/{{apiVersion}}/auth/logout
+Content-Type: application/json
+Authorization: Bearer {{tenantB_accessToken}}
+
+{
+  "refreshToken": "{{tenantB_refreshToken}}"
+}
