@@ -15,13 +15,13 @@ public class ValidationBehavior<TRequest, TResponse>(
 {
     public async Task<TResponse> Handle(
         TRequest request,
-        Func<Task<TResponse>> next,
+        Func<Task<TResponse>> nextHandler,
         CancellationToken cancellationToken)
     {
         // If no validators are registered for this request type, skip validation
         if (!validators.Any())
         {
-            return await next();
+            return await nextHandler();
         }
 
         // Create validation context
@@ -44,6 +44,6 @@ public class ValidationBehavior<TRequest, TResponse>(
         }
 
         // Validation passed, continue to the handler
-        return await next();
+        return await nextHandler();
     }
 }
