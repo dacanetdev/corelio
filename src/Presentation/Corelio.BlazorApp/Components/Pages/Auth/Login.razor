@@ -1,0 +1,128 @@
+@page "/auth/login"
+@using Corelio.BlazorApp.Models.Authentication
+@using Corelio.BlazorApp.Models.ViewModels
+@using Corelio.BlazorApp.Resources
+@using Microsoft.Extensions.Localization
+@inject IAuthService AuthService
+@inject NavigationManager NavigationManager
+@inject IStringLocalizer<SharedResource> L
+
+<PageTitle>@L["LoginPageTitle"]</PageTitle>
+
+<MudContainer MaxWidth="MaxWidth.Small" Class="d-flex align-center" Style="height: 100vh;">
+    <MudPaper Elevation="3" Class="pa-8" Style="width: 100%;">
+        <MudText Typo="Typo.h4" Align="Align.Center" GutterBottom="true">
+            @L["Login"]
+        </MudText>
+
+        @if (_sessionExpired)
+        {
+            <MudAlert Severity="Severity.Warning" Class="mb-4">
+                @L["SessionExpired"]
+            </MudAlert>
+        }
+
+        @if (!string.IsNullOrEmpty(_errorMessage))
+        {
+            <MudAlert Severity="Severity.Error" Class="mb-4">
+                @_errorMessage
+            </MudAlert>
+        }
+
+        <EditForm Model="_loginModel" OnValidSubmit="HandleLogin">
+            <DataAnnotationsValidator />
+
+            <MudTextField @bind-Value="_loginModel.Email"
+                          Label="@L["Email"]"
+                          Variant="Variant.Outlined"
+                          InputType="InputType.Email"
+                          Margin="Margin.Dense"
+                          Required="true"
+                          Class="mb-4"
+                          For="@(() => _loginModel.Email)" />
+
+            <MudTextField @bind-Value="_loginModel.Password"
+                          Label="@L["Password"]"
+                          Variant="Variant.Outlined"
+                          InputType="InputType.Password"
+                          Margin="Margin.Dense"
+                          Required="true"
+                          Class="mb-4"
+                          For="@(() => _loginModel.Password)" />
+
+            <MudButton ButtonType="ButtonType.Submit"
+                       Variant="Variant.Filled"
+                       Color="Color.Primary"
+                       FullWidth="true"
+                       Size="Size.Large"
+                       Disabled="_isLoading"
+                       Class="mb-3">
+                @if (_isLoading)
+                {
+                    <MudProgressCircular Class="ms-n1" Size="Size.Small" Indeterminate="true" />
+                    <MudText Class="ms-2">@L["Login"]...</MudText>
+                }
+                else
+                {
+                    @L["Login"]
+                }
+            </MudButton>
+
+            <MudText Align="Align.Center">
+                <MudLink Href="/auth/forgot-password" Color="Color.Primary">
+                    @L["ForgotPassword"]
+                </MudLink>
+            </MudText>
+        </EditForm>
+    </MudPaper>
+</MudContainer>
+
+@code {
+    private LoginViewModel _loginModel = new();
+    private bool _isLoading;
+    private string? _errorMessage;
+    private bool _sessionExpired;
+
+    [SupplyParameterFromQuery(Name = "expired")]
+    public bool SessionExpired { get; set; }
+
+    protected override void OnInitialized()
+    {
+        _sessionExpired = SessionExpired;
+    }
+
+    private async Task HandleLogin()
+    {
+        _isLoading = true;
+        _errorMessage = null;
+
+        try
+        {
+            var request = new LoginRequest
+            {
+                Email = _loginModel.Email,
+                Password = _loginModel.Password
+            };
+
+            var result = await AuthService.LoginAsync(request);
+
+            if (result.IsSuccess)
+            {
+                // Redirect to home page
+                NavigationManager.NavigateTo("/", forceLoad: true);
+            }
+            else
+            {
+                _errorMessage = L["LoginFailed"];
+            }
+        }
+        catch (Exception)
+        {
+            _errorMessage = L["UnexpectedError"];
+        }
+        finally
+        {
+            _isLoading = false;
+        }
+    }
+}

@@ -647,7 +647,73 @@ Before merging:
 5. **Hardcoding Configuration**
    - Use IConfiguration or Aspire service discovery
 
-### 14. Code Review Checklist
+### 14. Definition of Done
+
+**CRITICAL:** A user story is NOT complete until ALL criteria below are met. Backend-only implementations do NOT satisfy the Definition of Done for user-facing features.
+
+#### Code Implementation
+- [ ] **Backend implemented** (API endpoints, CQRS handlers, domain logic)
+- [ ] **Frontend implemented** (Blazor pages/components for user interaction)
+  - Required for ALL user-facing features
+  - Backend-only is acceptable ONLY for infrastructure stories (migrations, services, etc.)
+- [ ] Clean Architecture followed (proper layer separation)
+- [ ] C# 14 features used (primary constructors, collection expressions, file-scoped namespaces)
+- [ ] CQRS pattern followed (commands vs queries)
+- [ ] Proper error handling with Result<T> pattern
+- [ ] Input validation implemented (FluentValidation)
+
+#### User Experience (Required for User-Facing Features)
+- [ ] **Feature is demo-able** (stakeholder can see and interact with it via Blazor UI)
+- [ ] **All UI text in Spanish (es-MX)** via IStringLocalizer
+- [ ] **Resource files created** (*.es-MX.resx with all UI strings)
+- [ ] **Forms have validation** with Spanish error messages
+- [ ] **Feature works end-to-end** (user can complete the entire workflow)
+- [ ] **Responsive design** (works on different screen sizes)
+- [ ] **MudBlazor components** used consistently with project design system
+- [ ] Date format: dd/MM/yyyy (Mexican locale)
+- [ ] Currency format: $1,234.56 MXN (when applicable)
+
+#### Testing
+- [ ] **Backend unit tests** with >70% coverage
+- [ ] **Frontend component tests** (bUnit for Blazor components)
+- [ ] **End-to-end manual test scenarios** documented and passed
+- [ ] **Integration tests** for multi-tenancy isolation
+- [ ] All tests passing in CI/CD pipeline
+- [ ] Zero compilation warnings
+
+#### Security
+- [ ] Multi-tenancy properly enforced (ITenantEntity implemented)
+- [ ] No SQL injection vulnerabilities
+- [ ] Authorization checks on all endpoints
+- [ ] Sensitive data encrypted (passwords, certificates)
+- [ ] No hardcoded secrets (use Key Vault or user secrets)
+- [ ] No security vulnerabilities (SonarQube scan passed)
+
+#### Documentation
+- [ ] **API documentation updated** (Scalar/OpenAPI)
+- [ ] **User-facing documentation** (how to use the feature)
+- [ ] **XML comments** on all public interfaces and classes
+- [ ] **SPRINT_STATUS.md updated** with accurate completion status
+- [ ] **README updated** if setup instructions changed
+
+#### Deployment Readiness
+- [ ] Code reviewed and approved
+- [ ] All CI/CD checks passing (build, tests, quality gates)
+- [ ] Merged to main branch
+- [ ] Deployed to staging environment
+- [ ] Smoke tested in staging
+
+#### Demo-Ready Checklist (User-Facing Features)
+Ask these questions before marking a story complete:
+- [ ] Can a stakeholder see the feature in the Blazor UI?
+- [ ] Can a stakeholder interact with the feature (click buttons, fill forms)?
+- [ ] Does the feature work end-to-end without using Postman/Swagger/direct API calls?
+- [ ] Is all UI text in Spanish (es-MX)?
+- [ ] Are there any "backend-only" workarounds required to use this feature?
+
+**If ANY answer is "No", the story is NOT complete.**
+
+### 15. Code Review Checklist
 
 - [ ] Follows Clean Architecture layers
 - [ ] Multi-tenancy properly enforced
@@ -671,7 +737,7 @@ Before merging:
 ### Commit Convention
 Format: `[US-X.X] TASK Y: Short description`
 
-### 15. Development Workflow
+### 16. Development Workflow
 1. **Create Feature Branch**
    ```bash
    git checkout -b feature/product-management
@@ -715,7 +781,7 @@ Format: `[US-X.X] TASK Y: Short description`
     - All tests must pass
     - SonarQube quality gate passed
 
-### 16. Troubleshooting
+### 17. Troubleshooting
 
 **Multi-Tenancy Not Working:**
 - Check `OnModelCreating` has query filters
@@ -734,7 +800,7 @@ Format: `[US-X.X] TASK Y: Short description`
 - Ensure PostgreSQL container is running
 - Verify migration syntax (PostgreSQL-specific)
 
-### 17. Resources
+### 18. Resources
 
 - **Architecture:** See `docs/planning/00-architecture-specification.md`
 - **Database:** See `docs/planning/01-database-schema-design.md`

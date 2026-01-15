@@ -150,9 +150,22 @@ public static class DependencyInjection
             // Aspire will auto-configure the connection via service discovery
         });
 
-        // Add DbContext with Aspire PostgreSQL integration
-        builder.AddNpgsqlDbContext<ApplicationDbContext>("corelioDb", configureDbContextOptions: options =>
+        // Add DbContext without pooling
+        // Cannot use AddNpgsqlDbContext because it uses pooling which conflicts with scoped ITenantProvider
+        builder.Services.AddDbContext<ApplicationDbContext>((sp, options) =>
         {
+            // Get connection string from Aspire-enriched configuration
+            var connectionString = builder.Configuration.GetConnectionString("corelioDb");
+
+            options.UseNpgsql(connectionString, npgsqlOptions =>
+            {
+                npgsqlOptions.MigrationsAssembly(typeof(ApplicationDbContext).Assembly.FullName);
+                npgsqlOptions.EnableRetryOnFailure(
+                    maxRetryCount: 3,
+                    maxRetryDelay: TimeSpan.FromSeconds(30),
+                    errorCodesToAdd: null);
+            });
+
 #if DEBUG
             options.EnableDetailedErrors();
             options.EnableSensitiveDataLogging();

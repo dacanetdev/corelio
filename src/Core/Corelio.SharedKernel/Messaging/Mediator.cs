@@ -11,10 +11,7 @@ public class Mediator(IServiceProvider serviceProvider) : IMediator
         IRequest<TResponse> request,
         CancellationToken cancellationToken = default)
     {
-        if (request is null)
-        {
-            throw new ArgumentNullException(nameof(request));
-        }
+        ArgumentNullException.ThrowIfNull(request);
 
         var requestType = request.GetType();
         var responseType = typeof(TResponse);

@@ -1,5 +1,11 @@
 var builder = DistributedApplication.CreateBuilder(args);
 
+// Configure dashboard (Aspire 13 requires explicit configuration)
+builder.Configuration["ASPNETCORE_URLS"] = "http://localhost:15888";
+builder.Configuration["ASPIRE_DASHBOARD_OTLP_ENDPOINT_URL"] = "http://localhost:18889";
+builder.Configuration["DASHBOARD__OTLP__AUTHMODE"] = "Unsecured";
+builder.Configuration["ASPIRE_ALLOW_UNSECURED_TRANSPORT"] = "true";
+
 var postgres = builder.AddPostgres("postgres")
     .WithDataVolume()
     .AddDatabase("corelioDb");

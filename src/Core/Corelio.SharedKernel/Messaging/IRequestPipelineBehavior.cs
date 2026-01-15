@@ -11,5 +11,5 @@ public interface IRequestPipelineBehavior<in TRequest, TResponse>
     /// <summary>
     /// Handles the request and calls the next behavior in the pipeline.
     /// </summary>
-    Task<TResponse> Handle(TRequest request, Func<Task<TResponse>> next, CancellationToken cancellationToken);
+    Task<TResponse> Handle(TRequest request, Func<Task<TResponse>> nextHandler, CancellationToken cancellationToken);
 }

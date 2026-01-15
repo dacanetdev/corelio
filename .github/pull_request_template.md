@@ -108,6 +108,54 @@ Code coverage: __%
 - [ ] CQRS pattern used correctly
 - [ ] Proper separation of concerns
 
+### Frontend (REQUIRED for User-Facing Features)
+
+**⚠️ CRITICAL: Backend-only PRs for user-facing features do NOT satisfy Definition of Done**
+
+#### Blazor UI Implementation
+- [ ] **Blazor pages/components created** (Required unless exemption justified below)
+- [ ] **Spanish localization implemented** (*.es-MX.resx files created)
+- [ ] All UI text uses `IStringLocalizer<T>` (NO hardcoded Spanish strings)
+- [ ] MudBlazor components used consistently with design system
+- [ ] Forms have validation with Spanish error messages
+- [ ] Responsive design (tested on mobile, tablet, desktop)
+- [ ] Date format: dd/MM/yyyy (Mexican locale)
+- [ ] Currency format: $1,234.56 MXN (when applicable)
+
+#### Service Layer (Blazor)
+- [ ] Service interfaces created (e.g., IAuthService, IProductService)
+- [ ] Service implementations call WebAPI endpoints via HttpClient
+- [ ] HttpClient configured with Aspire service discovery
+- [ ] Error handling implemented (Result<T> pattern)
+- [ ] Loading states handled in UI (spinners, progress indicators)
+
+#### Component Tests
+- [ ] bUnit component tests added
+- [ ] Service layer unit tests added (mock HttpClient)
+- [ ] Frontend tests passing (>70% coverage goal)
+
+#### Demo-Ready Verification
+- [ ] **Feature is demo-able via Blazor UI** (stakeholder can see and interact)
+- [ ] **Feature works end-to-end** (no Postman/Swagger/API workarounds)
+- [ ] **All UI text in Spanish (es-MX)**
+- [ ] User can complete the entire workflow through UI
+
+#### Frontend Exemption (Complete if NO frontend)
+**Is this PR backend-only?** ☐ Yes ☐ No
+
+**If yes, this is acceptable ONLY if:**
+- [ ] This is an infrastructure story (migrations, services, middleware, etc.)
+- [ ] This is a technical debt or refactoring task
+- [ ] This is an API-only feature (explicitly documented as such)
+
+**If frontend is deferred, provide:**
+- Frontend tracking issue: #_____
+- Estimated completion date: YYYY-MM-DD
+- Reason for deferral: _______________
+- Who approved deferral: @_______________
+
+**WARNING:** User-facing features MUST include frontend. A feature is not "done" if users cannot interact with it via the Blazor UI.
+
 ### Multi-Tenancy
 
 - [ ] All business entities implement `ITenantEntity`
