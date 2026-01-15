@@ -215,7 +215,7 @@ jobs:
         password: ${{ secrets.DOCKER_PASSWORD }}
 
     - name: Build and push API image
-      uses: docker/build-push-action@v5
+      uses: docker/build-push-action@v6
       with:
         context: .
         file: ./src/Presentation/Corelio.WebAPI/Dockerfile
@@ -227,7 +227,7 @@ jobs:
         cache-to: type=inline
 
     - name: Build and push Blazor image
-      uses: docker/build-push-action@v5
+      uses: docker/build-push-action@v6
       with:
         context: .
         file: ./src/Presentation/Corelio.BlazorApp/Dockerfile
