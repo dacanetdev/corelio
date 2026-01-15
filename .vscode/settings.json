@@ -98,5 +98,6 @@
     "**/bin/**": true,
     "**/obj/**": true
   },
-  "dotnet.codeLens.enableReferencesCodeLens": true
+  "dotnet.codeLens.enableReferencesCodeLens": true,
+  "dotnet.formatting.organizeImportsOnFormat": true
 }
