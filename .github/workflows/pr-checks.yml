@@ -107,7 +107,7 @@ jobs:
         done
 
     - name: Comment test results on PR
-      uses: dorny/test-reporter@v1
+      uses: dorny/test-reporter@v2
       if: always()
       with:
         name: Test Results
