@@ -156,3 +156,7 @@ mono_crash.*
 # Backups
 *.bak
 *.backup
+
+# Claude Code temporary files
+tmpclaude-*
+nul

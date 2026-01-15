@@ -68,18 +68,24 @@ public static class Extensions
     public static IHostApplicationBuilder AddDefaultHealthChecks(this IHostApplicationBuilder builder)
     {
         builder.Services.AddHealthChecks()
-            .AddCheck("self", () => HealthCheckResult.Healthy(), ["live"]);
+            .AddCheck("self", () => HealthCheckResult.Healthy(), ["live"])
+            .AddCheck("ready", () => HealthCheckResult.Healthy(), ["ready"]);
 
         return builder;
     }
 
     public static WebApplication MapDefaultEndpoints(this WebApplication app)
     {
-        app.MapHealthChecks("/health");
+        app.MapHealthChecks("/health")
+            .AllowAnonymous()
+            .WithMetadata(new Microsoft.AspNetCore.Authorization.AllowAnonymousAttribute());
+
         app.MapHealthChecks("/alive", new HealthCheckOptions
         {
             Predicate = r => r.Tags.Contains("live")
-        });
+        })
+            .AllowAnonymous()
+            .WithMetadata(new Microsoft.AspNetCore.Authorization.AllowAnonymousAttribute());
 
         return app;
     }

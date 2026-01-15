@@ -1,0 +1,33 @@
+@page "/auth/logout"
+@using Corelio.BlazorApp.Resources
+@using Microsoft.Extensions.Localization
+@inject IAuthService AuthService
+@inject NavigationManager NavigationManager
+@inject IStringLocalizer<SharedResource> L
+@inject IDialogService DialogService
+
+<PageTitle>@L["Logout"]</PageTitle>
+
+@code {
+    protected override async Task OnInitializedAsync()
+    {
+        // Show confirmation dialog using MudBlazor's built-in message box
+        bool? result = await DialogService.ShowMessageBox(
+            L["Logout"],
+            L["LogoutConfirmation"],
+            yesText: L["Confirm"],
+            cancelText: L["Cancel"]);
+
+        if (result == true)
+        {
+            // Perform logout
+            await AuthService.LogoutAsync();
+            NavigationManager.NavigateTo("/auth/login", forceLoad: true);
+        }
+        else
+        {
+            // User canceled, go back to previous page
+            NavigationManager.NavigateTo("/");
+        }
+    }
+}

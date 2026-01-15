@@ -85,8 +85,6 @@
   },
   // IntelliCode
   "vsintellicode.modify.editor.suggestSelection": "automaticallyOverrodeDefaultValue",
-  // C# Specific
-  "csharp.referencesCodeLens.enabled": true,
   "csharp.format.enable": true,
   "csharp.suppressDotnetRestoreNotification": true,
   // Recommended for Clean Architecture
@@ -100,5 +98,6 @@
     "**/bin/**": true,
     "**/obj/**": true
   },
-  "dotnet.codeLens.enableReferencesCodeLens": true
+  "dotnet.codeLens.enableReferencesCodeLens": true,
+  "dotnet.formatting.organizeImportsOnFormat": true
 }

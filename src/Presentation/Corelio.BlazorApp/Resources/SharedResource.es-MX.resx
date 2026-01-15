@@ -1,0 +1,214 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" msdata:Ordinal="5" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+
+  <!-- Common UI Elements -->
+  <data name="Save" xml:space="preserve">
+    <value>Guardar</value>
+  </data>
+  <data name="Cancel" xml:space="preserve">
+    <value>Cancelar</value>
+  </data>
+  <data name="Close" xml:space="preserve">
+    <value>Cerrar</value>
+  </data>
+  <data name="Confirm" xml:space="preserve">
+    <value>Confirmar</value>
+  </data>
+  <data name="Required" xml:space="preserve">
+    <value>Este campo es requerido</value>
+  </data>
+
+  <!-- Authentication Pages -->
+  <data name="Login" xml:space="preserve">
+    <value>Iniciar Sesión</value>
+  </data>
+  <data name="Register" xml:space="preserve">
+    <value>Registrar</value>
+  </data>
+  <data name="Logout" xml:space="preserve">
+    <value>Cerrar Sesión</value>
+  </data>
+  <data name="ForgotPassword" xml:space="preserve">
+    <value>¿Olvidaste tu contraseña?</value>
+  </data>
+  <data name="ResetPassword" xml:space="preserve">
+    <value>Restablecer Contraseña</value>
+  </data>
+
+  <!-- Form Fields -->
+  <data name="Email" xml:space="preserve">
+    <value>Correo Electrónico</value>
+  </data>
+  <data name="Password" xml:space="preserve">
+    <value>Contraseña</value>
+  </data>
+  <data name="ConfirmPassword" xml:space="preserve">
+    <value>Confirmar Contraseña</value>
+  </data>
+  <data name="NewPassword" xml:space="preserve">
+    <value>Nueva Contraseña</value>
+  </data>
+  <data name="FirstName" xml:space="preserve">
+    <value>Nombre</value>
+  </data>
+  <data name="LastName" xml:space="preserve">
+    <value>Apellido</value>
+  </data>
+  <data name="Roles" xml:space="preserve">
+    <value>Roles</value>
+  </data>
+  <data name="Tenant" xml:space="preserve">
+    <value>Empresa</value>
+  </data>
+  <data name="User" xml:space="preserve">
+    <value>Usuario</value>
+  </data>
+
+  <!-- Validation Messages -->
+  <data name="EmailRequired" xml:space="preserve">
+    <value>El correo electrónico es requerido</value>
+  </data>
+  <data name="EmailInvalid" xml:space="preserve">
+    <value>Formato de correo inválido</value>
+  </data>
+  <data name="PasswordRequired" xml:space="preserve">
+    <value>La contraseña es requerida</value>
+  </data>
+  <data name="PasswordMinLength" xml:space="preserve">
+    <value>La contraseña debe tener al menos 8 caracteres</value>
+  </data>
+  <data name="PasswordsMustMatch" xml:space="preserve">
+    <value>Las contraseñas no coinciden</value>
+  </data>
+  <data name="FirstNameRequired" xml:space="preserve">
+    <value>El nombre es requerido</value>
+  </data>
+  <data name="LastNameRequired" xml:space="preserve">
+    <value>El apellido es requerido</value>
+  </data>
+
+  <!-- Success Messages -->
+  <data name="LoginSuccess" xml:space="preserve">
+    <value>Inicio de sesión exitoso</value>
+  </data>
+  <data name="LogoutSuccess" xml:space="preserve">
+    <value>Sesión cerrada exitosamente</value>
+  </data>
+  <data name="RegistrationSuccess" xml:space="preserve">
+    <value>Usuario creado exitosamente</value>
+  </data>
+  <data name="PasswordResetEmailSent" xml:space="preserve">
+    <value>Si el correo existe, se ha enviado un enlace de restablecimiento</value>
+  </data>
+  <data name="PasswordResetSuccess" xml:space="preserve">
+    <value>Contraseña restablecida exitosamente</value>
+  </data>
+
+  <!-- Error Messages -->
+  <data name="LoginFailed" xml:space="preserve">
+    <value>Inicio de sesión fallido. Verifica tus credenciales.</value>
+  </data>
+  <data name="RegistrationFailed" xml:space="preserve">
+    <value>Error al crear usuario</value>
+  </data>
+  <data name="PasswordResetFailed" xml:space="preserve">
+    <value>Error al restablecer contraseña</value>
+  </data>
+  <data name="SessionExpired" xml:space="preserve">
+    <value>Tu sesión ha expirado. Por favor, inicia sesión nuevamente.</value>
+  </data>
+  <data name="AccessDenied" xml:space="preserve">
+    <value>Acceso Denegado</value>
+  </data>
+  <data name="AccessDeniedMessage" xml:space="preserve">
+    <value>No tienes permiso para acceder a esta página.</value>
+  </data>
+  <data name="UnexpectedError" xml:space="preserve">
+    <value>Ocurrió un error inesperado</value>
+  </data>
+
+  <!-- Page Titles -->
+  <data name="LoginPageTitle" xml:space="preserve">
+    <value>Iniciar Sesión - Corelio</value>
+  </data>
+  <data name="RegisterPageTitle" xml:space="preserve">
+    <value>Registrar Usuario - Corelio</value>
+  </data>
+  <data name="ForgotPasswordPageTitle" xml:space="preserve">
+    <value>Recuperar Contraseña - Corelio</value>
+  </data>
+  <data name="ResetPasswordPageTitle" xml:space="preserve">
+    <value>Restablecer Contraseña - Corelio</value>
+  </data>
+
+  <!-- Confirmation Dialog -->
+  <data name="LogoutConfirmation" xml:space="preserve">
+    <value>¿Estás seguro de que deseas cerrar sesión?</value>
+  </data>
+
+  <!-- Buttons -->
+  <data name="SendLink" xml:space="preserve">
+    <value>Enviar Enlace</value>
+  </data>
+  <data name="BackToLogin" xml:space="preserve">
+    <value>Volver al Inicio de Sesión</value>
+  </data>
+</root>
