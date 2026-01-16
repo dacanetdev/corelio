@@ -2,6 +2,7 @@ using System.Globalization;
 using Blazored.LocalStorage;
 using Corelio.BlazorApp.Components;
 using Corelio.BlazorApp.Services.Authentication;
+using Corelio.BlazorApp.Services.Products;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Localization;
 using MudBlazor.Services;
@@ -45,6 +46,9 @@ builder.Services.AddScoped(sp =>
 
 // Add AuthService (depends on HttpClient)
 builder.Services.AddScoped<IAuthService, AuthService>();
+
+// Add Product service
+builder.Services.AddScoped<IProductService, ProductService>();
 
 // Add Razor Components
 builder.Services.AddRazorComponents()

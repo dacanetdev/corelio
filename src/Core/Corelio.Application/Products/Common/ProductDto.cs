@@ -1,0 +1,51 @@
+using Corelio.Domain.Enums;
+
+namespace Corelio.Application.Products.Common;
+
+/// <summary>
+/// Data transfer object for Product.
+/// </summary>
+public record ProductDto(
+    Guid Id,
+    string Sku,
+    string Name,
+    decimal SalePrice,
+    decimal CostPrice,
+    UnitOfMeasure UnitOfMeasure,
+    Guid? CategoryId,
+    string? CategoryName,
+    string? Barcode,
+    BarcodeType BarcodeType,
+    string? Description,
+    string? ShortDescription,
+    string? Brand,
+    string? Manufacturer,
+    string? ModelNumber,
+    decimal? WholesalePrice,
+    decimal? Msrp,
+    decimal TaxRate,
+    bool IsTaxExempt,
+    bool TrackInventory,
+    decimal MinStockLevel,
+    decimal? MaxStockLevel,
+    decimal? ReorderPoint,
+    decimal? ReorderQuantity,
+    decimal? WeightKg,
+    decimal? LengthCm,
+    decimal? WidthCm,
+    decimal? HeightCm,
+    decimal? VolumeCm3,
+    string? SatProductCode,
+    string? SatUnitCode,
+    string? SatHazardousMaterial,
+    string? PrimaryImageUrl,
+    string? ImagesJson,
+    bool IsService,
+    bool IsBundle,
+    bool IsVariantParent,
+    bool IsActive,
+    bool IsFeatured,
+    decimal ProfitMargin,
+    decimal MarkupPercentage,
+    DateTime CreatedAt,
+    DateTime UpdatedAt);

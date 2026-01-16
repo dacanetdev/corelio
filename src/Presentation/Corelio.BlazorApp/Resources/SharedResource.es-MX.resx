@@ -211,4 +211,120 @@
   <data name="BackToLogin" xml:space="preserve">
     <value>Volver al Inicio de Sesión</value>
   </data>
+
+  <!-- Product Management -->
+  <data name="Products" xml:space="preserve">
+    <value>Productos</value>
+  </data>
+  <data name="ProductList" xml:space="preserve">
+    <value>Lista de Productos</value>
+  </data>
+  <data name="AddProduct" xml:space="preserve">
+    <value>Agregar Producto</value>
+  </data>
+  <data name="EditProduct" xml:space="preserve">
+    <value>Editar Producto</value>
+  </data>
+  <data name="DeleteProduct" xml:space="preserve">
+    <value>Eliminar Producto</value>
+  </data>
+  <data name="ProductName" xml:space="preserve">
+    <value>Nombre del Producto</value>
+  </data>
+  <data name="SKU" xml:space="preserve">
+    <value>SKU</value>
+  </data>
+  <data name="Barcode" xml:space="preserve">
+    <value>Código de Barras</value>
+  </data>
+  <data name="Category" xml:space="preserve">
+    <value>Categoría</value>
+  </data>
+  <data name="Price" xml:space="preserve">
+    <value>Precio</value>
+  </data>
+  <data name="Cost" xml:space="preserve">
+    <value>Costo</value>
+  </data>
+  <data name="SalePrice" xml:space="preserve">
+    <value>Precio de Venta</value>
+  </data>
+  <data name="CostPrice" xml:space="preserve">
+    <value>Precio de Costo</value>
+  </data>
+  <data name="Description" xml:space="preserve">
+    <value>Descripción</value>
+  </data>
+  <data name="Brand" xml:space="preserve">
+    <value>Marca</value>
+  </data>
+  <data name="Active" xml:space="preserve">
+    <value>Activo</value>
+  </data>
+  <data name="Inactive" xml:space="preserve">
+    <value>Inactivo</value>
+  </data>
+  <data name="Search" xml:space="preserve">
+    <value>Buscar</value>
+  </data>
+  <data name="SearchProducts" xml:space="preserve">
+    <value>Buscar Productos</value>
+  </data>
+  <data name="NoProductsFound" xml:space="preserve">
+    <value>No se encontraron productos</value>
+  </data>
+  <data name="ProductNameRequired" xml:space="preserve">
+    <value>El nombre del producto es requerido</value>
+  </data>
+  <data name="SKURequired" xml:space="preserve">
+    <value>El SKU es requerido</value>
+  </data>
+  <data name="PriceRequired" xml:space="preserve">
+    <value>El precio es requerido</value>
+  </data>
+  <data name="PriceMustBeGreaterThanZero" xml:space="preserve">
+    <value>El precio debe ser mayor que cero</value>
+  </data>
+  <data name="ProductCreatedSuccessfully" xml:space="preserve">
+    <value>Producto creado exitosamente</value>
+  </data>
+  <data name="ProductUpdatedSuccessfully" xml:space="preserve">
+    <value>Producto actualizado exitosamente</value>
+  </data>
+  <data name="ProductDeletedSuccessfully" xml:space="preserve">
+    <value>Producto eliminado exitosamente</value>
+  </data>
+  <data name="DeleteProductConfirmation" xml:space="preserve">
+    <value>¿Estás seguro de que deseas eliminar este producto?</value>
+  </data>
+  <data name="Actions" xml:space="preserve">
+    <value>Acciones</value>
+  </data>
+  <data name="Edit" xml:space="preserve">
+    <value>Editar</value>
+  </data>
+  <data name="Delete" xml:space="preserve">
+    <value>Eliminar</value>
+  </data>
+  <data name="Back" xml:space="preserve">
+    <value>Regresar</value>
+  </data>
+  <data name="Loading" xml:space="preserve">
+    <value>Cargando...</value>
+  </data>
+  <data name="Error" xml:space="preserve">
+    <value>Error</value>
+  </data>
+  <data name="ErrorLoadingProducts" xml:space="preserve">
+    <value>Error al cargar los productos</value>
+  </data>
+  <data name="UnitOfMeasure" xml:space="preserve">
+    <value>Unidad de Medida</value>
+  </data>
+  <data name="TrackInventory" xml:space="preserve">
+    <value>Controlar Inventario</value>
+  </data>
+  <data name="MinStockLevel" xml:space="preserve">
+    <value>Nivel Mínimo de Stock</value>
+  </data>
 </root>

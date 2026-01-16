@@ -36,6 +36,10 @@ public class ApplicationDbContext(
     public DbSet<RefreshToken> RefreshTokens => Set<RefreshToken>();
     public DbSet<AuditLog> AuditLogs => Set<AuditLog>();
 
+    // Business entities
+    public DbSet<Product> Products => Set<Product>();
+    public DbSet<ProductCategory> ProductCategories => Set<ProductCategory>();
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
@@ -78,5 +82,13 @@ public class ApplicationDbContext(
         // AuditLog - shows system events (null TenantId) OR tenant-specific events
         modelBuilder.Entity<AuditLog>()
             .HasQueryFilter(al => !tenantProvider.HasTenantContext || al.TenantId == null || al.TenantId == tenantProvider.TenantId);
+
+        // Product - strict tenant isolation
+        modelBuilder.Entity<Product>()
+            .HasQueryFilter(p => !tenantProvider.HasTenantContext || p.TenantId == tenantProvider.TenantId);
+
+        // ProductCategory - strict tenant isolation
+        modelBuilder.Entity<ProductCategory>()
+            .HasQueryFilter(pc => !tenantProvider.HasTenantContext || pc.TenantId == tenantProvider.TenantId);
     }
 }
