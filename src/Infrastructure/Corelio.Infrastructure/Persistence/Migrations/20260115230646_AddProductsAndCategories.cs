@@ -3,14 +3,17 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
-namespace Corelio.Infrastructure.Persistence.Migrations
+namespace Corelio.Infrastructure.Persistence.Migrations;
+
+/// <inheritdoc />
+public partial class AddProductsAndCategories : Migration
 {
+    private static readonly string[] TenantNameColumns = ["tenant_id", "name"];
+    private static readonly string[] TenantBarcodeColumns = ["tenant_id", "barcode"];
+    private static readonly string[] TenantSkuColumns = ["tenant_id", "sku"];
     /// <inheritdoc />
-    public partial class AddProductsAndCategories : Migration
+    protected override void Up(MigrationBuilder migrationBuilder)
     {
-        /// <inheritdoc />
-        protected override void Up(MigrationBuilder migrationBuilder)
-        {
             migrationBuilder.CreateTable(
                 name: "product_categories",
                 columns: table => new
@@ -136,7 +139,7 @@ namespace Corelio.Infrastructure.Persistence.Migrations
             migrationBuilder.CreateIndex(
                 name: "ix_product_categories_tenant_name",
                 table: "product_categories",
-                columns: new[] { "tenant_id", "name" },
+                columns: TenantNameColumns,
                 unique: true,
                 filter: "is_deleted = false");
 
@@ -165,7 +168,7 @@ namespace Corelio.Infrastructure.Persistence.Migrations
             migrationBuilder.CreateIndex(
                 name: "ix_products_tenant_barcode",
                 table: "products",
-                columns: new[] { "tenant_id", "barcode" },
+                columns: TenantBarcodeColumns,
                 unique: true,
                 filter: "barcode IS NOT NULL AND is_deleted = false");
 
@@ -178,19 +181,18 @@ namespace Corelio.Infrastructure.Persistence.Migrations
             migrationBuilder.CreateIndex(
                 name: "ix_products_tenant_sku",
                 table: "products",
-                columns: new[] { "tenant_id", "sku" },
+                columns: TenantSkuColumns,
                 unique: true,
                 filter: "is_deleted = false");
-        }
+    }
 
-        /// <inheritdoc />
-        protected override void Down(MigrationBuilder migrationBuilder)
-        {
-            migrationBuilder.DropTable(
-                name: "products");
+    /// <inheritdoc />
+    protected override void Down(MigrationBuilder migrationBuilder)
+    {
+        migrationBuilder.DropTable(
+            name: "products");
 
-            migrationBuilder.DropTable(
-                name: "product_categories");
-        }
+        migrationBuilder.DropTable(
+            name: "product_categories");
     }
 }
