@@ -6,7 +6,7 @@ builder.Configuration["ASPIRE_DASHBOARD_OTLP_ENDPOINT_URL"] = "http://localhost:
 builder.Configuration["DASHBOARD__OTLP__AUTHMODE"] = "Unsecured";
 builder.Configuration["ASPIRE_ALLOW_UNSECURED_TRANSPORT"] = "true";
 
-// PostgreSQL with explicit credentials (default: postgres/postgres)
+// PostgreSQL with Aspire auto-generated password
 var postgres = builder.AddPostgres("postgres")
     .WithDataVolume()
     .WithPgAdmin()
