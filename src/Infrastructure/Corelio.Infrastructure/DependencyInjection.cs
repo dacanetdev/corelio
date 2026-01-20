@@ -139,6 +139,8 @@ public static class DependencyInjection
         builder.Services.AddScoped<IRoleRepository, RoleRepository>();
         builder.Services.AddScoped<IRefreshTokenRepository, RefreshTokenRepository>();
         builder.Services.AddScoped<ITenantConfigurationRepository, TenantConfigurationRepository>();
+        builder.Services.AddScoped<IProductRepository, ProductRepository>();
+        builder.Services.AddScoped<IProductCategoryRepository, ProductCategoryRepository>();
         builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 
         // Register interceptors (injected into ApplicationDbContext via constructor)
