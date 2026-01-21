@@ -146,6 +146,7 @@
 | 2026-01-10 | Sprint 1 | US-1.4 | Configure EF Core with PostgreSQL | dbdb398, 325b263, d92cce6, 6073910, bb3676c, 9d43ada | DbContext, 9 configurations, interceptors, initial migration, CI fixes, line ending normalization |
 | 2026-01-12 | Sprint 2 | US-2.1 | Multi-Tenancy Services Implementation | Multiple | ITenantService interface, TenantService impl, TenantMiddleware, Redis caching, DI registration, 12 unit tests |
 | 2026-01-13 | Sprint 2 | US-2.2 | Authentication & Authorization | 177eadc, 6cdeee5, 3779a93, fe4b422 | JWT service, auth endpoints, refresh tokens, BCrypt hashing, 35 authentication tests, Swagger replaced with Scalar |
+| 2026-01-21 | Sprint 1 | US-1.4 | Database Migration & Seed Data (Technical Debt) | d53549e, 0957ae1 | InitialSchemaWithSeedData migration, DataSeeder with 1 tenant, 3 roles, 17 permissions, 3 test users, automatic migration on startup |
 
 ---
 
@@ -282,6 +283,35 @@
 - Test responsive design on mobile/tablet
 - Unit tests for BlazorApp services (TokenService, AuthService)
 - Ready to start Sprint 3: Product Management
+
+---
+
+### 2026-01-21 (Technical Debt - US-1.4 Database Migration)
+**Yesterday:**
+- Sprint 2 authentication frontend completed
+- Sprint 3 product management in progress
+
+**Today:**
+- **Fixed US-1.4 Technical Debt: Database Migration & Seed Data**
+  - ✅ Created InitialSchemaWithSeedData migration (all tables including seed data)
+  - ✅ Created DataSeeder.cs with comprehensive seed data:
+    - 1 Tenant: "Demo Hardware Store" (subdomain: "demo", 30-day trial, Premium plan)
+    - 3 Roles: Administrator, Manager, Cashier
+    - 17 Permissions across 6 modules (Users, Products, Sales, Inventory, Reports, Settings)
+    - 3 Test Users: admin@demo.corelio.app / Admin123!, manager@demo.corelio.app / Manager123!, cashier@demo.corelio.app / Cashier123!
+  - ✅ Added automatic migration on startup (WebAPI Program.cs)
+  - ✅ Updated .editorconfig to suppress migration file warnings
+  - ✅ Committed to feature branch: feature/US-1.4-TASK-11-database-migration-seed-data
+  - ⏳ Testing login functionality with seeded users (pending Aspire startup)
+
+**Blockers:**
+- Aspire background startup issues - investigating console output for migration logs
+
+**Notes:**
+- US-1.4 was previously marked complete but lacked database migration and seed data
+- This work enables end-to-end authentication testing with real database records
+- Password hashing uses BCrypt (work factor 12) matching authentication service
+- All test users have IsActive=true and IsEmailConfirmed=true for immediate testing
 
 ---
 
