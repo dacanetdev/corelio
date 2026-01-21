@@ -47,6 +47,9 @@ public class ApplicationDbContext(
         // Apply all configurations from the assembly
         modelBuilder.ApplyConfigurationsFromAssembly(typeof(ApplicationDbContext).Assembly);
 
+        // Seed initial data
+        Seeds.DataSeeder.Seed(modelBuilder);
+
         // Apply multi-tenancy query filters
         ApplyTenantQueryFilters(modelBuilder);
     }
