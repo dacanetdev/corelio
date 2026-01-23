@@ -9,6 +9,10 @@ namespace Corelio.Infrastructure.Persistence.Seeds;
 /// </summary>
 public static class DataSeeder
 {
+    // Fixed dates for seed data to ensure deterministic migrations
+    private static readonly DateTime SeedDate = new(2026, 01, 21, 0, 0, 0, DateTimeKind.Utc);
+    private static readonly DateTime TrialEndDate = new(2026, 02, 20, 0, 0, 0, DateTimeKind.Utc); // 30 days after SeedDate
+
     /// <summary>
     /// Seeds all initial data in the correct order.
     /// </summary>
@@ -27,33 +31,33 @@ public static class DataSeeder
         var permissions = new List<Permission>
         {
             // Users Module
-            new() { Id = Guid.Parse("a1111111-1111-1111-1111-111111111111"), Code = "users.view", Name = "View Users", Module = PermissionModule.Users, Description = "View user list", CreatedAt = DateTime.UtcNow },
-            new() { Id = Guid.Parse("a1111111-1111-1111-1111-111111111112"), Code = "users.create", Name = "Create Users", Module = PermissionModule.Users, Description = "Create new users", CreatedAt = DateTime.UtcNow },
-            new() { Id = Guid.Parse("a1111111-1111-1111-1111-111111111113"), Code = "users.edit", Name = "Edit Users", Module = PermissionModule.Users, Description = "Edit user details", CreatedAt = DateTime.UtcNow },
-            new() { Id = Guid.Parse("a1111111-1111-1111-1111-111111111114"), Code = "users.delete", Name = "Delete Users", Module = PermissionModule.Users, Description = "Delete users", IsDangerous = true, CreatedAt = DateTime.UtcNow },
+            new() { Id = Guid.Parse("a1111111-1111-1111-1111-111111111111"), Code = "users.view", Name = "View Users", Module = PermissionModule.Users, Description = "View user list", CreatedAt = SeedDate },
+            new() { Id = Guid.Parse("a1111111-1111-1111-1111-111111111112"), Code = "users.create", Name = "Create Users", Module = PermissionModule.Users, Description = "Create new users", CreatedAt = SeedDate },
+            new() { Id = Guid.Parse("a1111111-1111-1111-1111-111111111113"), Code = "users.edit", Name = "Edit Users", Module = PermissionModule.Users, Description = "Edit user details", CreatedAt = SeedDate },
+            new() { Id = Guid.Parse("a1111111-1111-1111-1111-111111111114"), Code = "users.delete", Name = "Delete Users", Module = PermissionModule.Users, Description = "Delete users", IsDangerous = true, CreatedAt = SeedDate },
 
             // Products Module
-            new() { Id = Guid.Parse("a2222222-2222-2222-2222-222222222221"), Code = "products.view", Name = "View Products", Module = PermissionModule.Products, Description = "View product list", CreatedAt = DateTime.UtcNow },
-            new() { Id = Guid.Parse("a2222222-2222-2222-2222-222222222222"), Code = "products.create", Name = "Create Products", Module = PermissionModule.Products, Description = "Create new products", CreatedAt = DateTime.UtcNow },
-            new() { Id = Guid.Parse("a2222222-2222-2222-2222-222222222223"), Code = "products.edit", Name = "Edit Products", Module = PermissionModule.Products, Description = "Edit product details", CreatedAt = DateTime.UtcNow },
-            new() { Id = Guid.Parse("a2222222-2222-2222-2222-222222222224"), Code = "products.delete", Name = "Delete Products", Module = PermissionModule.Products, Description = "Delete products", CreatedAt = DateTime.UtcNow },
+            new() { Id = Guid.Parse("a2222222-2222-2222-2222-222222222221"), Code = "products.view", Name = "View Products", Module = PermissionModule.Products, Description = "View product list", CreatedAt = SeedDate },
+            new() { Id = Guid.Parse("a2222222-2222-2222-2222-222222222222"), Code = "products.create", Name = "Create Products", Module = PermissionModule.Products, Description = "Create new products", CreatedAt = SeedDate },
+            new() { Id = Guid.Parse("a2222222-2222-2222-2222-222222222223"), Code = "products.edit", Name = "Edit Products", Module = PermissionModule.Products, Description = "Edit product details", CreatedAt = SeedDate },
+            new() { Id = Guid.Parse("a2222222-2222-2222-2222-222222222224"), Code = "products.delete", Name = "Delete Products", Module = PermissionModule.Products, Description = "Delete products", CreatedAt = SeedDate },
 
             // Sales Module
-            new() { Id = Guid.Parse("a3333333-3333-3333-3333-333333333331"), Code = "sales.view", Name = "View Sales", Module = PermissionModule.Sales, Description = "View sales transactions", CreatedAt = DateTime.UtcNow },
-            new() { Id = Guid.Parse("a3333333-3333-3333-3333-333333333332"), Code = "sales.create", Name = "Create Sales", Module = PermissionModule.Sales, Description = "Create new sales", CreatedAt = DateTime.UtcNow },
-            new() { Id = Guid.Parse("a3333333-3333-3333-3333-333333333333"), Code = "sales.cancel", Name = "Cancel Sales", Module = PermissionModule.Sales, Description = "Cancel sales transactions", IsDangerous = true, CreatedAt = DateTime.UtcNow },
+            new() { Id = Guid.Parse("a3333333-3333-3333-3333-333333333331"), Code = "sales.view", Name = "View Sales", Module = PermissionModule.Sales, Description = "View sales transactions", CreatedAt = SeedDate },
+            new() { Id = Guid.Parse("a3333333-3333-3333-3333-333333333332"), Code = "sales.create", Name = "Create Sales", Module = PermissionModule.Sales, Description = "Create new sales", CreatedAt = SeedDate },
+            new() { Id = Guid.Parse("a3333333-3333-3333-3333-333333333333"), Code = "sales.cancel", Name = "Cancel Sales", Module = PermissionModule.Sales, Description = "Cancel sales transactions", IsDangerous = true, CreatedAt = SeedDate },
 
             // Inventory Module
-            new() { Id = Guid.Parse("a4444444-4444-4444-4444-444444444441"), Code = "inventory.view", Name = "View Inventory", Module = PermissionModule.Inventory, Description = "View inventory levels", CreatedAt = DateTime.UtcNow },
-            new() { Id = Guid.Parse("a4444444-4444-4444-4444-444444444442"), Code = "inventory.adjust", Name = "Adjust Inventory", Module = PermissionModule.Inventory, Description = "Adjust inventory levels", CreatedAt = DateTime.UtcNow },
+            new() { Id = Guid.Parse("a4444444-4444-4444-4444-444444444441"), Code = "inventory.view", Name = "View Inventory", Module = PermissionModule.Inventory, Description = "View inventory levels", CreatedAt = SeedDate },
+            new() { Id = Guid.Parse("a4444444-4444-4444-4444-444444444442"), Code = "inventory.adjust", Name = "Adjust Inventory", Module = PermissionModule.Inventory, Description = "Adjust inventory levels", CreatedAt = SeedDate },
 
             // Reports Module
-            new() { Id = Guid.Parse("a5555555-5555-5555-5555-555555555551"), Code = "reports.view", Name = "View Reports", Module = PermissionModule.Reports, Description = "View business reports", CreatedAt = DateTime.UtcNow },
-            new() { Id = Guid.Parse("a5555555-5555-5555-5555-555555555552"), Code = "reports.export", Name = "Export Reports", Module = PermissionModule.Reports, Description = "Export reports to file", CreatedAt = DateTime.UtcNow },
+            new() { Id = Guid.Parse("a5555555-5555-5555-5555-555555555551"), Code = "reports.view", Name = "View Reports", Module = PermissionModule.Reports, Description = "View business reports", CreatedAt = SeedDate },
+            new() { Id = Guid.Parse("a5555555-5555-5555-5555-555555555552"), Code = "reports.export", Name = "Export Reports", Module = PermissionModule.Reports, Description = "Export reports to file", CreatedAt = SeedDate },
 
             // Settings Module
-            new() { Id = Guid.Parse("a6666666-6666-6666-6666-666666666661"), Code = "settings.view", Name = "View Settings", Module = PermissionModule.Settings, Description = "View system settings", CreatedAt = DateTime.UtcNow },
-            new() { Id = Guid.Parse("a6666666-6666-6666-6666-666666666662"), Code = "settings.edit", Name = "Edit Settings", Module = PermissionModule.Settings, Description = "Modify system settings", IsDangerous = true, CreatedAt = DateTime.UtcNow },
+            new() { Id = Guid.Parse("a6666666-6666-6666-6666-666666666661"), Code = "settings.view", Name = "View Settings", Module = PermissionModule.Settings, Description = "View system settings", CreatedAt = SeedDate },
+            new() { Id = Guid.Parse("a6666666-6666-6666-6666-666666666662"), Code = "settings.edit", Name = "Edit Settings", Module = PermissionModule.Settings, Description = "Modify system settings", IsDangerous = true, CreatedAt = SeedDate },
         };
 
         modelBuilder.Entity<Permission>().HasData(permissions);
@@ -69,15 +73,15 @@ public static class DataSeeder
             Rfc = "FDE010101ABC",
             Subdomain = "demo",
             SubscriptionPlan = Domain.Enums.SubscriptionPlan.Premium,
-            SubscriptionStartsAt = DateTime.UtcNow,
+            SubscriptionStartsAt = SeedDate,
             MaxUsers = 10,
             MaxProducts = 5000,
             MaxSalesPerMonth = 10000,
             IsActive = true,
             IsTrial = true,
-            TrialEndsAt = DateTime.UtcNow.AddDays(30),
-            CreatedAt = DateTime.UtcNow,
-            UpdatedAt = DateTime.UtcNow
+            TrialEndsAt = TrialEndDate,
+            CreatedAt = SeedDate,
+            UpdatedAt = SeedDate
         };
 
         modelBuilder.Entity<Tenant>().HasData(defaultTenant);
@@ -104,8 +108,8 @@ public static class DataSeeder
             EmailNotificationsEnabled = true,
             SmsNotificationsEnabled = false,
             LowStockNotificationThreshold = 20.00m,
-            CreatedAt = DateTime.UtcNow,
-            UpdatedAt = DateTime.UtcNow
+            CreatedAt = SeedDate,
+            UpdatedAt = SeedDate
         };
 
         modelBuilder.Entity<TenantConfiguration>().HasData(tenantConfig);
@@ -123,8 +127,8 @@ public static class DataSeeder
                 Description = "Full system access",
                 IsSystemRole = true,
                 IsDefault = false,
-                CreatedAt = DateTime.UtcNow,
-                UpdatedAt = DateTime.UtcNow
+                CreatedAt = SeedDate,
+                UpdatedAt = SeedDate
             },
             new()
             {
@@ -134,8 +138,8 @@ public static class DataSeeder
                 Description = "Store manager with most permissions",
                 IsSystemRole = false,
                 IsDefault = false,
-                CreatedAt = DateTime.UtcNow,
-                UpdatedAt = DateTime.UtcNow
+                CreatedAt = SeedDate,
+                UpdatedAt = SeedDate
             },
             new()
             {
@@ -145,8 +149,8 @@ public static class DataSeeder
                 Description = "Point of sale operator",
                 IsSystemRole = false,
                 IsDefault = true,
-                CreatedAt = DateTime.UtcNow,
-                UpdatedAt = DateTime.UtcNow
+                CreatedAt = SeedDate,
+                UpdatedAt = SeedDate
             }
         };
 
@@ -189,7 +193,7 @@ public static class DataSeeder
             {
                 RoleId = adminRoleId,
                 PermissionId = permissionId,
-                AssignedAt = DateTime.UtcNow
+                AssignedAt = SeedDate
             });
         }
 
@@ -218,7 +222,7 @@ public static class DataSeeder
             {
                 RoleId = managerRoleId,
                 PermissionId = permissionId,
-                AssignedAt = DateTime.UtcNow
+                AssignedAt = SeedDate
             });
         }
 
@@ -237,7 +241,7 @@ public static class DataSeeder
             {
                 RoleId = cashierRoleId,
                 PermissionId = permissionId,
-                AssignedAt = DateTime.UtcNow
+                AssignedAt = SeedDate
             });
         }
 
@@ -260,8 +264,8 @@ public static class DataSeeder
                 IsActive = true,
                 IsEmailConfirmed = true,
                 FailedLoginAttempts = 0,
-                CreatedAt = DateTime.UtcNow,
-                UpdatedAt = DateTime.UtcNow
+                CreatedAt = SeedDate,
+                UpdatedAt = SeedDate
             },
             new()
             {
@@ -275,8 +279,8 @@ public static class DataSeeder
                 IsActive = true,
                 IsEmailConfirmed = true,
                 FailedLoginAttempts = 0,
-                CreatedAt = DateTime.UtcNow,
-                UpdatedAt = DateTime.UtcNow
+                CreatedAt = SeedDate,
+                UpdatedAt = SeedDate
             },
             new()
             {
@@ -290,8 +294,8 @@ public static class DataSeeder
                 IsActive = true,
                 IsEmailConfirmed = true,
                 FailedLoginAttempts = 0,
-                CreatedAt = DateTime.UtcNow,
-                UpdatedAt = DateTime.UtcNow
+                CreatedAt = SeedDate,
+                UpdatedAt = SeedDate
             }
         };
 
@@ -306,19 +310,19 @@ public static class DataSeeder
             {
                 UserId = Guid.Parse("e1111111-1111-1111-1111-111111111111"),
                 RoleId = Guid.Parse("d1111111-1111-1111-1111-111111111111"),
-                AssignedAt = DateTime.UtcNow
+                AssignedAt = SeedDate
             },
             new()
             {
                 UserId = Guid.Parse("e2222222-2222-2222-2222-222222222222"),
                 RoleId = Guid.Parse("d2222222-2222-2222-2222-222222222222"),
-                AssignedAt = DateTime.UtcNow
+                AssignedAt = SeedDate
             },
             new()
             {
                 UserId = Guid.Parse("e3333333-3333-3333-3333-333333333333"),
                 RoleId = Guid.Parse("d3333333-3333-3333-3333-333333333333"),
-                AssignedAt = DateTime.UtcNow
+                AssignedAt = SeedDate
             }
         };
 

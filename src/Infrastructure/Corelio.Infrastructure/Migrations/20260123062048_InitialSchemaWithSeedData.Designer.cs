@@ -12,7 +12,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Corelio.Infrastructure.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20260121075613_InitialSchemaWithSeedData")]
+    [Migration("20260123062048_InitialSchemaWithSeedData")]
     partial class InitialSchemaWithSeedData
     {
         /// <inheritdoc />
@@ -204,7 +204,7 @@ namespace Corelio.Infrastructure.Migrations
                         {
                             Id = new Guid("a1111111-1111-1111-1111-111111111111"),
                             Code = "users.view",
-                            CreatedAt = new DateTime(2026, 1, 21, 7, 56, 11, 103, DateTimeKind.Utc).AddTicks(1861),
+                            CreatedAt = new DateTime(2026, 1, 21, 0, 0, 0, 0, DateTimeKind.Utc),
                             Description = "View user list",
                             IsDangerous = false,
                             Module = "Users",
@@ -214,7 +214,7 @@ namespace Corelio.Infrastructure.Migrations
                         {
                             Id = new Guid("a1111111-1111-1111-1111-111111111112"),
                             Code = "users.create",
-                            CreatedAt = new DateTime(2026, 1, 21, 7, 56, 11, 103, DateTimeKind.Utc).AddTicks(1918),
+                            CreatedAt = new DateTime(2026, 1, 21, 0, 0, 0, 0, DateTimeKind.Utc),
                             Description = "Create new users",
                             IsDangerous = false,
                             Module = "Users",
@@ -224,7 +224,7 @@ namespace Corelio.Infrastructure.Migrations
                         {
                             Id = new Guid("a1111111-1111-1111-1111-111111111113"),
                             Code = "users.edit",
-                            CreatedAt = new DateTime(2026, 1, 21, 7, 56, 11, 103, DateTimeKind.Utc).AddTicks(1923),
+                            CreatedAt = new DateTime(2026, 1, 21, 0, 0, 0, 0, DateTimeKind.Utc),
                             Description = "Edit user details",
                             IsDangerous = false,
                             Module = "Users",
@@ -234,7 +234,7 @@ namespace Corelio.Infrastructure.Migrations
                         {
                             Id = new Guid("a1111111-1111-1111-1111-111111111114"),
                             Code = "users.delete",
-                            CreatedAt = new DateTime(2026, 1, 21, 7, 56, 11, 103, DateTimeKind.Utc).AddTicks(2391),
+                            CreatedAt = new DateTime(2026, 1, 21, 0, 0, 0, 0, DateTimeKind.Utc),
                             Description = "Delete users",
                             IsDangerous = true,
                             Module = "Users",
@@ -244,7 +244,7 @@ namespace Corelio.Infrastructure.Migrations
                         {
                             Id = new Guid("a2222222-2222-2222-2222-222222222221"),
                             Code = "products.view",
-                            CreatedAt = new DateTime(2026, 1, 21, 7, 56, 11, 103, DateTimeKind.Utc).AddTicks(2404),
+                            CreatedAt = new DateTime(2026, 1, 21, 0, 0, 0, 0, DateTimeKind.Utc),
                             Description = "View product list",
                             IsDangerous = false,
                             Module = "Products",
@@ -254,7 +254,7 @@ namespace Corelio.Infrastructure.Migrations
                         {
                             Id = new Guid("a2222222-2222-2222-2222-222222222222"),
                             Code = "products.create",
-                            CreatedAt = new DateTime(2026, 1, 21, 7, 56, 11, 103, DateTimeKind.Utc).AddTicks(2436),
+                            CreatedAt = new DateTime(2026, 1, 21, 0, 0, 0, 0, DateTimeKind.Utc),
                             Description = "Create new products",
                             IsDangerous = false,
                             Module = "Products",
@@ -264,7 +264,7 @@ namespace Corelio.Infrastructure.Migrations
                         {
                             Id = new Guid("a2222222-2222-2222-2222-222222222223"),
                             Code = "products.edit",
-                            CreatedAt = new DateTime(2026, 1, 21, 7, 56, 11, 103, DateTimeKind.Utc).AddTicks(2441),
+                            CreatedAt = new DateTime(2026, 1, 21, 0, 0, 0, 0, DateTimeKind.Utc),
                             Description = "Edit product details",
                             IsDangerous = false,
                             Module = "Products",
@@ -274,7 +274,7 @@ namespace Corelio.Infrastructure.Migrations
                         {
                             Id = new Guid("a2222222-2222-2222-2222-222222222224"),
                             Code = "products.delete",
-                            CreatedAt = new DateTime(2026, 1, 21, 7, 56, 11, 103, DateTimeKind.Utc).AddTicks(2446),
+                            CreatedAt = new DateTime(2026, 1, 21, 0, 0, 0, 0, DateTimeKind.Utc),
                             Description = "Delete products",
                             IsDangerous = false,
                             Module = "Products",
@@ -284,7 +284,7 @@ namespace Corelio.Infrastructure.Migrations
                         {
                             Id = new Guid("a3333333-3333-3333-3333-333333333331"),
                             Code = "sales.view",
-                            CreatedAt = new DateTime(2026, 1, 21, 7, 56, 11, 103, DateTimeKind.Utc).AddTicks(2450),
+                            CreatedAt = new DateTime(2026, 1, 21, 0, 0, 0, 0, DateTimeKind.Utc),
                             Description = "View sales transactions",
                             IsDangerous = false,
                             Module = "Sales",
@@ -294,7 +294,7 @@ namespace Corelio.Infrastructure.Migrations
                         {
                             Id = new Guid("a3333333-3333-3333-3333-333333333332"),
                             Code = "sales.create",
-                            CreatedAt = new DateTime(2026, 1, 21, 7, 56, 11, 103, DateTimeKind.Utc).AddTicks(2456),
+                            CreatedAt = new DateTime(2026, 1, 21, 0, 0, 0, 0, DateTimeKind.Utc),
                             Description = "Create new sales",
                             IsDangerous = false,
                             Module = "Sales",
@@ -304,7 +304,7 @@ namespace Corelio.Infrastructure.Migrations
                         {
                             Id = new Guid("a3333333-3333-3333-3333-333333333333"),
                             Code = "sales.cancel",
-                            CreatedAt = new DateTime(2026, 1, 21, 7, 56, 11, 103, DateTimeKind.Utc).AddTicks(2460),
+                            CreatedAt = new DateTime(2026, 1, 21, 0, 0, 0, 0, DateTimeKind.Utc),
                             Description = "Cancel sales transactions",
                             IsDangerous = true,
                             Module = "Sales",
@@ -314,7 +314,7 @@ namespace Corelio.Infrastructure.Migrations
                         {
                             Id = new Guid("a4444444-4444-4444-4444-444444444441"),
                             Code = "inventory.view",
-                            CreatedAt = new DateTime(2026, 1, 21, 7, 56, 11, 103, DateTimeKind.Utc).AddTicks(2465),
+                            CreatedAt = new DateTime(2026, 1, 21, 0, 0, 0, 0, DateTimeKind.Utc),
                             Description = "View inventory levels",
                             IsDangerous = false,
                             Module = "Inventory",
@@ -324,7 +324,7 @@ namespace Corelio.Infrastructure.Migrations
                         {
                             Id = new Guid("a4444444-4444-4444-4444-444444444442"),
                             Code = "inventory.adjust",
-                            CreatedAt = new DateTime(2026, 1, 21, 7, 56, 11, 103, DateTimeKind.Utc).AddTicks(2469),
+                            CreatedAt = new DateTime(2026, 1, 21, 0, 0, 0, 0, DateTimeKind.Utc),
                             Description = "Adjust inventory levels",
                             IsDangerous = false,
                             Module = "Inventory",
@@ -334,7 +334,7 @@ namespace Corelio.Infrastructure.Migrations
                         {
                             Id = new Guid("a5555555-5555-5555-5555-555555555551"),
                             Code = "reports.view",
-                            CreatedAt = new DateTime(2026, 1, 21, 7, 56, 11, 103, DateTimeKind.Utc).AddTicks(2477),
+                            CreatedAt = new DateTime(2026, 1, 21, 0, 0, 0, 0, DateTimeKind.Utc),
                             Description = "View business reports",
                             IsDangerous = false,
                             Module = "Reports",
@@ -344,7 +344,7 @@ namespace Corelio.Infrastructure.Migrations
                         {
                             Id = new Guid("a5555555-5555-5555-5555-555555555552"),
                             Code = "reports.export",
-                            CreatedAt = new DateTime(2026, 1, 21, 7, 56, 11, 103, DateTimeKind.Utc).AddTicks(2482),
+                            CreatedAt = new DateTime(2026, 1, 21, 0, 0, 0, 0, DateTimeKind.Utc),
                             Description = "Export reports to file",
                             IsDangerous = false,
                             Module = "Reports",
@@ -354,7 +354,7 @@ namespace Corelio.Infrastructure.Migrations
                         {
                             Id = new Guid("a6666666-6666-6666-6666-666666666661"),
                             Code = "settings.view",
-                            CreatedAt = new DateTime(2026, 1, 21, 7, 56, 11, 103, DateTimeKind.Utc).AddTicks(2486),
+                            CreatedAt = new DateTime(2026, 1, 21, 0, 0, 0, 0, DateTimeKind.Utc),
                             Description = "View system settings",
                             IsDangerous = false,
                             Module = "Settings",
@@ -364,7 +364,7 @@ namespace Corelio.Infrastructure.Migrations
                         {
                             Id = new Guid("a6666666-6666-6666-6666-666666666662"),
                             Code = "settings.edit",
-                            CreatedAt = new DateTime(2026, 1, 21, 7, 56, 11, 103, DateTimeKind.Utc).AddTicks(2491),
+                            CreatedAt = new DateTime(2026, 1, 21, 0, 0, 0, 0, DateTimeKind.Utc),
                             Description = "Modify system settings",
                             IsDangerous = true,
                             Module = "Settings",
@@ -935,35 +935,35 @@ namespace Corelio.Infrastructure.Migrations
                         new
                         {
                             Id = new Guid("d1111111-1111-1111-1111-111111111111"),
-                            CreatedAt = new DateTime(2026, 1, 21, 7, 56, 11, 110, DateTimeKind.Utc).AddTicks(162),
+                            CreatedAt = new DateTime(2026, 1, 21, 0, 0, 0, 0, DateTimeKind.Utc),
                             Description = "Full system access",
                             IsDefault = false,
                             IsSystemRole = true,
                             Name = "Administrator",
                             TenantId = new Guid("b0000000-0000-0000-0000-000000000001"),
-                            UpdatedAt = new DateTime(2026, 1, 21, 7, 56, 11, 110, DateTimeKind.Utc).AddTicks(167)
+                            UpdatedAt = new DateTime(2026, 1, 21, 0, 0, 0, 0, DateTimeKind.Utc)
                         },
                         new
                         {
                             Id = new Guid("d2222222-2222-2222-2222-222222222222"),
-                            CreatedAt = new DateTime(2026, 1, 21, 7, 56, 11, 110, DateTimeKind.Utc).AddTicks(370),
+                            CreatedAt = new DateTime(2026, 1, 21, 0, 0, 0, 0, DateTimeKind.Utc),
                             Description = "Store manager with most permissions",
                             IsDefault = false,
                             IsSystemRole = false,
                             Name = "Manager",
                             TenantId = new Guid("b0000000-0000-0000-0000-000000000001"),
-                            UpdatedAt = new DateTime(2026, 1, 21, 7, 56, 11, 110, DateTimeKind.Utc).AddTicks(371)
+                            UpdatedAt = new DateTime(2026, 1, 21, 0, 0, 0, 0, DateTimeKind.Utc)
                         },
                         new
                         {
                             Id = new Guid("d3333333-3333-3333-3333-333333333333"),
-                            CreatedAt = new DateTime(2026, 1, 21, 7, 56, 11, 110, DateTimeKind.Utc).AddTicks(428),
+                            CreatedAt = new DateTime(2026, 1, 21, 0, 0, 0, 0, DateTimeKind.Utc),
                             Description = "Point of sale operator",
                             IsDefault = true,
                             IsSystemRole = false,
                             Name = "Cashier",
                             TenantId = new Guid("b0000000-0000-0000-0000-000000000001"),
-                            UpdatedAt = new DateTime(2026, 1, 21, 7, 56, 11, 110, DateTimeKind.Utc).AddTicks(429)
+                            UpdatedAt = new DateTime(2026, 1, 21, 0, 0, 0, 0, DateTimeKind.Utc)
                         });
                 });
 
@@ -1000,211 +1000,211 @@ namespace Corelio.Infrastructure.Migrations
                         {
                             RoleId = new Guid("d1111111-1111-1111-1111-111111111111"),
                             PermissionId = new Guid("a1111111-1111-1111-1111-111111111111"),
-                            AssignedAt = new DateTime(2026, 1, 21, 7, 56, 11, 111, DateTimeKind.Utc).AddTicks(8717)
+                            AssignedAt = new DateTime(2026, 1, 21, 0, 0, 0, 0, DateTimeKind.Utc)
                         },
                         new
                         {
                             RoleId = new Guid("d1111111-1111-1111-1111-111111111111"),
                             PermissionId = new Guid("a1111111-1111-1111-1111-111111111112"),
-                            AssignedAt = new DateTime(2026, 1, 21, 7, 56, 11, 111, DateTimeKind.Utc).AddTicks(9199)
+                            AssignedAt = new DateTime(2026, 1, 21, 0, 0, 0, 0, DateTimeKind.Utc)
                         },
                         new
                         {
                             RoleId = new Guid("d1111111-1111-1111-1111-111111111111"),
                             PermissionId = new Guid("a1111111-1111-1111-1111-111111111113"),
-                            AssignedAt = new DateTime(2026, 1, 21, 7, 56, 11, 111, DateTimeKind.Utc).AddTicks(9201)
+                            AssignedAt = new DateTime(2026, 1, 21, 0, 0, 0, 0, DateTimeKind.Utc)
                         },
                         new
                         {
                             RoleId = new Guid("d1111111-1111-1111-1111-111111111111"),
                             PermissionId = new Guid("a1111111-1111-1111-1111-111111111114"),
-                            AssignedAt = new DateTime(2026, 1, 21, 7, 56, 11, 111, DateTimeKind.Utc).AddTicks(9202)
+                            AssignedAt = new DateTime(2026, 1, 21, 0, 0, 0, 0, DateTimeKind.Utc)
                         },
                         new
                         {
                             RoleId = new Guid("d1111111-1111-1111-1111-111111111111"),
                             PermissionId = new Guid("a2222222-2222-2222-2222-222222222221"),
-                            AssignedAt = new DateTime(2026, 1, 21, 7, 56, 11, 111, DateTimeKind.Utc).AddTicks(9203)
+                            AssignedAt = new DateTime(2026, 1, 21, 0, 0, 0, 0, DateTimeKind.Utc)
                         },
                         new
                         {
                             RoleId = new Guid("d1111111-1111-1111-1111-111111111111"),
                             PermissionId = new Guid("a2222222-2222-2222-2222-222222222222"),
-                            AssignedAt = new DateTime(2026, 1, 21, 7, 56, 11, 111, DateTimeKind.Utc).AddTicks(9225)
+                            AssignedAt = new DateTime(2026, 1, 21, 0, 0, 0, 0, DateTimeKind.Utc)
                         },
                         new
                         {
                             RoleId = new Guid("d1111111-1111-1111-1111-111111111111"),
                             PermissionId = new Guid("a2222222-2222-2222-2222-222222222223"),
-                            AssignedAt = new DateTime(2026, 1, 21, 7, 56, 11, 111, DateTimeKind.Utc).AddTicks(9226)
+                            AssignedAt = new DateTime(2026, 1, 21, 0, 0, 0, 0, DateTimeKind.Utc)
                         },
                         new
                         {
                             RoleId = new Guid("d1111111-1111-1111-1111-111111111111"),
                             PermissionId = new Guid("a2222222-2222-2222-2222-222222222224"),
-                            AssignedAt = new DateTime(2026, 1, 21, 7, 56, 11, 111, DateTimeKind.Utc).AddTicks(9229)
+                            AssignedAt = new DateTime(2026, 1, 21, 0, 0, 0, 0, DateTimeKind.Utc)
                         },
                         new
                         {
                             RoleId = new Guid("d1111111-1111-1111-1111-111111111111"),
                             PermissionId = new Guid("a3333333-3333-3333-3333-333333333331"),
-                            AssignedAt = new DateTime(2026, 1, 21, 7, 56, 11, 111, DateTimeKind.Utc).AddTicks(9230)
+                            AssignedAt = new DateTime(2026, 1, 21, 0, 0, 0, 0, DateTimeKind.Utc)
                         },
                         new
                         {
                             RoleId = new Guid("d1111111-1111-1111-1111-111111111111"),
                             PermissionId = new Guid("a3333333-3333-3333-3333-333333333332"),
-                            AssignedAt = new DateTime(2026, 1, 21, 7, 56, 11, 111, DateTimeKind.Utc).AddTicks(9232)
+                            AssignedAt = new DateTime(2026, 1, 21, 0, 0, 0, 0, DateTimeKind.Utc)
                         },
                         new
                         {
                             RoleId = new Guid("d1111111-1111-1111-1111-111111111111"),
                             PermissionId = new Guid("a3333333-3333-3333-3333-333333333333"),
-                            AssignedAt = new DateTime(2026, 1, 21, 7, 56, 11, 111, DateTimeKind.Utc).AddTicks(9233)
+                            AssignedAt = new DateTime(2026, 1, 21, 0, 0, 0, 0, DateTimeKind.Utc)
                         },
                         new
                         {
                             RoleId = new Guid("d1111111-1111-1111-1111-111111111111"),
                             PermissionId = new Guid("a4444444-4444-4444-4444-444444444441"),
-                            AssignedAt = new DateTime(2026, 1, 21, 7, 56, 11, 111, DateTimeKind.Utc).AddTicks(9234)
+                            AssignedAt = new DateTime(2026, 1, 21, 0, 0, 0, 0, DateTimeKind.Utc)
                         },
                         new
                         {
                             RoleId = new Guid("d1111111-1111-1111-1111-111111111111"),
                             PermissionId = new Guid("a4444444-4444-4444-4444-444444444442"),
-                            AssignedAt = new DateTime(2026, 1, 21, 7, 56, 11, 111, DateTimeKind.Utc).AddTicks(9236)
+                            AssignedAt = new DateTime(2026, 1, 21, 0, 0, 0, 0, DateTimeKind.Utc)
                         },
                         new
                         {
                             RoleId = new Guid("d1111111-1111-1111-1111-111111111111"),
                             PermissionId = new Guid("a5555555-5555-5555-5555-555555555551"),
-                            AssignedAt = new DateTime(2026, 1, 21, 7, 56, 11, 111, DateTimeKind.Utc).AddTicks(9237)
+                            AssignedAt = new DateTime(2026, 1, 21, 0, 0, 0, 0, DateTimeKind.Utc)
                         },
                         new
                         {
                             RoleId = new Guid("d1111111-1111-1111-1111-111111111111"),
                             PermissionId = new Guid("a5555555-5555-5555-5555-555555555552"),
-                            AssignedAt = new DateTime(2026, 1, 21, 7, 56, 11, 111, DateTimeKind.Utc).AddTicks(9238)
+                            AssignedAt = new DateTime(2026, 1, 21, 0, 0, 0, 0, DateTimeKind.Utc)
                         },
                         new
                         {
                             RoleId = new Guid("d1111111-1111-1111-1111-111111111111"),
                             PermissionId = new Guid("a6666666-6666-6666-6666-666666666661"),
-                            AssignedAt = new DateTime(2026, 1, 21, 7, 56, 11, 111, DateTimeKind.Utc).AddTicks(9239)
+                            AssignedAt = new DateTime(2026, 1, 21, 0, 0, 0, 0, DateTimeKind.Utc)
                         },
                         new
                         {
                             RoleId = new Guid("d1111111-1111-1111-1111-111111111111"),
                             PermissionId = new Guid("a6666666-6666-6666-6666-666666666662"),
-                            AssignedAt = new DateTime(2026, 1, 21, 7, 56, 11, 111, DateTimeKind.Utc).AddTicks(9241)
+                            AssignedAt = new DateTime(2026, 1, 21, 0, 0, 0, 0, DateTimeKind.Utc)
                         },
                         new
                         {
                             RoleId = new Guid("d2222222-2222-2222-2222-222222222222"),
                             PermissionId = new Guid("a1111111-1111-1111-1111-111111111111"),
-                            AssignedAt = new DateTime(2026, 1, 21, 7, 56, 11, 111, DateTimeKind.Utc).AddTicks(9256)
+                            AssignedAt = new DateTime(2026, 1, 21, 0, 0, 0, 0, DateTimeKind.Utc)
                         },
                         new
                         {
                             RoleId = new Guid("d2222222-2222-2222-2222-222222222222"),
                             PermissionId = new Guid("a1111111-1111-1111-1111-111111111112"),
-                            AssignedAt = new DateTime(2026, 1, 21, 7, 56, 11, 111, DateTimeKind.Utc).AddTicks(9258)
+                            AssignedAt = new DateTime(2026, 1, 21, 0, 0, 0, 0, DateTimeKind.Utc)
                         },
                         new
                         {
                             RoleId = new Guid("d2222222-2222-2222-2222-222222222222"),
                             PermissionId = new Guid("a1111111-1111-1111-1111-111111111113"),
-                            AssignedAt = new DateTime(2026, 1, 21, 7, 56, 11, 111, DateTimeKind.Utc).AddTicks(9259)
+                            AssignedAt = new DateTime(2026, 1, 21, 0, 0, 0, 0, DateTimeKind.Utc)
                         },
                         new
                         {
                             RoleId = new Guid("d2222222-2222-2222-2222-222222222222"),
                             PermissionId = new Guid("a2222222-2222-2222-2222-222222222221"),
-                            AssignedAt = new DateTime(2026, 1, 21, 7, 56, 11, 111, DateTimeKind.Utc).AddTicks(9260)
+                            AssignedAt = new DateTime(2026, 1, 21, 0, 0, 0, 0, DateTimeKind.Utc)
                         },
                         new
                         {
                             RoleId = new Guid("d2222222-2222-2222-2222-222222222222"),
                             PermissionId = new Guid("a2222222-2222-2222-2222-222222222222"),
-                            AssignedAt = new DateTime(2026, 1, 21, 7, 56, 11, 111, DateTimeKind.Utc).AddTicks(9261)
+                            AssignedAt = new DateTime(2026, 1, 21, 0, 0, 0, 0, DateTimeKind.Utc)
                         },
                         new
                         {
                             RoleId = new Guid("d2222222-2222-2222-2222-222222222222"),
                             PermissionId = new Guid("a2222222-2222-2222-2222-222222222223"),
-                            AssignedAt = new DateTime(2026, 1, 21, 7, 56, 11, 111, DateTimeKind.Utc).AddTicks(9262)
+                            AssignedAt = new DateTime(2026, 1, 21, 0, 0, 0, 0, DateTimeKind.Utc)
                         },
                         new
                         {
                             RoleId = new Guid("d2222222-2222-2222-2222-222222222222"),
                             PermissionId = new Guid("a2222222-2222-2222-2222-222222222224"),
-                            AssignedAt = new DateTime(2026, 1, 21, 7, 56, 11, 111, DateTimeKind.Utc).AddTicks(9263)
+                            AssignedAt = new DateTime(2026, 1, 21, 0, 0, 0, 0, DateTimeKind.Utc)
                         },
                         new
                         {
                             RoleId = new Guid("d2222222-2222-2222-2222-222222222222"),
                             PermissionId = new Guid("a3333333-3333-3333-3333-333333333331"),
-                            AssignedAt = new DateTime(2026, 1, 21, 7, 56, 11, 111, DateTimeKind.Utc).AddTicks(9264)
+                            AssignedAt = new DateTime(2026, 1, 21, 0, 0, 0, 0, DateTimeKind.Utc)
                         },
                         new
                         {
                             RoleId = new Guid("d2222222-2222-2222-2222-222222222222"),
                             PermissionId = new Guid("a3333333-3333-3333-3333-333333333332"),
-                            AssignedAt = new DateTime(2026, 1, 21, 7, 56, 11, 111, DateTimeKind.Utc).AddTicks(9266)
+                            AssignedAt = new DateTime(2026, 1, 21, 0, 0, 0, 0, DateTimeKind.Utc)
                         },
                         new
                         {
                             RoleId = new Guid("d2222222-2222-2222-2222-222222222222"),
                             PermissionId = new Guid("a4444444-4444-4444-4444-444444444441"),
-                            AssignedAt = new DateTime(2026, 1, 21, 7, 56, 11, 111, DateTimeKind.Utc).AddTicks(9267)
+                            AssignedAt = new DateTime(2026, 1, 21, 0, 0, 0, 0, DateTimeKind.Utc)
                         },
                         new
                         {
                             RoleId = new Guid("d2222222-2222-2222-2222-222222222222"),
                             PermissionId = new Guid("a4444444-4444-4444-4444-444444444442"),
-                            AssignedAt = new DateTime(2026, 1, 21, 7, 56, 11, 111, DateTimeKind.Utc).AddTicks(9268)
+                            AssignedAt = new DateTime(2026, 1, 21, 0, 0, 0, 0, DateTimeKind.Utc)
                         },
                         new
                         {
                             RoleId = new Guid("d2222222-2222-2222-2222-222222222222"),
                             PermissionId = new Guid("a5555555-5555-5555-5555-555555555551"),
-                            AssignedAt = new DateTime(2026, 1, 21, 7, 56, 11, 111, DateTimeKind.Utc).AddTicks(9269)
+                            AssignedAt = new DateTime(2026, 1, 21, 0, 0, 0, 0, DateTimeKind.Utc)
                         },
                         new
                         {
                             RoleId = new Guid("d2222222-2222-2222-2222-222222222222"),
                             PermissionId = new Guid("a5555555-5555-5555-5555-555555555552"),
-                            AssignedAt = new DateTime(2026, 1, 21, 7, 56, 11, 111, DateTimeKind.Utc).AddTicks(9270)
+                            AssignedAt = new DateTime(2026, 1, 21, 0, 0, 0, 0, DateTimeKind.Utc)
                         },
                         new
                         {
                             RoleId = new Guid("d2222222-2222-2222-2222-222222222222"),
                             PermissionId = new Guid("a6666666-6666-6666-6666-666666666661"),
-                            AssignedAt = new DateTime(2026, 1, 21, 7, 56, 11, 111, DateTimeKind.Utc).AddTicks(9271)
+                            AssignedAt = new DateTime(2026, 1, 21, 0, 0, 0, 0, DateTimeKind.Utc)
                         },
                         new
                         {
                             RoleId = new Guid("d3333333-3333-3333-3333-333333333333"),
                             PermissionId = new Guid("a2222222-2222-2222-2222-222222222221"),
-                            AssignedAt = new DateTime(2026, 1, 21, 7, 56, 11, 111, DateTimeKind.Utc).AddTicks(9276)
+                            AssignedAt = new DateTime(2026, 1, 21, 0, 0, 0, 0, DateTimeKind.Utc)
                         },
                         new
                         {
                             RoleId = new Guid("d3333333-3333-3333-3333-333333333333"),
                             PermissionId = new Guid("a3333333-3333-3333-3333-333333333331"),
-                            AssignedAt = new DateTime(2026, 1, 21, 7, 56, 11, 111, DateTimeKind.Utc).AddTicks(9277)
+                            AssignedAt = new DateTime(2026, 1, 21, 0, 0, 0, 0, DateTimeKind.Utc)
                         },
                         new
                         {
                             RoleId = new Guid("d3333333-3333-3333-3333-333333333333"),
                             PermissionId = new Guid("a3333333-3333-3333-3333-333333333332"),
-                            AssignedAt = new DateTime(2026, 1, 21, 7, 56, 11, 111, DateTimeKind.Utc).AddTicks(9279)
+                            AssignedAt = new DateTime(2026, 1, 21, 0, 0, 0, 0, DateTimeKind.Utc)
                         },
                         new
                         {
                             RoleId = new Guid("d3333333-3333-3333-3333-333333333333"),
                             PermissionId = new Guid("a4444444-4444-4444-4444-444444444441"),
-                            AssignedAt = new DateTime(2026, 1, 21, 7, 56, 11, 111, DateTimeKind.Utc).AddTicks(9280)
+                            AssignedAt = new DateTime(2026, 1, 21, 0, 0, 0, 0, DateTimeKind.Utc)
                         });
                 });
 
@@ -1331,7 +1331,7 @@ namespace Corelio.Infrastructure.Migrations
                         new
                         {
                             Id = new Guid("b0000000-0000-0000-0000-000000000001"),
-                            CreatedAt = new DateTime(2026, 1, 21, 7, 56, 11, 107, DateTimeKind.Utc).AddTicks(1902),
+                            CreatedAt = new DateTime(2026, 1, 21, 0, 0, 0, 0, DateTimeKind.Utc),
                             IsActive = true,
                             IsTrial = true,
                             LegalName = "Ferretería Demo S.A. de C.V.",
@@ -1342,9 +1342,9 @@ namespace Corelio.Infrastructure.Migrations
                             Rfc = "FDE010101ABC",
                             Subdomain = "demo",
                             SubscriptionPlan = "Premium",
-                            SubscriptionStartsAt = new DateTime(2026, 1, 21, 7, 56, 11, 106, DateTimeKind.Utc).AddTicks(6433),
-                            TrialEndsAt = new DateTime(2026, 2, 20, 7, 56, 11, 107, DateTimeKind.Utc).AddTicks(672),
-                            UpdatedAt = new DateTime(2026, 1, 21, 7, 56, 11, 107, DateTimeKind.Utc).AddTicks(1906)
+                            SubscriptionStartsAt = new DateTime(2026, 1, 21, 0, 0, 0, 0, DateTimeKind.Utc),
+                            TrialEndsAt = new DateTime(2026, 2, 20, 0, 0, 0, 0, DateTimeKind.Utc),
+                            UpdatedAt = new DateTime(2026, 1, 21, 0, 0, 0, 0, DateTimeKind.Utc)
                         });
                 });
 
@@ -1579,7 +1579,7 @@ namespace Corelio.Infrastructure.Migrations
                             CfdiNextFolio = 1,
                             CfdiPacTestMode = true,
                             CfdiSeries = "A",
-                            CreatedAt = new DateTime(2026, 1, 21, 7, 56, 11, 108, DateTimeKind.Utc).AddTicks(7203),
+                            CreatedAt = new DateTime(2026, 1, 21, 0, 0, 0, 0, DateTimeKind.Utc),
                             Currency = "MXN",
                             DefaultTaxRate = 0.1600m,
                             EmailNotificationsEnabled = true,
@@ -1596,7 +1596,7 @@ namespace Corelio.Infrastructure.Migrations
                             SmsNotificationsEnabled = false,
                             TenantId = new Guid("b0000000-0000-0000-0000-000000000001"),
                             Timezone = "America/Mexico_City",
-                            UpdatedAt = new DateTime(2026, 1, 21, 7, 56, 11, 108, DateTimeKind.Utc).AddTicks(7206)
+                            UpdatedAt = new DateTime(2026, 1, 21, 0, 0, 0, 0, DateTimeKind.Utc)
                         });
                 });
 
@@ -1758,7 +1758,7 @@ namespace Corelio.Infrastructure.Migrations
                         new
                         {
                             Id = new Guid("e1111111-1111-1111-1111-111111111111"),
-                            CreatedAt = new DateTime(2026, 1, 21, 7, 56, 11, 113, DateTimeKind.Utc).AddTicks(667),
+                            CreatedAt = new DateTime(2026, 1, 21, 0, 0, 0, 0, DateTimeKind.Utc),
                             Email = "admin@demo.corelio.app",
                             FailedLoginAttempts = 0,
                             FirstName = "Admin",
@@ -1768,13 +1768,13 @@ namespace Corelio.Infrastructure.Migrations
                             PasswordHash = "$2a$12$LQv3c1yqBWVHxkd0LHAkCOYz6TtxMQJqhN8/LewY5GyYIq7MRnH.m",
                             TenantId = new Guid("b0000000-0000-0000-0000-000000000001"),
                             TwoFactorEnabled = false,
-                            UpdatedAt = new DateTime(2026, 1, 21, 7, 56, 11, 113, DateTimeKind.Utc).AddTicks(670),
+                            UpdatedAt = new DateTime(2026, 1, 21, 0, 0, 0, 0, DateTimeKind.Utc),
                             Username = ""
                         },
                         new
                         {
                             Id = new Guid("e2222222-2222-2222-2222-222222222222"),
-                            CreatedAt = new DateTime(2026, 1, 21, 7, 56, 11, 113, DateTimeKind.Utc).AddTicks(768),
+                            CreatedAt = new DateTime(2026, 1, 21, 0, 0, 0, 0, DateTimeKind.Utc),
                             Email = "manager@demo.corelio.app",
                             FailedLoginAttempts = 0,
                             FirstName = "Manager",
@@ -1784,13 +1784,13 @@ namespace Corelio.Infrastructure.Migrations
                             PasswordHash = "$2a$12$LQv3c1yqBWVHxkd0LHAkCOYz6TtxMQJqhN8/LewY5GyYIq7MRnH.m",
                             TenantId = new Guid("b0000000-0000-0000-0000-000000000001"),
                             TwoFactorEnabled = false,
-                            UpdatedAt = new DateTime(2026, 1, 21, 7, 56, 11, 113, DateTimeKind.Utc).AddTicks(768),
+                            UpdatedAt = new DateTime(2026, 1, 21, 0, 0, 0, 0, DateTimeKind.Utc),
                             Username = ""
                         },
                         new
                         {
                             Id = new Guid("e3333333-3333-3333-3333-333333333333"),
-                            CreatedAt = new DateTime(2026, 1, 21, 7, 56, 11, 113, DateTimeKind.Utc).AddTicks(774),
+                            CreatedAt = new DateTime(2026, 1, 21, 0, 0, 0, 0, DateTimeKind.Utc),
                             Email = "cashier@demo.corelio.app",
                             FailedLoginAttempts = 0,
                             FirstName = "Cashier",
@@ -1800,7 +1800,7 @@ namespace Corelio.Infrastructure.Migrations
                             PasswordHash = "$2a$12$LQv3c1yqBWVHxkd0LHAkCOYz6TtxMQJqhN8/LewY5GyYIq7MRnH.m",
                             TenantId = new Guid("b0000000-0000-0000-0000-000000000001"),
                             TwoFactorEnabled = false,
-                            UpdatedAt = new DateTime(2026, 1, 21, 7, 56, 11, 113, DateTimeKind.Utc).AddTicks(775),
+                            UpdatedAt = new DateTime(2026, 1, 21, 0, 0, 0, 0, DateTimeKind.Utc),
                             Username = ""
                         });
                 });
@@ -1846,19 +1846,19 @@ namespace Corelio.Infrastructure.Migrations
                         {
                             UserId = new Guid("e1111111-1111-1111-1111-111111111111"),
                             RoleId = new Guid("d1111111-1111-1111-1111-111111111111"),
-                            AssignedAt = new DateTime(2026, 1, 21, 7, 56, 11, 113, DateTimeKind.Utc).AddTicks(6237)
+                            AssignedAt = new DateTime(2026, 1, 21, 0, 0, 0, 0, DateTimeKind.Utc)
                         },
                         new
                         {
                             UserId = new Guid("e2222222-2222-2222-2222-222222222222"),
                             RoleId = new Guid("d2222222-2222-2222-2222-222222222222"),
-                            AssignedAt = new DateTime(2026, 1, 21, 7, 56, 11, 113, DateTimeKind.Utc).AddTicks(6793)
+                            AssignedAt = new DateTime(2026, 1, 21, 0, 0, 0, 0, DateTimeKind.Utc)
                         },
                         new
                         {
                             UserId = new Guid("e3333333-3333-3333-3333-333333333333"),
                             RoleId = new Guid("d3333333-3333-3333-3333-333333333333"),
-                            AssignedAt = new DateTime(2026, 1, 21, 7, 56, 11, 113, DateTimeKind.Utc).AddTicks(6796)
+                            AssignedAt = new DateTime(2026, 1, 21, 0, 0, 0, 0, DateTimeKind.Utc)
                         });
                 });
 
