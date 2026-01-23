@@ -12,7 +12,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Corelio.Infrastructure.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20260123062834_InitialSchemaWithSeedData")]
+    [Migration("20260123064600_InitialSchemaWithSeedData")]
     partial class InitialSchemaWithSeedData
     {
         /// <inheritdoc />
@@ -1769,7 +1769,7 @@ namespace Corelio.Infrastructure.Migrations
                             TenantId = new Guid("b0000000-0000-0000-0000-000000000001"),
                             TwoFactorEnabled = false,
                             UpdatedAt = new DateTime(2026, 1, 21, 0, 0, 0, 0, DateTimeKind.Utc),
-                            Username = ""
+                            Username = "admin"
                         },
                         new
                         {
@@ -1785,7 +1785,7 @@ namespace Corelio.Infrastructure.Migrations
                             TenantId = new Guid("b0000000-0000-0000-0000-000000000001"),
                             TwoFactorEnabled = false,
                             UpdatedAt = new DateTime(2026, 1, 21, 0, 0, 0, 0, DateTimeKind.Utc),
-                            Username = ""
+                            Username = "manager"
                         },
                         new
                         {
@@ -1801,7 +1801,7 @@ namespace Corelio.Infrastructure.Migrations
                             TenantId = new Guid("b0000000-0000-0000-0000-000000000001"),
                             TwoFactorEnabled = false,
                             UpdatedAt = new DateTime(2026, 1, 21, 0, 0, 0, 0, DateTimeKind.Utc),
-                            Username = ""
+                            Username = "cashier"
                         });
                 });
 

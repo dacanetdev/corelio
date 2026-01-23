@@ -1766,7 +1766,7 @@ namespace Corelio.Infrastructure.Migrations
                             TenantId = new Guid("b0000000-0000-0000-0000-000000000001"),
                             TwoFactorEnabled = false,
                             UpdatedAt = new DateTime(2026, 1, 21, 0, 0, 0, 0, DateTimeKind.Utc),
-                            Username = ""
+                            Username = "admin"
                         },
                         new
                         {
@@ -1782,7 +1782,7 @@ namespace Corelio.Infrastructure.Migrations
                             TenantId = new Guid("b0000000-0000-0000-0000-000000000001"),
                             TwoFactorEnabled = false,
                             UpdatedAt = new DateTime(2026, 1, 21, 0, 0, 0, 0, DateTimeKind.Utc),
-                            Username = ""
+                            Username = "manager"
                         },
                         new
                         {
@@ -1798,7 +1798,7 @@ namespace Corelio.Infrastructure.Migrations
                             TenantId = new Guid("b0000000-0000-0000-0000-000000000001"),
                             TwoFactorEnabled = false,
                             UpdatedAt = new DateTime(2026, 1, 21, 0, 0, 0, 0, DateTimeKind.Utc),
-                            Username = ""
+                            Username = "cashier"
                         });
                 });
 

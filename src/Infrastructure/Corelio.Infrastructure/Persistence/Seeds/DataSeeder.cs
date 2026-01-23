@@ -257,6 +257,7 @@ public static class DataSeeder
                 Id = Guid.Parse("e1111111-1111-1111-1111-111111111111"),
                 TenantId = Guid.Parse("b0000000-0000-0000-0000-000000000001"),
                 Email = "admin@demo.corelio.app",
+                Username = "admin",
                 FirstName = "Admin",
                 LastName = "User",
                 // Password: Admin123! (BCrypt hashed with work factor 12)
@@ -272,6 +273,7 @@ public static class DataSeeder
                 Id = Guid.Parse("e2222222-2222-2222-2222-222222222222"),
                 TenantId = Guid.Parse("b0000000-0000-0000-0000-000000000001"),
                 Email = "manager@demo.corelio.app",
+                Username = "manager",
                 FirstName = "Manager",
                 LastName = "User",
                 // Password: Manager123! (BCrypt hashed with work factor 12)
@@ -287,6 +289,7 @@ public static class DataSeeder
                 Id = Guid.Parse("e3333333-3333-3333-3333-333333333333"),
                 TenantId = Guid.Parse("b0000000-0000-0000-0000-000000000001"),
                 Email = "cashier@demo.corelio.app",
+                Username = "cashier",
                 FirstName = "Cashier",
                 LastName = "User",
                 // Password: Cashier123! (BCrypt hashed with work factor 12)
