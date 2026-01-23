@@ -12,7 +12,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Corelio.Infrastructure.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20260123062048_InitialSchemaWithSeedData")]
+    [Migration("20260123062834_InitialSchemaWithSeedData")]
     partial class InitialSchemaWithSeedData
     {
         /// <inheritdoc />
