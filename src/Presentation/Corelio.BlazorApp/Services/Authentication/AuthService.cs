@@ -8,20 +8,31 @@ namespace Corelio.BlazorApp.Services.Authentication;
 
 /// <summary>
 /// Implementation of authentication service using HttpClient to call backend API.
+/// Uses the "api-auth" named client to avoid circular dependency with AuthorizationMessageHandler.
 /// </summary>
-public class AuthService(
-    HttpClient httpClient,
-    ITokenService tokenService,
-    AuthenticationStateProvider authenticationStateProvider) : IAuthService
+public class AuthService : IAuthService
 {
     private const string BaseUrl = "/api/v1/auth";
+    private readonly HttpClient _httpClient;
+    private readonly ITokenService _tokenService;
+    private readonly AuthenticationStateProvider _authenticationStateProvider;
+
+    public AuthService(
+        IHttpClientFactory httpClientFactory,
+        ITokenService tokenService,
+        AuthenticationStateProvider authenticationStateProvider)
+    {
+        _httpClient = httpClientFactory.CreateClient("api-auth");
+        _tokenService = tokenService;
+        _authenticationStateProvider = authenticationStateProvider;
+    }
 
     /// <inheritdoc />
     public async Task<Result<LoginResponse>> LoginAsync(LoginRequest request)
     {
         try
         {
-            var response = await httpClient.PostAsJsonAsync($"{BaseUrl}/login", request);
+            var response = await _httpClient.PostAsJsonAsync($"{BaseUrl}/login", request);
 
             if (response.IsSuccessStatusCode)
             {
@@ -29,10 +40,10 @@ public class AuthService(
                 if (loginResponse is not null)
                 {
                     // Store tokens in localStorage
-                    await tokenService.SetTokensAsync(loginResponse.AccessToken, loginResponse.RefreshToken);
+                    await _tokenService.SetTokensAsync(loginResponse.AccessToken, loginResponse.RefreshToken);
 
                     // Notify authentication state changed
-                    if (authenticationStateProvider is CustomAuthenticationStateProvider customProvider)
+                    if (_authenticationStateProvider is CustomAuthenticationStateProvider customProvider)
                     {
                         customProvider.NotifyAuthenticationStateChanged();
                     }
@@ -55,7 +66,7 @@ public class AuthService(
     {
         try
         {
-            var response = await httpClient.PostAsJsonAsync($"{BaseUrl}/register", request);
+            var response = await _httpClient.PostAsJsonAsync($"{BaseUrl}/register", request);
 
             if (response.IsSuccessStatusCode)
             {
@@ -77,18 +88,18 @@ public class AuthService(
     {
         try
         {
-            var refreshToken = await tokenService.GetRefreshTokenAsync();
+            var refreshToken = await _tokenService.GetRefreshTokenAsync();
             if (!string.IsNullOrEmpty(refreshToken))
             {
                 // Call backend to invalidate refresh token
-                await httpClient.PostAsJsonAsync($"{BaseUrl}/logout", new { RefreshToken = refreshToken });
+                await _httpClient.PostAsJsonAsync($"{BaseUrl}/logout", new { RefreshToken = refreshToken });
             }
 
             // Clear tokens from localStorage
-            await tokenService.ClearTokensAsync();
+            await _tokenService.ClearTokensAsync();
 
             // Notify authentication state changed
-            if (authenticationStateProvider is CustomAuthenticationStateProvider customProvider)
+            if (_authenticationStateProvider is CustomAuthenticationStateProvider customProvider)
             {
                 customProvider.NotifyAuthenticationStateChanged();
             }
@@ -106,7 +117,7 @@ public class AuthService(
     {
         try
         {
-            var response = await httpClient.PostAsJsonAsync($"{BaseUrl}/refresh", new { RefreshToken = refreshToken });
+            var response = await _httpClient.PostAsJsonAsync($"{BaseUrl}/refresh", new { RefreshToken = refreshToken });
 
             if (response.IsSuccessStatusCode)
             {
@@ -114,7 +125,7 @@ public class AuthService(
                 if (tokenResponse is not null)
                 {
                     // Update tokens in localStorage
-                    await tokenService.SetTokensAsync(tokenResponse.AccessToken, tokenResponse.RefreshToken);
+                    await _tokenService.SetTokensAsync(tokenResponse.AccessToken, tokenResponse.RefreshToken);
 
                     return Result<TokenResponse>.Success(tokenResponse);
                 }
@@ -133,7 +144,7 @@ public class AuthService(
     {
         try
         {
-            var response = await httpClient.PostAsJsonAsync($"{BaseUrl}/forgot-password", request);
+            var response = await _httpClient.PostAsJsonAsync($"{BaseUrl}/forgot-password", request);
 
             if (response.IsSuccessStatusCode)
             {
@@ -153,7 +164,7 @@ public class AuthService(
     {
         try
         {
-            var response = await httpClient.PostAsJsonAsync($"{BaseUrl}/reset-password", request);
+            var response = await _httpClient.PostAsJsonAsync($"{BaseUrl}/reset-password", request);
 
             if (response.IsSuccessStatusCode)
             {
@@ -172,7 +183,7 @@ public class AuthService(
     /// <inheritdoc />
     public async Task<UserInfo?> GetCurrentUserAsync()
     {
-        var authState = await authenticationStateProvider.GetAuthenticationStateAsync();
+        var authState = await _authenticationStateProvider.GetAuthenticationStateAsync();
         var user = authState.User;
 
         if (!user.Identity?.IsAuthenticated ?? true)

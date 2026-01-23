@@ -4,6 +4,7 @@ using Corelio.Infrastructure.MultiTenancy;
 using Corelio.ServiceDefaults;
 using Corelio.WebAPI.Endpoints;
 using Corelio.WebAPI.Extensions;
+using Microsoft.EntityFrameworkCore;
 using Scalar.AspNetCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -24,6 +25,24 @@ builder.Services.AddCorelioAuthorization(builder.Configuration);
 builder.Services.AddOpenApi();
 
 var app = builder.Build();
+
+// Apply pending migrations in development
+if (app.Environment.IsDevelopment())
+{
+    using var scope = app.Services.CreateScope();
+    var dbContext = scope.ServiceProvider.GetRequiredService<Corelio.Infrastructure.Persistence.ApplicationDbContext>();
+
+    try
+    {
+        await dbContext.Database.MigrateAsync();
+        app.Logger.LogInformation("Database migrations applied successfully");
+    }
+    catch (Exception ex)
+    {
+        app.Logger.LogError(ex, "An error occurred while migrating the database");
+        throw;
+    }
+}
 
 // Map Aspire health check endpoints FIRST (before authentication middleware)
 // This allows health checks to work without authentication/tenant context

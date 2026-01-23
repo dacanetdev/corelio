@@ -2,6 +2,8 @@ using Corelio.Application.Common.Behaviors;
 using System.Reflection;
 using Corelio.SharedKernel.Messaging;
 using FluentValidation;
+using Mapster;
+using MapsterMapper;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Corelio.Application;
@@ -31,6 +33,12 @@ public static class DependencyInjection
 
         // Register the validation pipeline behavior
         services.AddScoped(typeof(IRequestPipelineBehavior<,>), typeof(ValidationBehavior<,>));
+
+        // Register Mapster for object mapping
+        var mapsterConfig = TypeAdapterConfig.GlobalSettings;
+        mapsterConfig.Scan(assembly);
+        services.AddSingleton(mapsterConfig);
+        services.AddScoped<IMapper, ServiceMapper>();
 
         return services;
     }

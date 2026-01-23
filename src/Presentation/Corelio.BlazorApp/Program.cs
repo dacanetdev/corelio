@@ -2,6 +2,7 @@ using System.Globalization;
 using Blazored.LocalStorage;
 using Corelio.BlazorApp.Components;
 using Corelio.BlazorApp.Services.Authentication;
+using Corelio.BlazorApp.Services.Products;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Localization;
 using MudBlazor.Services;
@@ -31,20 +32,47 @@ builder.Services.AddScoped<CustomAuthenticationStateProvider>();
 builder.Services.AddScoped<AuthenticationStateProvider>(sp =>
     sp.GetRequiredService<CustomAuthenticationStateProvider>());
 
-// Add HttpClient for API calls with Authorization header
-builder.Services.AddScoped<AuthorizationMessageHandler>();
-builder.Services.AddScoped(sp =>
+// Add Aspire service discovery
+builder.Services.AddServiceDiscovery();
+
+// Helper method to configure API base address
+void ConfigureApiClient(IServiceProvider sp, HttpClient client)
 {
-    var handler = sp.GetRequiredService<AuthorizationMessageHandler>();
-    var httpClient = new HttpClient(handler)
+    // When running with Aspire, "http://api" will be resolved via service discovery
+    // When running standalone, fall back to appsettings
+    var apiUrl = builder.Configuration["ApiSettings:BaseUrl"] ?? "https://localhost:7001";
+
+    // Check if running in Aspire environment
+    if (builder.Configuration.GetSection("services:api").Exists())
     {
-        BaseAddress = new Uri(builder.Configuration["ApiSettings:BaseUrl"] ?? "https://localhost:7001")
-    };
-    return httpClient;
-});
+        client.BaseAddress = new Uri("http://api");
+        Console.WriteLine($"Blazor using Aspire service discovery for API");
+    }
+    else
+    {
+        client.BaseAddress = new Uri(apiUrl);
+        Console.WriteLine($"Blazor connecting to API at: {apiUrl}");
+    }
+}
+
+// HttpClient for authentication endpoints (no auth handler to avoid circular dependency)
+builder.Services.AddHttpClient("api-auth", ConfigureApiClient)
+    .AddServiceDiscovery();
+
+// HttpClient for protected endpoints (with authorization handler)
+builder.Services.AddScoped<AuthorizationMessageHandler>();
+builder.Services.AddHttpClient("api", ConfigureApiClient)
+    .ConfigurePrimaryHttpMessageHandler<AuthorizationMessageHandler>()
+    .AddServiceDiscovery();
+
+// Register default HttpClient for general use (with auth handler)
+builder.Services.AddScoped(sp => sp.GetRequiredService<IHttpClientFactory>().CreateClient("api"));
 
 // Add AuthService (depends on HttpClient)
 builder.Services.AddScoped<IAuthService, AuthService>();
+
+// Add Product service
+builder.Services.AddScoped<IProductService, ProductService>();
 
 // Add Razor Components
 builder.Services.AddRazorComponents()

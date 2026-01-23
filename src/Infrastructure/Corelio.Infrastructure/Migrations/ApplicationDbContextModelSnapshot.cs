@@ -195,6 +195,571 @@ namespace Corelio.Infrastructure.Migrations
                         .HasDatabaseName("ix_permissions_module");
 
                     b.ToTable("permissions", (string)null);
+
+                    b.HasData(
+                        new
+                        {
+                            Id = new Guid("a1111111-1111-1111-1111-111111111111"),
+                            Code = "users.view",
+                            CreatedAt = new DateTime(2026, 1, 21, 0, 0, 0, 0, DateTimeKind.Utc),
+                            Description = "View user list",
+                            IsDangerous = false,
+                            Module = "Users",
+                            Name = "View Users"
+                        },
+                        new
+                        {
+                            Id = new Guid("a1111111-1111-1111-1111-111111111112"),
+                            Code = "users.create",
+                            CreatedAt = new DateTime(2026, 1, 21, 0, 0, 0, 0, DateTimeKind.Utc),
+                            Description = "Create new users",
+                            IsDangerous = false,
+                            Module = "Users",
+                            Name = "Create Users"
+                        },
+                        new
+                        {
+                            Id = new Guid("a1111111-1111-1111-1111-111111111113"),
+                            Code = "users.edit",
+                            CreatedAt = new DateTime(2026, 1, 21, 0, 0, 0, 0, DateTimeKind.Utc),
+                            Description = "Edit user details",
+                            IsDangerous = false,
+                            Module = "Users",
+                            Name = "Edit Users"
+                        },
+                        new
+                        {
+                            Id = new Guid("a1111111-1111-1111-1111-111111111114"),
+                            Code = "users.delete",
+                            CreatedAt = new DateTime(2026, 1, 21, 0, 0, 0, 0, DateTimeKind.Utc),
+                            Description = "Delete users",
+                            IsDangerous = true,
+                            Module = "Users",
+                            Name = "Delete Users"
+                        },
+                        new
+                        {
+                            Id = new Guid("a2222222-2222-2222-2222-222222222221"),
+                            Code = "products.view",
+                            CreatedAt = new DateTime(2026, 1, 21, 0, 0, 0, 0, DateTimeKind.Utc),
+                            Description = "View product list",
+                            IsDangerous = false,
+                            Module = "Products",
+                            Name = "View Products"
+                        },
+                        new
+                        {
+                            Id = new Guid("a2222222-2222-2222-2222-222222222222"),
+                            Code = "products.create",
+                            CreatedAt = new DateTime(2026, 1, 21, 0, 0, 0, 0, DateTimeKind.Utc),
+                            Description = "Create new products",
+                            IsDangerous = false,
+                            Module = "Products",
+                            Name = "Create Products"
+                        },
+                        new
+                        {
+                            Id = new Guid("a2222222-2222-2222-2222-222222222223"),
+                            Code = "products.edit",
+                            CreatedAt = new DateTime(2026, 1, 21, 0, 0, 0, 0, DateTimeKind.Utc),
+                            Description = "Edit product details",
+                            IsDangerous = false,
+                            Module = "Products",
+                            Name = "Edit Products"
+                        },
+                        new
+                        {
+                            Id = new Guid("a2222222-2222-2222-2222-222222222224"),
+                            Code = "products.delete",
+                            CreatedAt = new DateTime(2026, 1, 21, 0, 0, 0, 0, DateTimeKind.Utc),
+                            Description = "Delete products",
+                            IsDangerous = false,
+                            Module = "Products",
+                            Name = "Delete Products"
+                        },
+                        new
+                        {
+                            Id = new Guid("a3333333-3333-3333-3333-333333333331"),
+                            Code = "sales.view",
+                            CreatedAt = new DateTime(2026, 1, 21, 0, 0, 0, 0, DateTimeKind.Utc),
+                            Description = "View sales transactions",
+                            IsDangerous = false,
+                            Module = "Sales",
+                            Name = "View Sales"
+                        },
+                        new
+                        {
+                            Id = new Guid("a3333333-3333-3333-3333-333333333332"),
+                            Code = "sales.create",
+                            CreatedAt = new DateTime(2026, 1, 21, 0, 0, 0, 0, DateTimeKind.Utc),
+                            Description = "Create new sales",
+                            IsDangerous = false,
+                            Module = "Sales",
+                            Name = "Create Sales"
+                        },
+                        new
+                        {
+                            Id = new Guid("a3333333-3333-3333-3333-333333333333"),
+                            Code = "sales.cancel",
+                            CreatedAt = new DateTime(2026, 1, 21, 0, 0, 0, 0, DateTimeKind.Utc),
+                            Description = "Cancel sales transactions",
+                            IsDangerous = true,
+                            Module = "Sales",
+                            Name = "Cancel Sales"
+                        },
+                        new
+                        {
+                            Id = new Guid("a4444444-4444-4444-4444-444444444441"),
+                            Code = "inventory.view",
+                            CreatedAt = new DateTime(2026, 1, 21, 0, 0, 0, 0, DateTimeKind.Utc),
+                            Description = "View inventory levels",
+                            IsDangerous = false,
+                            Module = "Inventory",
+                            Name = "View Inventory"
+                        },
+                        new
+                        {
+                            Id = new Guid("a4444444-4444-4444-4444-444444444442"),
+                            Code = "inventory.adjust",
+                            CreatedAt = new DateTime(2026, 1, 21, 0, 0, 0, 0, DateTimeKind.Utc),
+                            Description = "Adjust inventory levels",
+                            IsDangerous = false,
+                            Module = "Inventory",
+                            Name = "Adjust Inventory"
+                        },
+                        new
+                        {
+                            Id = new Guid("a5555555-5555-5555-5555-555555555551"),
+                            Code = "reports.view",
+                            CreatedAt = new DateTime(2026, 1, 21, 0, 0, 0, 0, DateTimeKind.Utc),
+                            Description = "View business reports",
+                            IsDangerous = false,
+                            Module = "Reports",
+                            Name = "View Reports"
+                        },
+                        new
+                        {
+                            Id = new Guid("a5555555-5555-5555-5555-555555555552"),
+                            Code = "reports.export",
+                            CreatedAt = new DateTime(2026, 1, 21, 0, 0, 0, 0, DateTimeKind.Utc),
+                            Description = "Export reports to file",
+                            IsDangerous = false,
+                            Module = "Reports",
+                            Name = "Export Reports"
+                        },
+                        new
+                        {
+                            Id = new Guid("a6666666-6666-6666-6666-666666666661"),
+                            Code = "settings.view",
+                            CreatedAt = new DateTime(2026, 1, 21, 0, 0, 0, 0, DateTimeKind.Utc),
+                            Description = "View system settings",
+                            IsDangerous = false,
+                            Module = "Settings",
+                            Name = "View Settings"
+                        },
+                        new
+                        {
+                            Id = new Guid("a6666666-6666-6666-6666-666666666662"),
+                            Code = "settings.edit",
+                            CreatedAt = new DateTime(2026, 1, 21, 0, 0, 0, 0, DateTimeKind.Utc),
+                            Description = "Modify system settings",
+                            IsDangerous = true,
+                            Module = "Settings",
+                            Name = "Edit Settings"
+                        });
+                });
+
+            modelBuilder.Entity("Corelio.Domain.Entities.Product", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uuid")
+                        .HasColumnName("id");
+
+                    b.Property<string>("Barcode")
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)")
+                        .HasColumnName("barcode");
+
+                    b.Property<string>("BarcodeType")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("character varying(20)")
+                        .HasColumnName("barcode_type");
+
+                    b.Property<string>("Brand")
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)")
+                        .HasColumnName("brand");
+
+                    b.Property<Guid?>("CategoryId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("category_id");
+
+                    b.Property<decimal>("CostPrice")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("decimal(15,2)")
+                        .HasDefaultValue(0.00m)
+                        .HasColumnName("cost_price");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("created_at");
+
+                    b.Property<Guid?>("CreatedBy")
+                        .HasColumnType("uuid")
+                        .HasColumnName("created_by");
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("deleted_at");
+
+                    b.Property<Guid?>("DeletedBy")
+                        .HasColumnType("uuid")
+                        .HasColumnName("deleted_by");
+
+                    b.Property<string>("Description")
+                        .HasColumnType("text")
+                        .HasColumnName("description");
+
+                    b.Property<decimal?>("HeightCm")
+                        .HasColumnType("decimal(10,2)")
+                        .HasColumnName("height_cm");
+
+                    b.Property<string>("ImagesJson")
+                        .HasColumnType("jsonb")
+                        .HasColumnName("images_json");
+
+                    b.Property<bool>("IsActive")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("boolean")
+                        .HasDefaultValue(true)
+                        .HasColumnName("is_active");
+
+                    b.Property<bool>("IsBundle")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("boolean")
+                        .HasDefaultValue(false)
+                        .HasColumnName("is_bundle");
+
+                    b.Property<bool>("IsDeleted")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("boolean")
+                        .HasDefaultValue(false)
+                        .HasColumnName("is_deleted");
+
+                    b.Property<bool>("IsFeatured")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("boolean")
+                        .HasDefaultValue(false)
+                        .HasColumnName("is_featured");
+
+                    b.Property<bool>("IsService")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("boolean")
+                        .HasDefaultValue(false)
+                        .HasColumnName("is_service");
+
+                    b.Property<bool>("IsTaxExempt")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("boolean")
+                        .HasDefaultValue(false)
+                        .HasColumnName("is_tax_exempt");
+
+                    b.Property<bool>("IsVariantParent")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("boolean")
+                        .HasDefaultValue(false)
+                        .HasColumnName("is_variant_parent");
+
+                    b.Property<decimal?>("LengthCm")
+                        .HasColumnType("decimal(10,2)")
+                        .HasColumnName("length_cm");
+
+                    b.Property<string>("Manufacturer")
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)")
+                        .HasColumnName("manufacturer");
+
+                    b.Property<decimal?>("MaxStockLevel")
+                        .HasColumnType("decimal(10,2)")
+                        .HasColumnName("max_stock_level");
+
+                    b.Property<string>("MetaDescription")
+                        .HasMaxLength(500)
+                        .HasColumnType("character varying(500)")
+                        .HasColumnName("meta_description");
+
+                    b.Property<string>("MetaKeywords")
+                        .HasMaxLength(500)
+                        .HasColumnType("character varying(500)")
+                        .HasColumnName("meta_keywords");
+
+                    b.Property<string>("MetaTitle")
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)")
+                        .HasColumnName("meta_title");
+
+                    b.Property<decimal>("MinStockLevel")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("decimal(10,2)")
+                        .HasDefaultValue(0m)
+                        .HasColumnName("min_stock_level");
+
+                    b.Property<string>("ModelNumber")
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)")
+                        .HasColumnName("model_number");
+
+                    b.Property<decimal?>("Msrp")
+                        .HasColumnType("decimal(15,2)")
+                        .HasColumnName("msrp");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(300)
+                        .HasColumnType("character varying(300)")
+                        .HasColumnName("name");
+
+                    b.Property<string>("PrimaryImageUrl")
+                        .HasMaxLength(500)
+                        .HasColumnType("character varying(500)")
+                        .HasColumnName("primary_image_url");
+
+                    b.Property<decimal?>("ReorderPoint")
+                        .HasColumnType("decimal(10,2)")
+                        .HasColumnName("reorder_point");
+
+                    b.Property<decimal?>("ReorderQuantity")
+                        .HasColumnType("decimal(10,2)")
+                        .HasColumnName("reorder_quantity");
+
+                    b.Property<decimal>("SalePrice")
+                        .HasColumnType("decimal(15,2)")
+                        .HasColumnName("sale_price");
+
+                    b.Property<string>("SatHazardousMaterial")
+                        .HasMaxLength(4)
+                        .HasColumnType("character varying(4)")
+                        .HasColumnName("sat_hazardous_material");
+
+                    b.Property<string>("SatProductCode")
+                        .HasMaxLength(8)
+                        .HasColumnType("character varying(8)")
+                        .HasColumnName("sat_product_code");
+
+                    b.Property<string>("SatUnitCode")
+                        .HasMaxLength(3)
+                        .HasColumnType("character varying(3)")
+                        .HasColumnName("sat_unit_code");
+
+                    b.Property<string>("ShortDescription")
+                        .HasMaxLength(500)
+                        .HasColumnType("character varying(500)")
+                        .HasColumnName("short_description");
+
+                    b.Property<string>("Sku")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)")
+                        .HasColumnName("sku");
+
+                    b.Property<string>("Slug")
+                        .HasMaxLength(300)
+                        .HasColumnType("character varying(300)")
+                        .HasColumnName("slug");
+
+                    b.Property<decimal>("TaxRate")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("decimal(5,4)")
+                        .HasDefaultValue(0.1600m)
+                        .HasColumnName("tax_rate");
+
+                    b.Property<Guid>("TenantId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("tenant_id");
+
+                    b.Property<bool>("TrackInventory")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("boolean")
+                        .HasDefaultValue(true)
+                        .HasColumnName("track_inventory");
+
+                    b.Property<string>("UnitOfMeasure")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("character varying(20)")
+                        .HasColumnName("unit_of_measure");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("updated_at");
+
+                    b.Property<Guid?>("UpdatedBy")
+                        .HasColumnType("uuid")
+                        .HasColumnName("updated_by");
+
+                    b.Property<decimal?>("VolumeCm3")
+                        .HasColumnType("decimal(15,2)")
+                        .HasColumnName("volume_cm3");
+
+                    b.Property<decimal?>("WeightKg")
+                        .HasColumnType("decimal(10,3)")
+                        .HasColumnName("weight_kg");
+
+                    b.Property<decimal?>("WholesalePrice")
+                        .HasColumnType("decimal(15,2)")
+                        .HasColumnName("wholesale_price");
+
+                    b.Property<decimal?>("WidthCm")
+                        .HasColumnType("decimal(10,2)")
+                        .HasColumnName("width_cm");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CategoryId")
+                        .HasDatabaseName("ix_products_category_id");
+
+                    b.HasIndex("IsActive")
+                        .HasDatabaseName("ix_products_is_active");
+
+                    b.HasIndex("IsFeatured")
+                        .HasDatabaseName("ix_products_is_featured")
+                        .HasFilter("is_featured = true AND is_deleted = false");
+
+                    b.HasIndex("Name")
+                        .HasDatabaseName("ix_products_name")
+                        .HasFilter("is_deleted = false");
+
+                    b.HasIndex("TenantId")
+                        .HasDatabaseName("ix_products_tenant_id")
+                        .HasFilter("is_deleted = false");
+
+                    b.HasIndex("TenantId", "Barcode")
+                        .IsUnique()
+                        .HasDatabaseName("ix_products_tenant_barcode")
+                        .HasFilter("barcode IS NOT NULL AND is_deleted = false");
+
+                    b.HasIndex("TenantId", "Sku")
+                        .IsUnique()
+                        .HasDatabaseName("ix_products_tenant_sku")
+                        .HasFilter("is_deleted = false");
+
+                    b.ToTable("products", (string)null);
+                });
+
+            modelBuilder.Entity("Corelio.Domain.Entities.ProductCategory", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uuid")
+                        .HasColumnName("id");
+
+                    b.Property<string>("ColorHex")
+                        .HasMaxLength(7)
+                        .HasColumnType("character varying(7)")
+                        .HasColumnName("color_hex");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("created_at");
+
+                    b.Property<Guid?>("CreatedBy")
+                        .HasColumnType("uuid")
+                        .HasColumnName("created_by");
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("deleted_at");
+
+                    b.Property<Guid?>("DeletedBy")
+                        .HasColumnType("uuid")
+                        .HasColumnName("deleted_by");
+
+                    b.Property<string>("Description")
+                        .HasColumnType("text")
+                        .HasColumnName("description");
+
+                    b.Property<string>("IconName")
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)")
+                        .HasColumnName("icon_name");
+
+                    b.Property<string>("ImageUrl")
+                        .HasMaxLength(500)
+                        .HasColumnType("character varying(500)")
+                        .HasColumnName("image_url");
+
+                    b.Property<bool>("IsActive")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("boolean")
+                        .HasDefaultValue(true)
+                        .HasColumnName("is_active");
+
+                    b.Property<bool>("IsDeleted")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("boolean")
+                        .HasDefaultValue(false)
+                        .HasColumnName("is_deleted");
+
+                    b.Property<int>("Level")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasDefaultValue(0)
+                        .HasColumnName("level");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)")
+                        .HasColumnName("name");
+
+                    b.Property<Guid?>("ParentCategoryId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("parent_category_id");
+
+                    b.Property<string>("Path")
+                        .HasMaxLength(500)
+                        .HasColumnType("character varying(500)")
+                        .HasColumnName("path");
+
+                    b.Property<int>("SortOrder")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasDefaultValue(0)
+                        .HasColumnName("sort_order");
+
+                    b.Property<Guid>("TenantId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("tenant_id");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("updated_at");
+
+                    b.Property<Guid?>("UpdatedBy")
+                        .HasColumnType("uuid")
+                        .HasColumnName("updated_by");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("IsActive")
+                        .HasDatabaseName("ix_product_categories_is_active");
+
+                    b.HasIndex("ParentCategoryId")
+                        .HasDatabaseName("ix_product_categories_parent_id");
+
+                    b.HasIndex("Path")
+                        .HasDatabaseName("ix_product_categories_path");
+
+                    b.HasIndex("TenantId")
+                        .HasDatabaseName("ix_product_categories_tenant_id")
+                        .HasFilter("is_deleted = false");
+
+                    b.HasIndex("TenantId", "Name")
+                        .IsUnique()
+                        .HasDatabaseName("ix_product_categories_tenant_name")
+                        .HasFilter("is_deleted = false");
+
+                    b.ToTable("product_categories", (string)null);
                 });
 
             modelBuilder.Entity("Corelio.Domain.Entities.RefreshToken", b =>
@@ -362,6 +927,41 @@ namespace Corelio.Infrastructure.Migrations
                         .HasDatabaseName("ix_roles_tenant_name");
 
                     b.ToTable("roles", (string)null);
+
+                    b.HasData(
+                        new
+                        {
+                            Id = new Guid("d1111111-1111-1111-1111-111111111111"),
+                            CreatedAt = new DateTime(2026, 1, 21, 0, 0, 0, 0, DateTimeKind.Utc),
+                            Description = "Full system access",
+                            IsDefault = false,
+                            IsSystemRole = true,
+                            Name = "Administrator",
+                            TenantId = new Guid("b0000000-0000-0000-0000-000000000001"),
+                            UpdatedAt = new DateTime(2026, 1, 21, 0, 0, 0, 0, DateTimeKind.Utc)
+                        },
+                        new
+                        {
+                            Id = new Guid("d2222222-2222-2222-2222-222222222222"),
+                            CreatedAt = new DateTime(2026, 1, 21, 0, 0, 0, 0, DateTimeKind.Utc),
+                            Description = "Store manager with most permissions",
+                            IsDefault = false,
+                            IsSystemRole = false,
+                            Name = "Manager",
+                            TenantId = new Guid("b0000000-0000-0000-0000-000000000001"),
+                            UpdatedAt = new DateTime(2026, 1, 21, 0, 0, 0, 0, DateTimeKind.Utc)
+                        },
+                        new
+                        {
+                            Id = new Guid("d3333333-3333-3333-3333-333333333333"),
+                            CreatedAt = new DateTime(2026, 1, 21, 0, 0, 0, 0, DateTimeKind.Utc),
+                            Description = "Point of sale operator",
+                            IsDefault = true,
+                            IsSystemRole = false,
+                            Name = "Cashier",
+                            TenantId = new Guid("b0000000-0000-0000-0000-000000000001"),
+                            UpdatedAt = new DateTime(2026, 1, 21, 0, 0, 0, 0, DateTimeKind.Utc)
+                        });
                 });
 
             modelBuilder.Entity("Corelio.Domain.Entities.RolePermission", b =>
@@ -391,6 +991,218 @@ namespace Corelio.Infrastructure.Migrations
                         .HasDatabaseName("ix_role_permissions_role_id");
 
                     b.ToTable("role_permissions", (string)null);
+
+                    b.HasData(
+                        new
+                        {
+                            RoleId = new Guid("d1111111-1111-1111-1111-111111111111"),
+                            PermissionId = new Guid("a1111111-1111-1111-1111-111111111111"),
+                            AssignedAt = new DateTime(2026, 1, 21, 0, 0, 0, 0, DateTimeKind.Utc)
+                        },
+                        new
+                        {
+                            RoleId = new Guid("d1111111-1111-1111-1111-111111111111"),
+                            PermissionId = new Guid("a1111111-1111-1111-1111-111111111112"),
+                            AssignedAt = new DateTime(2026, 1, 21, 0, 0, 0, 0, DateTimeKind.Utc)
+                        },
+                        new
+                        {
+                            RoleId = new Guid("d1111111-1111-1111-1111-111111111111"),
+                            PermissionId = new Guid("a1111111-1111-1111-1111-111111111113"),
+                            AssignedAt = new DateTime(2026, 1, 21, 0, 0, 0, 0, DateTimeKind.Utc)
+                        },
+                        new
+                        {
+                            RoleId = new Guid("d1111111-1111-1111-1111-111111111111"),
+                            PermissionId = new Guid("a1111111-1111-1111-1111-111111111114"),
+                            AssignedAt = new DateTime(2026, 1, 21, 0, 0, 0, 0, DateTimeKind.Utc)
+                        },
+                        new
+                        {
+                            RoleId = new Guid("d1111111-1111-1111-1111-111111111111"),
+                            PermissionId = new Guid("a2222222-2222-2222-2222-222222222221"),
+                            AssignedAt = new DateTime(2026, 1, 21, 0, 0, 0, 0, DateTimeKind.Utc)
+                        },
+                        new
+                        {
+                            RoleId = new Guid("d1111111-1111-1111-1111-111111111111"),
+                            PermissionId = new Guid("a2222222-2222-2222-2222-222222222222"),
+                            AssignedAt = new DateTime(2026, 1, 21, 0, 0, 0, 0, DateTimeKind.Utc)
+                        },
+                        new
+                        {
+                            RoleId = new Guid("d1111111-1111-1111-1111-111111111111"),
+                            PermissionId = new Guid("a2222222-2222-2222-2222-222222222223"),
+                            AssignedAt = new DateTime(2026, 1, 21, 0, 0, 0, 0, DateTimeKind.Utc)
+                        },
+                        new
+                        {
+                            RoleId = new Guid("d1111111-1111-1111-1111-111111111111"),
+                            PermissionId = new Guid("a2222222-2222-2222-2222-222222222224"),
+                            AssignedAt = new DateTime(2026, 1, 21, 0, 0, 0, 0, DateTimeKind.Utc)
+                        },
+                        new
+                        {
+                            RoleId = new Guid("d1111111-1111-1111-1111-111111111111"),
+                            PermissionId = new Guid("a3333333-3333-3333-3333-333333333331"),
+                            AssignedAt = new DateTime(2026, 1, 21, 0, 0, 0, 0, DateTimeKind.Utc)
+                        },
+                        new
+                        {
+                            RoleId = new Guid("d1111111-1111-1111-1111-111111111111"),
+                            PermissionId = new Guid("a3333333-3333-3333-3333-333333333332"),
+                            AssignedAt = new DateTime(2026, 1, 21, 0, 0, 0, 0, DateTimeKind.Utc)
+                        },
+                        new
+                        {
+                            RoleId = new Guid("d1111111-1111-1111-1111-111111111111"),
+                            PermissionId = new Guid("a3333333-3333-3333-3333-333333333333"),
+                            AssignedAt = new DateTime(2026, 1, 21, 0, 0, 0, 0, DateTimeKind.Utc)
+                        },
+                        new
+                        {
+                            RoleId = new Guid("d1111111-1111-1111-1111-111111111111"),
+                            PermissionId = new Guid("a4444444-4444-4444-4444-444444444441"),
+                            AssignedAt = new DateTime(2026, 1, 21, 0, 0, 0, 0, DateTimeKind.Utc)
+                        },
+                        new
+                        {
+                            RoleId = new Guid("d1111111-1111-1111-1111-111111111111"),
+                            PermissionId = new Guid("a4444444-4444-4444-4444-444444444442"),
+                            AssignedAt = new DateTime(2026, 1, 21, 0, 0, 0, 0, DateTimeKind.Utc)
+                        },
+                        new
+                        {
+                            RoleId = new Guid("d1111111-1111-1111-1111-111111111111"),
+                            PermissionId = new Guid("a5555555-5555-5555-5555-555555555551"),
+                            AssignedAt = new DateTime(2026, 1, 21, 0, 0, 0, 0, DateTimeKind.Utc)
+                        },
+                        new
+                        {
+                            RoleId = new Guid("d1111111-1111-1111-1111-111111111111"),
+                            PermissionId = new Guid("a5555555-5555-5555-5555-555555555552"),
+                            AssignedAt = new DateTime(2026, 1, 21, 0, 0, 0, 0, DateTimeKind.Utc)
+                        },
+                        new
+                        {
+                            RoleId = new Guid("d1111111-1111-1111-1111-111111111111"),
+                            PermissionId = new Guid("a6666666-6666-6666-6666-666666666661"),
+                            AssignedAt = new DateTime(2026, 1, 21, 0, 0, 0, 0, DateTimeKind.Utc)
+                        },
+                        new
+                        {
+                            RoleId = new Guid("d1111111-1111-1111-1111-111111111111"),
+                            PermissionId = new Guid("a6666666-6666-6666-6666-666666666662"),
+                            AssignedAt = new DateTime(2026, 1, 21, 0, 0, 0, 0, DateTimeKind.Utc)
+                        },
+                        new
+                        {
+                            RoleId = new Guid("d2222222-2222-2222-2222-222222222222"),
+                            PermissionId = new Guid("a1111111-1111-1111-1111-111111111111"),
+                            AssignedAt = new DateTime(2026, 1, 21, 0, 0, 0, 0, DateTimeKind.Utc)
+                        },
+                        new
+                        {
+                            RoleId = new Guid("d2222222-2222-2222-2222-222222222222"),
+                            PermissionId = new Guid("a1111111-1111-1111-1111-111111111112"),
+                            AssignedAt = new DateTime(2026, 1, 21, 0, 0, 0, 0, DateTimeKind.Utc)
+                        },
+                        new
+                        {
+                            RoleId = new Guid("d2222222-2222-2222-2222-222222222222"),
+                            PermissionId = new Guid("a1111111-1111-1111-1111-111111111113"),
+                            AssignedAt = new DateTime(2026, 1, 21, 0, 0, 0, 0, DateTimeKind.Utc)
+                        },
+                        new
+                        {
+                            RoleId = new Guid("d2222222-2222-2222-2222-222222222222"),
+                            PermissionId = new Guid("a2222222-2222-2222-2222-222222222221"),
+                            AssignedAt = new DateTime(2026, 1, 21, 0, 0, 0, 0, DateTimeKind.Utc)
+                        },
+                        new
+                        {
+                            RoleId = new Guid("d2222222-2222-2222-2222-222222222222"),
+                            PermissionId = new Guid("a2222222-2222-2222-2222-222222222222"),
+                            AssignedAt = new DateTime(2026, 1, 21, 0, 0, 0, 0, DateTimeKind.Utc)
+                        },
+                        new
+                        {
+                            RoleId = new Guid("d2222222-2222-2222-2222-222222222222"),
+                            PermissionId = new Guid("a2222222-2222-2222-2222-222222222223"),
+                            AssignedAt = new DateTime(2026, 1, 21, 0, 0, 0, 0, DateTimeKind.Utc)
+                        },
+                        new
+                        {
+                            RoleId = new Guid("d2222222-2222-2222-2222-222222222222"),
+                            PermissionId = new Guid("a2222222-2222-2222-2222-222222222224"),
+                            AssignedAt = new DateTime(2026, 1, 21, 0, 0, 0, 0, DateTimeKind.Utc)
+                        },
+                        new
+                        {
+                            RoleId = new Guid("d2222222-2222-2222-2222-222222222222"),
+                            PermissionId = new Guid("a3333333-3333-3333-3333-333333333331"),
+                            AssignedAt = new DateTime(2026, 1, 21, 0, 0, 0, 0, DateTimeKind.Utc)
+                        },
+                        new
+                        {
+                            RoleId = new Guid("d2222222-2222-2222-2222-222222222222"),
+                            PermissionId = new Guid("a3333333-3333-3333-3333-333333333332"),
+                            AssignedAt = new DateTime(2026, 1, 21, 0, 0, 0, 0, DateTimeKind.Utc)
+                        },
+                        new
+                        {
+                            RoleId = new Guid("d2222222-2222-2222-2222-222222222222"),
+                            PermissionId = new Guid("a4444444-4444-4444-4444-444444444441"),
+                            AssignedAt = new DateTime(2026, 1, 21, 0, 0, 0, 0, DateTimeKind.Utc)
+                        },
+                        new
+                        {
+                            RoleId = new Guid("d2222222-2222-2222-2222-222222222222"),
+                            PermissionId = new Guid("a4444444-4444-4444-4444-444444444442"),
+                            AssignedAt = new DateTime(2026, 1, 21, 0, 0, 0, 0, DateTimeKind.Utc)
+                        },
+                        new
+                        {
+                            RoleId = new Guid("d2222222-2222-2222-2222-222222222222"),
+                            PermissionId = new Guid("a5555555-5555-5555-5555-555555555551"),
+                            AssignedAt = new DateTime(2026, 1, 21, 0, 0, 0, 0, DateTimeKind.Utc)
+                        },
+                        new
+                        {
+                            RoleId = new Guid("d2222222-2222-2222-2222-222222222222"),
+                            PermissionId = new Guid("a5555555-5555-5555-5555-555555555552"),
+                            AssignedAt = new DateTime(2026, 1, 21, 0, 0, 0, 0, DateTimeKind.Utc)
+                        },
+                        new
+                        {
+                            RoleId = new Guid("d2222222-2222-2222-2222-222222222222"),
+                            PermissionId = new Guid("a6666666-6666-6666-6666-666666666661"),
+                            AssignedAt = new DateTime(2026, 1, 21, 0, 0, 0, 0, DateTimeKind.Utc)
+                        },
+                        new
+                        {
+                            RoleId = new Guid("d3333333-3333-3333-3333-333333333333"),
+                            PermissionId = new Guid("a2222222-2222-2222-2222-222222222221"),
+                            AssignedAt = new DateTime(2026, 1, 21, 0, 0, 0, 0, DateTimeKind.Utc)
+                        },
+                        new
+                        {
+                            RoleId = new Guid("d3333333-3333-3333-3333-333333333333"),
+                            PermissionId = new Guid("a3333333-3333-3333-3333-333333333331"),
+                            AssignedAt = new DateTime(2026, 1, 21, 0, 0, 0, 0, DateTimeKind.Utc)
+                        },
+                        new
+                        {
+                            RoleId = new Guid("d3333333-3333-3333-3333-333333333333"),
+                            PermissionId = new Guid("a3333333-3333-3333-3333-333333333332"),
+                            AssignedAt = new DateTime(2026, 1, 21, 0, 0, 0, 0, DateTimeKind.Utc)
+                        },
+                        new
+                        {
+                            RoleId = new Guid("d3333333-3333-3333-3333-333333333333"),
+                            PermissionId = new Guid("a4444444-4444-4444-4444-444444444441"),
+                            AssignedAt = new DateTime(2026, 1, 21, 0, 0, 0, 0, DateTimeKind.Utc)
+                        });
                 });
 
             modelBuilder.Entity("Corelio.Domain.Entities.Tenant", b =>
@@ -511,6 +1323,26 @@ namespace Corelio.Infrastructure.Migrations
                         .HasDatabaseName("ix_tenants_subdomain");
 
                     b.ToTable("tenants", (string)null);
+
+                    b.HasData(
+                        new
+                        {
+                            Id = new Guid("b0000000-0000-0000-0000-000000000001"),
+                            CreatedAt = new DateTime(2026, 1, 21, 0, 0, 0, 0, DateTimeKind.Utc),
+                            IsActive = true,
+                            IsTrial = true,
+                            LegalName = "Ferretería Demo S.A. de C.V.",
+                            MaxProducts = 5000,
+                            MaxSalesPerMonth = 10000,
+                            MaxUsers = 10,
+                            Name = "Demo Hardware Store",
+                            Rfc = "FDE010101ABC",
+                            Subdomain = "demo",
+                            SubscriptionPlan = "Premium",
+                            SubscriptionStartsAt = new DateTime(2026, 1, 21, 0, 0, 0, 0, DateTimeKind.Utc),
+                            TrialEndsAt = new DateTime(2026, 2, 20, 0, 0, 0, 0, DateTimeKind.Utc),
+                            UpdatedAt = new DateTime(2026, 1, 21, 0, 0, 0, 0, DateTimeKind.Utc)
+                        });
                 });
 
             modelBuilder.Entity("Corelio.Domain.Entities.TenantConfiguration", b =>
@@ -732,6 +1564,37 @@ namespace Corelio.Infrastructure.Migrations
                         .HasDatabaseName("ix_tenant_configurations_tenant_id");
 
                     b.ToTable("tenant_configurations", (string)null);
+
+                    b.HasData(
+                        new
+                        {
+                            Id = new Guid("c0000000-0000-0000-0000-000000000001"),
+                            AllowNegativeInventory = false,
+                            AutoCalculateMargin = true,
+                            BusinessHoursEnd = new TimeOnly(18, 0, 0),
+                            BusinessHoursStart = new TimeOnly(9, 0, 0),
+                            CfdiNextFolio = 1,
+                            CfdiPacTestMode = true,
+                            CfdiSeries = "A",
+                            CreatedAt = new DateTime(2026, 1, 21, 0, 0, 0, 0, DateTimeKind.Utc),
+                            Currency = "MXN",
+                            DefaultTaxRate = 0.1600m,
+                            EmailNotificationsEnabled = true,
+                            FeatureEcommerce = false,
+                            FeatureLoyaltyProgram = false,
+                            FeatureMultiWarehouse = false,
+                            FeaturePurchaseOrders = false,
+                            LowStockNotificationThreshold = 20.00m,
+                            PosAutoPrintReceipt = false,
+                            PosDefaultPaymentMethod = "Cash",
+                            PosEnableBarcodeScanner = true,
+                            PosRequireCustomer = false,
+                            RequireProductCost = true,
+                            SmsNotificationsEnabled = false,
+                            TenantId = new Guid("b0000000-0000-0000-0000-000000000001"),
+                            Timezone = "America/Mexico_City",
+                            UpdatedAt = new DateTime(2026, 1, 21, 0, 0, 0, 0, DateTimeKind.Utc)
+                        });
                 });
 
             modelBuilder.Entity("Corelio.Domain.Entities.User", b =>
@@ -887,6 +1750,56 @@ namespace Corelio.Infrastructure.Migrations
                         .HasDatabaseName("ix_users_tenant_username");
 
                     b.ToTable("users", (string)null);
+
+                    b.HasData(
+                        new
+                        {
+                            Id = new Guid("e1111111-1111-1111-1111-111111111111"),
+                            CreatedAt = new DateTime(2026, 1, 21, 0, 0, 0, 0, DateTimeKind.Utc),
+                            Email = "admin@demo.corelio.app",
+                            FailedLoginAttempts = 0,
+                            FirstName = "Admin",
+                            IsActive = true,
+                            IsEmailConfirmed = true,
+                            LastName = "User",
+                            PasswordHash = "$2a$12$LQv3c1yqBWVHxkd0LHAkCOYz6TtxMQJqhN8/LewY5GyYIq7MRnH.m",
+                            TenantId = new Guid("b0000000-0000-0000-0000-000000000001"),
+                            TwoFactorEnabled = false,
+                            UpdatedAt = new DateTime(2026, 1, 21, 0, 0, 0, 0, DateTimeKind.Utc),
+                            Username = "admin"
+                        },
+                        new
+                        {
+                            Id = new Guid("e2222222-2222-2222-2222-222222222222"),
+                            CreatedAt = new DateTime(2026, 1, 21, 0, 0, 0, 0, DateTimeKind.Utc),
+                            Email = "manager@demo.corelio.app",
+                            FailedLoginAttempts = 0,
+                            FirstName = "Manager",
+                            IsActive = true,
+                            IsEmailConfirmed = true,
+                            LastName = "User",
+                            PasswordHash = "$2a$12$LQv3c1yqBWVHxkd0LHAkCOYz6TtxMQJqhN8/LewY5GyYIq7MRnH.m",
+                            TenantId = new Guid("b0000000-0000-0000-0000-000000000001"),
+                            TwoFactorEnabled = false,
+                            UpdatedAt = new DateTime(2026, 1, 21, 0, 0, 0, 0, DateTimeKind.Utc),
+                            Username = "manager"
+                        },
+                        new
+                        {
+                            Id = new Guid("e3333333-3333-3333-3333-333333333333"),
+                            CreatedAt = new DateTime(2026, 1, 21, 0, 0, 0, 0, DateTimeKind.Utc),
+                            Email = "cashier@demo.corelio.app",
+                            FailedLoginAttempts = 0,
+                            FirstName = "Cashier",
+                            IsActive = true,
+                            IsEmailConfirmed = true,
+                            LastName = "User",
+                            PasswordHash = "$2a$12$LQv3c1yqBWVHxkd0LHAkCOYz6TtxMQJqhN8/LewY5GyYIq7MRnH.m",
+                            TenantId = new Guid("b0000000-0000-0000-0000-000000000001"),
+                            TwoFactorEnabled = false,
+                            UpdatedAt = new DateTime(2026, 1, 21, 0, 0, 0, 0, DateTimeKind.Utc),
+                            Username = "cashier"
+                        });
                 });
 
             modelBuilder.Entity("Corelio.Domain.Entities.UserRole", b =>
@@ -924,6 +1837,46 @@ namespace Corelio.Infrastructure.Migrations
                         .HasDatabaseName("ix_user_roles_user_id");
 
                     b.ToTable("user_roles", (string)null);
+
+                    b.HasData(
+                        new
+                        {
+                            UserId = new Guid("e1111111-1111-1111-1111-111111111111"),
+                            RoleId = new Guid("d1111111-1111-1111-1111-111111111111"),
+                            AssignedAt = new DateTime(2026, 1, 21, 0, 0, 0, 0, DateTimeKind.Utc)
+                        },
+                        new
+                        {
+                            UserId = new Guid("e2222222-2222-2222-2222-222222222222"),
+                            RoleId = new Guid("d2222222-2222-2222-2222-222222222222"),
+                            AssignedAt = new DateTime(2026, 1, 21, 0, 0, 0, 0, DateTimeKind.Utc)
+                        },
+                        new
+                        {
+                            UserId = new Guid("e3333333-3333-3333-3333-333333333333"),
+                            RoleId = new Guid("d3333333-3333-3333-3333-333333333333"),
+                            AssignedAt = new DateTime(2026, 1, 21, 0, 0, 0, 0, DateTimeKind.Utc)
+                        });
+                });
+
+            modelBuilder.Entity("Corelio.Domain.Entities.Product", b =>
+                {
+                    b.HasOne("Corelio.Domain.Entities.ProductCategory", "Category")
+                        .WithMany("Products")
+                        .HasForeignKey("CategoryId")
+                        .OnDelete(DeleteBehavior.SetNull);
+
+                    b.Navigation("Category");
+                });
+
+            modelBuilder.Entity("Corelio.Domain.Entities.ProductCategory", b =>
+                {
+                    b.HasOne("Corelio.Domain.Entities.ProductCategory", "ParentCategory")
+                        .WithMany("ChildCategories")
+                        .HasForeignKey("ParentCategoryId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.Navigation("ParentCategory");
                 });
 
             modelBuilder.Entity("Corelio.Domain.Entities.RefreshToken", b =>
@@ -1010,6 +1963,13 @@ namespace Corelio.Infrastructure.Migrations
             modelBuilder.Entity("Corelio.Domain.Entities.Permission", b =>
                 {
                     b.Navigation("RolePermissions");
+                });
+
+            modelBuilder.Entity("Corelio.Domain.Entities.ProductCategory", b =>
+                {
+                    b.Navigation("ChildCategories");
+
+                    b.Navigation("Products");
                 });
 
             modelBuilder.Entity("Corelio.Domain.Entities.Role", b =>

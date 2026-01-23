@@ -29,7 +29,7 @@
             </MudAlert>
         }
 
-        <EditForm Model="_loginModel" OnValidSubmit="HandleLogin">
+        <EditForm Model="_loginModel" OnValidSubmit="HandleLogin" FormName="loginForm">
             <DataAnnotationsValidator />
 
             <MudTextField @bind-Value="_loginModel.Email"

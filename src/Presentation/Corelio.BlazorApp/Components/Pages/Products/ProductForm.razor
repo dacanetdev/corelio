@@ -1,0 +1,398 @@
+@page "/products/new"
+@page "/products/{Id:guid}"
+@using System.Globalization
+@attribute [Authorize]
+@inject IProductService ProductService
+@inject NavigationManager NavigationManager
+@inject IStringLocalizer<SharedResource> L
+@inject ISnackbar Snackbar
+
+<PageTitle>@(_isEditMode ? L["EditProduct"] : L["AddProduct"]) - Corelio</PageTitle>
+
+<MudContainer MaxWidth="MaxWidth.Large" Class="mt-4">
+    <MudPaper Elevation="2" Class="pa-4">
+        <MudStack Spacing="3">
+            <!-- Header -->
+            <MudStack Row="true" AlignItems="AlignItems.Center" Spacing="2">
+                <MudIconButton Icon="@Icons.Material.Filled.ArrowBack"
+                               OnClick="@(() => NavigationManager.NavigateTo("/products"))" />
+                <MudText Typo="Typo.h4">
+                    @(_isEditMode ? L["EditProduct"] : L["AddProduct"])
+                </MudText>
+            </MudStack>
+
+            @if (_loading)
+            {
+                <MudProgressLinear Color="Color.Primary" Indeterminate="true" />
+            }
+            else if (!string.IsNullOrEmpty(_errorMessage))
+            {
+                <MudAlert Severity="Severity.Error">@_errorMessage</MudAlert>
+            }
+            else
+            {
+                <EditForm Model="_product" OnValidSubmit="HandleSubmit">
+                    <MudGrid>
+                        <!-- Basic Information -->
+                        <MudItem xs="12">
+                            <MudText Typo="Typo.h6">Información Básica</MudText>
+                            <MudDivider Class="my-2" />
+                        </MudItem>
+
+                        <MudItem xs="12" md="6">
+                            <MudTextField @bind-Value="_product.Sku"
+                                          Label="@L["SKU"]"
+                                          Variant="Variant.Outlined"
+                                          Required="true"
+                                          RequiredError="@L["SKURequired"]" />
+                        </MudItem>
+
+                        <MudItem xs="12" md="6">
+                            <MudTextField @bind-Value="_product.Barcode"
+                                          Label="@L["Barcode"]"
+                                          Variant="Variant.Outlined" />
+                        </MudItem>
+
+                        <MudItem xs="12">
+                            <MudTextField @bind-Value="_product.Name"
+                                          Label="@L["ProductName"]"
+                                          Variant="Variant.Outlined"
+                                          Required="true"
+                                          RequiredError="@L["ProductNameRequired"]" />
+                        </MudItem>
+
+                        <MudItem xs="12" md="6">
+                            <MudSelect @bind-Value="_product.CategoryId"
+                                       Label="@L["Category"]"
+                                       Variant="Variant.Outlined"
+                                       Clearable="true">
+                                @foreach (var category in _categories)
+                                {
+                                    <MudSelectItem Value="@category.Id">@category.Name</MudSelectItem>
+                                }
+                            </MudSelect>
+                        </MudItem>
+
+                        <MudItem xs="12" md="6">
+                            <MudTextField @bind-Value="_product.Brand"
+                                          Label="@L["Brand"]"
+                                          Variant="Variant.Outlined" />
+                        </MudItem>
+
+                        <MudItem xs="12">
+                            <MudTextField @bind-Value="_product.Description"
+                                          Label="@L["Description"]"
+                                          Variant="Variant.Outlined"
+                                          Lines="3" />
+                        </MudItem>
+
+                        <!-- Pricing -->
+                        <MudItem xs="12">
+                            <MudText Typo="Typo.h6" Class="mt-4">Precios</MudText>
+                            <MudDivider Class="my-2" />
+                        </MudItem>
+
+                        <MudItem xs="12" md="6">
+                            <MudNumericField @bind-Value="_product.CostPrice"
+                                             Label="@L["CostPrice"]"
+                                             Variant="Variant.Outlined"
+                                             Format="C"
+                                             Culture="@(new CultureInfo("es-MX"))"
+                                             Min="0m"
+                                             T="decimal" />
+                        </MudItem>
+
+                        <MudItem xs="12" md="6">
+                            <MudNumericField @bind-Value="_product.SalePrice"
+                                             Label="@L["SalePrice"]"
+                                             Variant="Variant.Outlined"
+                                             Format="C"
+                                             Culture="@(new CultureInfo("es-MX"))"
+                                             Required="true"
+                                             RequiredError="@L["PriceRequired"]"
+                                             Min="0.01m"
+                                             T="decimal" />
+                        </MudItem>
+
+                        <MudItem xs="12" md="6">
+                            <MudNumericField @bind-Value="_product.TaxRate"
+                                             Label="Tasa de Impuesto (IVA)"
+                                             Variant="Variant.Outlined"
+                                             Format="N4"
+                                             Min="0m"
+                                             Max="1m"
+                                             Step="0.01m"
+                                             T="decimal" />
+                        </MudItem>
+
+                        <!-- Inventory -->
+                        <MudItem xs="12">
+                            <MudText Typo="Typo.h6" Class="mt-4">Inventario</MudText>
+                            <MudDivider Class="my-2" />
+                        </MudItem>
+
+                        <MudItem xs="12" md="6">
+                            <MudSelect @bind-Value="_product.UnitOfMeasure"
+                                       Label="@L["UnitOfMeasure"]"
+                                       Variant="Variant.Outlined"
+                                       Required="true">
+                                <MudSelectItem Value="@("PCS")">Piezas (PCS)</MudSelectItem>
+                                <MudSelectItem Value="@("KG")">Kilogramos (KG)</MudSelectItem>
+                                <MudSelectItem Value="@("M")">Metros (M)</MudSelectItem>
+                                <MudSelectItem Value="@("L")">Litros (L)</MudSelectItem>
+                                <MudSelectItem Value="@("BOX")">Cajas (BOX)</MudSelectItem>
+                                <MudSelectItem Value="@("PACK")">Paquetes (PACK)</MudSelectItem>
+                            </MudSelect>
+                        </MudItem>
+
+                        <MudItem xs="12" md="6">
+                            <MudSwitch @bind-Value="_product.TrackInventory"
+                                       Label="@L["TrackInventory"]"
+                                       Color="Color.Primary" />
+                        </MudItem>
+
+                        @if (_product.TrackInventory)
+                        {
+                            <MudItem xs="12" md="6">
+                                <MudNumericField @bind-Value="_product.MinStockLevel"
+                                                 Label="@L["MinStockLevel"]"
+                                                 Variant="Variant.Outlined"
+                                                 Min="0m"
+                                                 T="decimal" />
+                            </MudItem>
+                        }
+
+                        <!-- Status -->
+                        <MudItem xs="12">
+                            <MudText Typo="Typo.h6" Class="mt-4">Estado</MudText>
+                            <MudDivider Class="my-2" />
+                        </MudItem>
+
+                        <MudItem xs="12" md="6">
+                            <MudSwitch @bind-Value="_product.IsActive"
+                                       Label="@L["Active"]"
+                                       Color="Color.Primary" />
+                        </MudItem>
+
+                        <MudItem xs="12" md="6">
+                            <MudSwitch @bind-Value="_product.IsFeatured"
+                                       Label="Destacado"
+                                       Color="Color.Primary" />
+                        </MudItem>
+
+                        <!-- Actions -->
+                        <MudItem xs="12" Class="mt-4">
+                            <MudStack Row="true" Spacing="2" Justify="Justify.FlexEnd">
+                                <MudButton Variant="Variant.Outlined"
+                                           OnClick="@(() => NavigationManager.NavigateTo("/products"))">
+                                    @L["Cancel"]
+                                </MudButton>
+                                <MudButton ButtonType="ButtonType.Submit"
+                                           Variant="Variant.Filled"
+                                           Color="Color.Primary"
+                                           Disabled="_saving">
+                                    @if (_saving)
+                                    {
+                                        <MudProgressCircular Class="ms-n1" Size="Size.Small" Indeterminate="true" />
+                                        <MudText Class="ms-2">@L["Save"]...</MudText>
+                                    }
+                                    else
+                                    {
+                                        @L["Save"]
+                                    }
+                                </MudButton>
+                            </MudStack>
+                        </MudItem>
+                    </MudGrid>
+                </EditForm>
+            }
+        </MudStack>
+    </MudPaper>
+</MudContainer>
+
+@code {
+    [Parameter]
+    public Guid? Id { get; set; }
+
+    private bool _isEditMode => Id.HasValue;
+    private bool _loading = true;
+    private bool _saving;
+    private string? _errorMessage;
+    private CreateProductRequest _product = new();
+    private List<ProductCategoryDto> _categories = [];
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadCategories();
+
+        if (_isEditMode && Id.HasValue)
+        {
+            await LoadProduct(Id.Value);
+        }
+        else
+        {
+            _loading = false;
+        }
+    }
+
+    private async Task LoadCategories()
+    {
+        var result = await ProductService.GetCategoriesAsync();
+        if (result.IsSuccess && result.Value is not null)
+        {
+            _categories = result.Value;
+        }
+    }
+
+    private async Task LoadProduct(Guid id)
+    {
+        try
+        {
+            var result = await ProductService.GetProductByIdAsync(id);
+            if (result.IsSuccess && result.Value is not null)
+            {
+                var dto = result.Value;
+                _product = new CreateProductRequest
+                {
+                    Sku = dto.Sku,
+                    Barcode = dto.Barcode,
+                    BarcodeType = dto.BarcodeType,
+                    Name = dto.Name,
+                    Description = dto.Description,
+                    ShortDescription = dto.ShortDescription,
+                    CategoryId = dto.CategoryId,
+                    Brand = dto.Brand,
+                    Manufacturer = dto.Manufacturer,
+                    ModelNumber = dto.ModelNumber,
+                    CostPrice = dto.CostPrice,
+                    SalePrice = dto.SalePrice,
+                    WholesalePrice = dto.WholesalePrice,
+                    Msrp = dto.Msrp,
+                    TaxRate = dto.TaxRate,
+                    IsTaxExempt = dto.IsTaxExempt,
+                    TrackInventory = dto.TrackInventory,
+                    UnitOfMeasure = dto.UnitOfMeasure,
+                    MinStockLevel = dto.MinStockLevel,
+                    MaxStockLevel = dto.MaxStockLevel,
+                    ReorderPoint = dto.ReorderPoint,
+                    ReorderQuantity = dto.ReorderQuantity,
+                    WeightKg = dto.WeightKg,
+                    LengthCm = dto.LengthCm,
+                    WidthCm = dto.WidthCm,
+                    HeightCm = dto.HeightCm,
+                    SatProductCode = dto.SatProductCode,
+                    SatUnitCode = dto.SatUnitCode,
+                    SatHazardousMaterial = dto.SatHazardousMaterial,
+                    PrimaryImageUrl = dto.PrimaryImageUrl,
+                    IsService = dto.IsService,
+                    IsBundle = dto.IsBundle,
+                    IsActive = dto.IsActive,
+                    IsFeatured = dto.IsFeatured,
+                    Slug = dto.Slug,
+                    MetaTitle = dto.MetaTitle,
+                    MetaDescription = dto.MetaDescription,
+                    MetaKeywords = dto.MetaKeywords
+                };
+            }
+            else
+            {
+                _errorMessage = result.Error ?? "Producto no encontrado";
+            }
+        }
+        catch (Exception ex)
+        {
+            _errorMessage = $"{L["Error"]}: {ex.Message}";
+        }
+        finally
+        {
+            _loading = false;
+        }
+    }
+
+    private async Task HandleSubmit()
+    {
+        _saving = true;
+        _errorMessage = null;
+
+        try
+        {
+            if (_isEditMode && Id.HasValue)
+            {
+                var updateRequest = new UpdateProductRequest
+                {
+                    Id = Id.Value,
+                    Sku = _product.Sku,
+                    Barcode = _product.Barcode,
+                    BarcodeType = _product.BarcodeType,
+                    Name = _product.Name,
+                    Description = _product.Description,
+                    ShortDescription = _product.ShortDescription,
+                    CategoryId = _product.CategoryId,
+                    Brand = _product.Brand,
+                    Manufacturer = _product.Manufacturer,
+                    ModelNumber = _product.ModelNumber,
+                    CostPrice = _product.CostPrice,
+                    SalePrice = _product.SalePrice,
+                    WholesalePrice = _product.WholesalePrice,
+                    Msrp = _product.Msrp,
+                    TaxRate = _product.TaxRate,
+                    IsTaxExempt = _product.IsTaxExempt,
+                    TrackInventory = _product.TrackInventory,
+                    UnitOfMeasure = _product.UnitOfMeasure,
+                    MinStockLevel = _product.MinStockLevel,
+                    MaxStockLevel = _product.MaxStockLevel,
+                    ReorderPoint = _product.ReorderPoint,
+                    ReorderQuantity = _product.ReorderQuantity,
+                    WeightKg = _product.WeightKg,
+                    LengthCm = _product.LengthCm,
+                    WidthCm = _product.WidthCm,
+                    HeightCm = _product.HeightCm,
+                    SatProductCode = _product.SatProductCode,
+                    SatUnitCode = _product.SatUnitCode,
+                    SatHazardousMaterial = _product.SatHazardousMaterial,
+                    PrimaryImageUrl = _product.PrimaryImageUrl,
+                    IsService = _product.IsService,
+                    IsBundle = _product.IsBundle,
+                    IsActive = _product.IsActive,
+                    IsFeatured = _product.IsFeatured,
+                    Slug = _product.Slug,
+                    MetaTitle = _product.MetaTitle,
+                    MetaDescription = _product.MetaDescription,
+                    MetaKeywords = _product.MetaKeywords
+                };
+
+                var result = await ProductService.UpdateProductAsync(updateRequest);
+                if (result.IsSuccess)
+                {
+                    Snackbar.Add(L["ProductUpdatedSuccessfully"], Severity.Success);
+                    NavigationManager.NavigateTo("/products");
+                }
+                else
+                {
+                    _errorMessage = result.Error ?? L["UnexpectedError"];
+                }
+            }
+            else
+            {
+                var result = await ProductService.CreateProductAsync(_product);
+                if (result.IsSuccess)
+                {
+                    Snackbar.Add(L["ProductCreatedSuccessfully"], Severity.Success);
+                    NavigationManager.NavigateTo("/products");
+                }
+                else
+                {
+                    _errorMessage = result.Error ?? L["UnexpectedError"];
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            _errorMessage = $"{L["Error"]}: {ex.Message}";
+        }
+        finally
+        {
+            _saving = false;
+        }
+    }
+}
