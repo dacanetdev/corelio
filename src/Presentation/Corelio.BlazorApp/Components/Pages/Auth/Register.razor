@@ -31,56 +31,56 @@
             </MudAlert>
         }
 
-        <EditForm Model="_registerModel" OnValidSubmit="HandleRegister" FormName="registerForm">
+        <EditForm Model="RegisterModel" OnValidSubmit="HandleRegister" FormName="registerForm">
             <DataAnnotationsValidator />
 
             <MudGrid>
                 <MudItem xs="12" sm="6">
-                    <MudTextField @bind-Value="_registerModel.FirstName"
+                    <MudTextField @bind-Value="RegisterModel.FirstName"
                                   Label="@L["FirstName"]"
                                   Variant="Variant.Outlined"
                                   Margin="Margin.Dense"
                                   Required="true"
-                                  For="@(() => _registerModel.FirstName)" />
+                                  For="@(() => RegisterModel.FirstName)" />
                 </MudItem>
 
                 <MudItem xs="12" sm="6">
-                    <MudTextField @bind-Value="_registerModel.LastName"
+                    <MudTextField @bind-Value="RegisterModel.LastName"
                                   Label="@L["LastName"]"
                                   Variant="Variant.Outlined"
                                   Margin="Margin.Dense"
                                   Required="true"
-                                  For="@(() => _registerModel.LastName)" />
+                                  For="@(() => RegisterModel.LastName)" />
                 </MudItem>
 
                 <MudItem xs="12">
-                    <MudTextField @bind-Value="_registerModel.Email"
+                    <MudTextField @bind-Value="RegisterModel.Email"
                                   Label="@L["Email"]"
                                   Variant="Variant.Outlined"
                                   InputType="InputType.Email"
                                   Margin="Margin.Dense"
                                   Required="true"
-                                  For="@(() => _registerModel.Email)" />
+                                  For="@(() => RegisterModel.Email)" />
                 </MudItem>
 
                 <MudItem xs="12" sm="6">
-                    <MudTextField @bind-Value="_registerModel.Password"
+                    <MudTextField @bind-Value="RegisterModel.Password"
                                   Label="@L["Password"]"
                                   Variant="Variant.Outlined"
                                   InputType="InputType.Password"
                                   Margin="Margin.Dense"
                                   Required="true"
-                                  For="@(() => _registerModel.Password)" />
+                                  For="@(() => RegisterModel.Password)" />
                 </MudItem>
 
                 <MudItem xs="12" sm="6">
-                    <MudTextField @bind-Value="_registerModel.ConfirmPassword"
+                    <MudTextField @bind-Value="RegisterModel.ConfirmPassword"
                                   Label="@L["ConfirmPassword"]"
                                   Variant="Variant.Outlined"
                                   InputType="InputType.Password"
                                   Margin="Margin.Dense"
                                   Required="true"
-                                  For="@(() => _registerModel.ConfirmPassword)" />
+                                  For="@(() => RegisterModel.ConfirmPassword)" />
                 </MudItem>
 
                 <MudItem xs="12">
@@ -115,7 +115,9 @@
 </MudContainer>
 
 @code {
-    private RegisterViewModel _registerModel = new();
+    [SupplyParameterFromForm]
+    private RegisterViewModel RegisterModel { get; set; } = new();
+
     private bool _isLoading;
     private string? _errorMessage;
     private bool _successMessage;
@@ -130,12 +132,12 @@
         {
             var request = new RegisterRequest
             {
-                Email = _registerModel.Email,
-                Password = _registerModel.Password,
-                ConfirmPassword = _registerModel.ConfirmPassword,
-                FirstName = _registerModel.FirstName,
-                LastName = _registerModel.LastName,
-                Roles = _registerModel.Roles
+                Email = RegisterModel.Email,
+                Password = RegisterModel.Password,
+                ConfirmPassword = RegisterModel.ConfirmPassword,
+                FirstName = RegisterModel.FirstName,
+                LastName = RegisterModel.LastName,
+                Roles = RegisterModel.Roles
             };
 
             var result = await AuthService.RegisterAsync(request);
@@ -143,7 +145,7 @@
             if (result.IsSuccess)
             {
                 _successMessage = true;
-                _registerModel = new(); // Reset form
+                RegisterModel = new(); // Reset form
 
                 // Redirect to login after 2 seconds
                 await Task.Delay(2000);
