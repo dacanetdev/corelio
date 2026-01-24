@@ -96,6 +96,8 @@
 
     private async Task HandleLogin()
     {
+        Console.WriteLine($"HandleLogin called - Email: {LoginModel?.Email}, Password length: {LoginModel?.Password?.Length ?? 0}");
+
         _isLoading = true;
         _errorMessage = null;
 
@@ -107,20 +109,26 @@
                 Password = LoginModel!.Password
             };
 
+            Console.WriteLine($"Calling AuthService.LoginAsync with email: {request.Email}");
             var result = await AuthService.LoginAsync(request);
+            Console.WriteLine($"LoginAsync result: IsSuccess={result.IsSuccess}, Error={result.Error}");
 
             if (result.IsSuccess)
             {
+                Console.WriteLine("Login successful, redirecting to home");
                 // Redirect to home page
                 NavigationManager.NavigateTo("/", forceLoad: true);
             }
             else
             {
+                Console.WriteLine($"Login failed: {result.Error}");
                 _errorMessage = L["LoginFailed"];
             }
         }
-        catch (Exception)
+        catch (Exception ex)
         {
+            Console.WriteLine($"Login exception: {ex.Message}");
+            Console.WriteLine($"Stack trace: {ex.StackTrace}");
             _errorMessage = L["UnexpectedError"];
         }
         finally
