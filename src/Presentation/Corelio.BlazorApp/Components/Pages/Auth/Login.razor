@@ -29,26 +29,26 @@
             </MudAlert>
         }
 
-        <EditForm Model="LoginModel" OnValidSubmit="HandleLogin" FormName="loginForm">
+        <EditForm Model="LoginModel!" OnValidSubmit="HandleLogin" FormName="loginForm">
             <DataAnnotationsValidator />
 
-            <MudTextField @bind-Value="LoginModel.Email"
+            <MudTextField @bind-Value="LoginModel!.Email"
                           Label="@L["Email"]"
                           Variant="Variant.Outlined"
                           InputType="InputType.Email"
                           Margin="Margin.Dense"
                           Required="true"
                           Class="mb-4"
-                          For="@(() => LoginModel.Email)" />
+                          For="@(() => LoginModel!.Email)" />
 
-            <MudTextField @bind-Value="LoginModel.Password"
+            <MudTextField @bind-Value="LoginModel!.Password"
                           Label="@L["Password"]"
                           Variant="Variant.Outlined"
                           InputType="InputType.Password"
                           Margin="Margin.Dense"
                           Required="true"
                           Class="mb-4"
-                          For="@(() => LoginModel.Password)" />
+                          For="@(() => LoginModel!.Password)" />
 
             <MudButton ButtonType="ButtonType.Submit"
                        Variant="Variant.Filled"
@@ -103,8 +103,8 @@
         {
             var request = new LoginRequest
             {
-                Email = LoginModel.Email,
-                Password = LoginModel.Password
+                Email = LoginModel!.Email,
+                Password = LoginModel!.Password
             };
 
             var result = await AuthService.LoginAsync(request);

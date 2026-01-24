@@ -31,56 +31,56 @@
             </MudAlert>
         }
 
-        <EditForm Model="RegisterModel" OnValidSubmit="HandleRegister" FormName="registerForm">
+        <EditForm Model="RegisterModel!" OnValidSubmit="HandleRegister" FormName="registerForm">
             <DataAnnotationsValidator />
 
             <MudGrid>
                 <MudItem xs="12" sm="6">
-                    <MudTextField @bind-Value="RegisterModel.FirstName"
+                    <MudTextField @bind-Value="RegisterModel!.FirstName"
                                   Label="@L["FirstName"]"
                                   Variant="Variant.Outlined"
                                   Margin="Margin.Dense"
                                   Required="true"
-                                  For="@(() => RegisterModel.FirstName)" />
+                                  For="@(() => RegisterModel!.FirstName)" />
                 </MudItem>
 
                 <MudItem xs="12" sm="6">
-                    <MudTextField @bind-Value="RegisterModel.LastName"
+                    <MudTextField @bind-Value="RegisterModel!.LastName"
                                   Label="@L["LastName"]"
                                   Variant="Variant.Outlined"
                                   Margin="Margin.Dense"
                                   Required="true"
-                                  For="@(() => RegisterModel.LastName)" />
+                                  For="@(() => RegisterModel!.LastName)" />
                 </MudItem>
 
                 <MudItem xs="12">
-                    <MudTextField @bind-Value="RegisterModel.Email"
+                    <MudTextField @bind-Value="RegisterModel!.Email"
                                   Label="@L["Email"]"
                                   Variant="Variant.Outlined"
                                   InputType="InputType.Email"
                                   Margin="Margin.Dense"
                                   Required="true"
-                                  For="@(() => RegisterModel.Email)" />
+                                  For="@(() => RegisterModel!.Email)" />
                 </MudItem>
 
                 <MudItem xs="12" sm="6">
-                    <MudTextField @bind-Value="RegisterModel.Password"
+                    <MudTextField @bind-Value="RegisterModel!.Password"
                                   Label="@L["Password"]"
                                   Variant="Variant.Outlined"
                                   InputType="InputType.Password"
                                   Margin="Margin.Dense"
                                   Required="true"
-                                  For="@(() => RegisterModel.Password)" />
+                                  For="@(() => RegisterModel!.Password)" />
                 </MudItem>
 
                 <MudItem xs="12" sm="6">
-                    <MudTextField @bind-Value="RegisterModel.ConfirmPassword"
+                    <MudTextField @bind-Value="RegisterModel!.ConfirmPassword"
                                   Label="@L["ConfirmPassword"]"
                                   Variant="Variant.Outlined"
                                   InputType="InputType.Password"
                                   Margin="Margin.Dense"
                                   Required="true"
-                                  For="@(() => RegisterModel.ConfirmPassword)" />
+                                  For="@(() => RegisterModel!.ConfirmPassword)" />
                 </MudItem>
 
                 <MudItem xs="12">
@@ -137,12 +137,12 @@
         {
             var request = new RegisterRequest
             {
-                Email = RegisterModel.Email,
-                Password = RegisterModel.Password,
-                ConfirmPassword = RegisterModel.ConfirmPassword,
-                FirstName = RegisterModel.FirstName,
-                LastName = RegisterModel.LastName,
-                Roles = RegisterModel.Roles
+                Email = RegisterModel!.Email,
+                Password = RegisterModel!.Password,
+                ConfirmPassword = RegisterModel!.ConfirmPassword,
+                FirstName = RegisterModel!.FirstName,
+                LastName = RegisterModel!.LastName,
+                Roles = RegisterModel!.Roles
             };
 
             var result = await AuthService.RegisterAsync(request);
