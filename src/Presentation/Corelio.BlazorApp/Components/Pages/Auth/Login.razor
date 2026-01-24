@@ -1,4 +1,5 @@
 @page "/auth/login"
+@rendermode InteractiveServer
 @using Corelio.BlazorApp.Models.Authentication
 @using Corelio.BlazorApp.Models.ViewModels
 @using Corelio.BlazorApp.Resources
@@ -92,6 +93,15 @@
     {
         LoginModel ??= new();
         _sessionExpired = SessionExpired;
+        Console.WriteLine($"OnInitialized - LoginModel created: {LoginModel != null}");
+    }
+
+    protected override void OnAfterRender(bool firstRender)
+    {
+        if (!firstRender && LoginModel != null)
+        {
+            Console.WriteLine($"OnAfterRender - Email: '{LoginModel.Email}', Password: '{LoginModel.Password}'");
+        }
     }
 
     private async Task HandleLogin()
