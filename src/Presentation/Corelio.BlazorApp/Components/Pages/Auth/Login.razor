@@ -79,7 +79,7 @@
 
 @code {
     [SupplyParameterFromForm]
-    private LoginViewModel LoginModel { get; set; } = new();
+    private LoginViewModel? LoginModel { get; set; }
 
     private bool _isLoading;
     private string? _errorMessage;
@@ -90,6 +90,7 @@
 
     protected override void OnInitialized()
     {
+        LoginModel ??= new();
         _sessionExpired = SessionExpired;
     }
 

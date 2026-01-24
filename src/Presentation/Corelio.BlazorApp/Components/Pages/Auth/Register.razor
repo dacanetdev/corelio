@@ -116,11 +116,16 @@
 
 @code {
     [SupplyParameterFromForm]
-    private RegisterViewModel RegisterModel { get; set; } = new();
+    private RegisterViewModel? RegisterModel { get; set; }
 
     private bool _isLoading;
     private string? _errorMessage;
     private bool _successMessage;
+
+    protected override void OnInitialized()
+    {
+        RegisterModel ??= new();
+    }
 
     private async Task HandleRegister()
     {
