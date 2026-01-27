@@ -260,8 +260,8 @@ public static class DataSeeder
                 Username = "admin",
                 FirstName = "Admin",
                 LastName = "User",
-                // Password: Password123! (BCrypt hashed with work factor 12) - TEMP: All users same password for testing
-                PasswordHash = "$2a$12$LQv3c1yqBWVHxkd0LHAkCOYz6TtxMQJqhN8/LewY5GyYIq7MRnH.m",
+                // Password: Admin123! (BCrypt hashed with work factor 12)
+                PasswordHash = "$2a$12$9XY1aM3lapFOiGY/FhoPe.7yFNQEM5I7mV.0FvWHdiwcfbI/1/xPa",
                 IsActive = true,
                 IsEmailConfirmed = true,
                 FailedLoginAttempts = 0,
@@ -276,8 +276,8 @@ public static class DataSeeder
                 Username = "manager",
                 FirstName = "Manager",
                 LastName = "User",
-                // Password: Password123! (BCrypt hashed with work factor 12) - TEMP: All users same password for testing
-                PasswordHash = "$2a$12$LQv3c1yqBWVHxkd0LHAkCOYz6TtxMQJqhN8/LewY5GyYIq7MRnH.m",
+                // Password: Manager123! (BCrypt hashed with work factor 12)
+                PasswordHash = "$2a$12$C0aR7VAyIrwnpVXnyJgghu1U7J/TSDPUBOToWBqTJd.KmNdktsGea",
                 IsActive = true,
                 IsEmailConfirmed = true,
                 FailedLoginAttempts = 0,
@@ -292,8 +292,8 @@ public static class DataSeeder
                 Username = "cashier",
                 FirstName = "Cashier",
                 LastName = "User",
-                // Password: Password123! (BCrypt hashed with work factor 12) - TEMP: All users same password for testing
-                PasswordHash = "$2a$12$LQv3c1yqBWVHxkd0LHAkCOYz6TtxMQJqhN8/LewY5GyYIq7MRnH.m",
+                // Password: Cashier123! (BCrypt hashed with work factor 12)
+                PasswordHash = "$2a$12$p0.21IB1wquXLAtxzYNNE.u8tr4lrGyNXU75ovrtUTLZsnrsJYLBe",
                 IsActive = true,
                 IsEmailConfirmed = true,
                 FailedLoginAttempts = 0,
