@@ -1,26 +1,28 @@
 ﻿@inherits LayoutComponentBase
+@using Corelio.BlazorApp.Services
 
-<MudThemeProvider />
+<MudThemeProvider Theme="@ThemeConfiguration.CorelioDefaultTheme" />
 <MudPopoverProvider />
 <MudDialogProvider />
 <MudSnackbarProvider />
 
 <MudLayout>
-    <MudAppBar Elevation="1">
+    <MudAppBar Elevation="1" Style="background: white; border-bottom: 1px solid var(--color-secondary-200);">
         <MudIconButton Icon="@Icons.Material.Filled.Menu" Color="Color.Inherit" Edge="Edge.Start" OnClick="@ToggleDrawer" />
-        <MudText Typo="Typo.h6">Corelio</MudText>
+        <MudIcon Icon="@Icons.Material.Filled.Store" Color="Color.Primary" Size="Size.Medium" Class="mr-2" />
+        <MudText Typo="Typo.h6" Style="color: #B03A2E; font-weight: 600;">Corelio ERP</MudText>
         <MudSpacer />
         <TenantDisplay />
         <MudSpacer />
         <UserDisplay />
     </MudAppBar>
 
-    <MudDrawer @bind-Open="_drawerOpen" ClipMode="DrawerClipMode.Always" Elevation="2">
+    <MudDrawer @bind-Open="_drawerOpen" ClipMode="DrawerClipMode.Always" Elevation="2" Style="background: white;">
         <NavMenu />
     </MudDrawer>
 
-    <MudMainContent>
-        <MudContainer MaxWidth="MaxWidth.ExtraExtraLarge" Class="mt-4">
+    <MudMainContent Style="background: var(--color-secondary-50); min-height: 100vh;">
+        <MudContainer MaxWidth="MaxWidth.ExtraExtraLarge" Class="pa-6">
             @Body
         </MudContainer>
     </MudMainContent>
