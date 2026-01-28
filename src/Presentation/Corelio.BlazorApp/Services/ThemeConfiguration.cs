@@ -61,8 +61,8 @@ public static class ThemeConfiguration
         Shadows = new Shadow
         {
             // Subtle shadows following Tailwind CSS shadow system
-            Elevation =
-            [
+            Elevation = new string[]
+            {
                 "none",                                                                                 // 0: No shadow
                 "0 1px 2px 0 rgba(0, 0, 0, 0.05)",                                                    // 1: Subtle shadow
                 "0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06)",                   // 2: Light shadow
@@ -88,7 +88,7 @@ public static class ThemeConfiguration
                 "0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)",         // 22: Same as 8
                 "0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)",         // 23: Same as 8
                 "0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)"          // 24: Same as 8
-            ]
+            }
         },
 
         LayoutProperties = new LayoutProperties
