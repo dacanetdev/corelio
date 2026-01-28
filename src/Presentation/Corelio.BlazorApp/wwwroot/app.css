@@ -331,3 +331,204 @@ h6, .mud-typography-h6 {
         font-size: 14px;
     }
 }
+
+/* ========================================
+   AUTHENTICATION LAYOUT
+   ======================================== */
+
+.auth-layout {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    background: linear-gradient(135deg, #F8F9FA 0%, #E9ECEF 100%);
+    position: relative;
+    overflow: hidden;
+}
+
+/* Subtle decorative pattern overlay (optional) */
+.auth-layout::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-image: repeating-linear-gradient(
+        45deg,
+        transparent,
+        transparent 35px,
+        rgba(0, 0, 0, 0.03) 35px,
+        rgba(0, 0, 0, 0.03) 70px
+    );
+    pointer-events: none;
+    opacity: 0.3;
+    z-index: 0;
+}
+
+.auth-content-wrapper {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 48px 24px;
+    position: relative;
+    z-index: 1;
+}
+
+.auth-content-container {
+    width: 100%;
+    max-width: 480px;
+}
+
+.auth-footer {
+    position: relative;
+    z-index: 1;
+    text-align: center;
+    padding: 24px;
+    background: rgba(255, 255, 255, 0.5);
+    backdrop-filter: blur(10px);
+}
+
+/* ========================================
+   AUTHENTICATION PAGES - Hero Section
+   ======================================== */
+
+.auth-hero {
+    text-align: center;
+    margin-bottom: 32px;
+}
+
+.auth-icon-circle {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 96px;
+    height: 96px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--color-primary-100) 0%, var(--color-primary-200) 100%);
+    margin: 0 auto 16px;
+}
+
+.auth-icon-circle .mud-icon-root {
+    font-size: 4rem;
+    color: var(--color-primary-700);
+}
+
+.auth-title {
+    font-size: 1.75rem;
+    font-weight: 700;
+    color: var(--color-primary-700);
+    margin-bottom: 8px;
+}
+
+.auth-subtitle {
+    font-size: 1rem;
+    color: var(--color-secondary-600);
+}
+
+/* ========================================
+   AUTHENTICATION PAGES - Form Card
+   ======================================== */
+
+.auth-card {
+    background: white;
+    border-radius: 16px;
+    padding: 48px;
+    box-shadow: var(--shadow-xl);
+    animation: fadeIn 0.4s ease-out;
+}
+
+.auth-section-header {
+    font-size: 1.125rem;
+    font-weight: 600;
+    color: var(--color-primary-600);
+    margin-bottom: 16px;
+    margin-top: 24px;
+}
+
+.auth-section-header:first-child {
+    margin-top: 0;
+}
+
+.auth-submit-button {
+    height: 56px !important;
+    font-weight: 600 !important;
+}
+
+.auth-link {
+    color: var(--color-primary-600);
+    text-decoration: none;
+    transition: all var(--transition-base);
+}
+
+.auth-link:hover {
+    color: var(--color-primary-700);
+    text-decoration: underline;
+}
+
+/* ========================================
+   ANIMATIONS - Smooth Fade-In
+   ======================================== */
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.fade-in {
+    animation: fadeIn 0.4s ease-out;
+}
+
+/* ========================================
+   AUTHENTICATION LAYOUT - Mobile Responsive
+   ======================================== */
+
+/* Tablet and below */
+@media (max-width: 959px) {
+    .auth-content-wrapper {
+        padding: 32px 16px;
+    }
+
+    .auth-card {
+        padding: 32px;
+    }
+
+    .auth-icon-circle {
+        width: 80px;
+        height: 80px;
+    }
+
+    .auth-icon-circle .mud-icon-root {
+        font-size: 3rem;
+    }
+}
+
+/* Mobile */
+@media (max-width: 599px) {
+    .auth-content-wrapper {
+        padding: 24px 16px;
+    }
+
+    .auth-card {
+        padding: 24px;
+    }
+
+    .auth-icon-circle {
+        width: 80px;
+        height: 80px;
+    }
+
+    .auth-icon-circle .mud-icon-root {
+        font-size: 3rem;
+    }
+
+    .auth-content-container {
+        max-width: 100%;
+    }
+}

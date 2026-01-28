@@ -1,9 +1,9 @@
 # Corelio - Sprint Status Tracking
 
-## Current Sprint: Sprint 3 - Products & Categories
+## Current Sprint: Sprint 4 - UI/UX Design System (Phase 1-2)
 
-**Sprint Start:** 2026-01-13
-**Sprint End:** 2026-01-17
+**Sprint Start:** 2026-01-27
+**Sprint End:** 2026-02-03
 **Status:** 🟡 In Progress
 
 ---
@@ -24,8 +24,8 @@
 
 | User Story | Priority | Story Points | Hours | Status | Notes |
 |------------|----------|--------------|-------|--------|-------|
-| US-4.1: Core Theme Infrastructure | P0 Critical | 5 | 6-8 | 🔵 Not Started | MudTheme, CSS variables, Inter font, remove Bootstrap |
-| US-4.2: Authentication Pages Redesign | P0 Critical | 8 | 8-10 | 🔵 Not Started | AuthLayout, Login/Register/ForgotPassword/ResetPassword redesign |
+| US-4.1: Core Theme Infrastructure | P0 Critical | 5 | 6-8 | 🟢 Completed | ✅ MudTheme with Terracotta theme, CSS variables, Inter font loaded, Bootstrap removed |
+| US-4.2: Authentication Pages Redesign | P0 Critical | 8 | 8-10 | 🟢 Completed | ✅ AuthLayout, Login/Register/ForgotPassword/ResetPassword with new design, hero sections, gradient backgrounds, fade-in animations, mobile responsive |
 | US-4.3: Core Reusable Components | P1 High | 5 | 6-8 | 🔵 Not Started | PageHeader, LoadingState, EmptyState, TenantDisplay, UserDisplay |
 | US-4.4: Multi-Tenant Theming Infrastructure | P1 High | 8 | 10-12 | 🔵 Not Started | Database migration, TenantThemeService, DynamicThemeService, API endpoints, Redis caching |
 

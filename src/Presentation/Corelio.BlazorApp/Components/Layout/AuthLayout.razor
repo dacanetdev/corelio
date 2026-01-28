@@ -1,0 +1,31 @@
+@inherits LayoutComponentBase
+@using Corelio.BlazorApp.Services
+
+<MudThemeProvider Theme="@ThemeConfiguration.CorelioDefaultTheme" />
+<MudPopoverProvider />
+<MudDialogProvider />
+<MudSnackbarProvider />
+
+<div class="auth-layout">
+    <div class="auth-content-wrapper">
+        <div class="auth-content-container">
+            @Body
+        </div>
+    </div>
+
+    <footer class="auth-footer">
+        <MudText Typo="Typo.caption" Color="Color.Secondary">
+            © 2026 Corelio ERP. Todos los derechos reservados.
+        </MudText>
+    </footer>
+</div>
+
+<div id="blazor-error-ui" data-nosnippet>
+    An unhandled error has occurred.
+    <a href="." class="reload">Reload</a>
+    <span class="dismiss">🗙</span>
+</div>
+
+@code {
+    // No code needed - layout only
+}

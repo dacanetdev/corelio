@@ -1,4 +1,5 @@
 @page "/auth/register"
+@layout AuthLayout
 @rendermode InteractiveServer
 @using Microsoft.AspNetCore.Authorization
 @attribute [Authorize(Policy = "users.create")]
@@ -12,108 +13,140 @@
 
 <PageTitle>@L["RegisterPageTitle"]</PageTitle>
 
-<MudContainer MaxWidth="MaxWidth.Medium" Class="mt-8">
-    <MudPaper Elevation="3" Class="pa-8">
-        <MudText Typo="Typo.h4" Align="Align.Center" GutterBottom="true">
-            @L["Register"]
+<div class="auth-hero">
+    <div class="auth-icon-circle">
+        <MudIcon Icon="@Icons.Material.Filled.Store" />
+    </div>
+    <div class="auth-title">@L["AppTitle"]</div>
+    <MudText Typo="Typo.body1" Class="auth-subtitle">
+        @L["AppSubtitle"]
+    </MudText>
+</div>
+
+<MudPaper Class="auth-card" Elevation="8">
+    <MudStack Row="true" AlignItems="AlignItems.Center" Spacing="2" Class="mb-6">
+        <MudIcon Icon="@Icons.Material.Filled.PersonAdd" Color="Color.Primary" Size="Size.Large" />
+        <MudText Typo="Typo.h4" Color="Color.Primary">
+            @L["RegisterUser"]
+        </MudText>
+    </MudStack>
+
+    @if (!string.IsNullOrEmpty(_errorMessage))
+    {
+        <MudAlert Severity="Severity.Error" Variant="Variant.Filled" Icon="@Icons.Material.Filled.Error" Class="mb-4">
+            @_errorMessage
+        </MudAlert>
+    }
+
+    @if (_successMessage)
+    {
+        <MudAlert Severity="Severity.Success" Variant="Variant.Filled" Icon="@Icons.Material.Filled.CheckCircle" Class="mb-4">
+            @L["RegistrationSuccess"]
+            <MudText Typo="Typo.body2" Class="mt-2">
+                @L["RedirectingToLogin"]
+            </MudText>
+        </MudAlert>
+    }
+
+    <EditForm Model="RegisterModel!" OnValidSubmit="HandleRegister" FormName="registerForm">
+        <DataAnnotationsValidator />
+
+        <MudText Typo="Typo.h6" Class="auth-section-header">
+            @L["PersonalInformation"]
         </MudText>
 
-        @if (!string.IsNullOrEmpty(_errorMessage))
-        {
-            <MudAlert Severity="Severity.Error" Class="mb-4">
-                @_errorMessage
-            </MudAlert>
-        }
+        <MudGrid Spacing="4">
+            <MudItem xs="12" md="6">
+                <MudTextField @bind-Value="RegisterModel!.FirstName"
+                              Label="@L["FirstName"]"
+                              Variant="Variant.Outlined"
+                              Required="true"
+                              Adornment="Adornment.Start"
+                              AdornmentIcon="@Icons.Material.Filled.Person"
+                              For="@(() => RegisterModel!.FirstName)" />
+            </MudItem>
 
-        @if (_successMessage)
-        {
-            <MudAlert Severity="Severity.Success" Class="mb-4">
-                @L["RegistrationSuccess"]
-            </MudAlert>
-        }
+            <MudItem xs="12" md="6">
+                <MudTextField @bind-Value="RegisterModel!.LastName"
+                              Label="@L["LastName"]"
+                              Variant="Variant.Outlined"
+                              Required="true"
+                              Adornment="Adornment.Start"
+                              AdornmentIcon="@Icons.Material.Filled.Person"
+                              For="@(() => RegisterModel!.LastName)" />
+            </MudItem>
 
-        <EditForm Model="RegisterModel!" OnValidSubmit="HandleRegister" FormName="registerForm">
-            <DataAnnotationsValidator />
+            <MudItem xs="12">
+                <MudTextField @bind-Value="RegisterModel!.Email"
+                              Label="@L["Email"]"
+                              Variant="Variant.Outlined"
+                              InputType="InputType.Email"
+                              Required="true"
+                              Adornment="Adornment.Start"
+                              AdornmentIcon="@Icons.Material.Filled.Email"
+                              For="@(() => RegisterModel!.Email)" />
+            </MudItem>
+        </MudGrid>
 
-            <MudGrid>
-                <MudItem xs="12" sm="6">
-                    <MudTextField @bind-Value="RegisterModel!.FirstName"
-                                  Label="@L["FirstName"]"
-                                  Variant="Variant.Outlined"
-                                  Margin="Margin.Dense"
-                                  Required="true"
-                                  For="@(() => RegisterModel!.FirstName)" />
-                </MudItem>
+        <MudDivider Class="my-6" />
 
-                <MudItem xs="12" sm="6">
-                    <MudTextField @bind-Value="RegisterModel!.LastName"
-                                  Label="@L["LastName"]"
-                                  Variant="Variant.Outlined"
-                                  Margin="Margin.Dense"
-                                  Required="true"
-                                  For="@(() => RegisterModel!.LastName)" />
-                </MudItem>
+        <MudText Typo="Typo.h6" Class="auth-section-header">
+            @L["SecuritySection"]
+        </MudText>
 
-                <MudItem xs="12">
-                    <MudTextField @bind-Value="RegisterModel!.Email"
-                                  Label="@L["Email"]"
-                                  Variant="Variant.Outlined"
-                                  InputType="InputType.Email"
-                                  Margin="Margin.Dense"
-                                  Required="true"
-                                  For="@(() => RegisterModel!.Email)" />
-                </MudItem>
+        <MudGrid Spacing="4">
+            <MudItem xs="12" md="6">
+                <MudTextField @bind-Value="RegisterModel!.Password"
+                              Label="@L["Password"]"
+                              Variant="Variant.Outlined"
+                              InputType="@_passwordInputType"
+                              Required="true"
+                              Adornment="Adornment.End"
+                              AdornmentIcon="@(_showPassword ? Icons.Material.Filled.Visibility : Icons.Material.Filled.VisibilityOff)"
+                              OnAdornmentClick="TogglePasswordVisibility"
+                              For="@(() => RegisterModel!.Password)" />
+            </MudItem>
 
-                <MudItem xs="12" sm="6">
-                    <MudTextField @bind-Value="RegisterModel!.Password"
-                                  Label="@L["Password"]"
-                                  Variant="Variant.Outlined"
-                                  InputType="InputType.Password"
-                                  Margin="Margin.Dense"
-                                  Required="true"
-                                  For="@(() => RegisterModel!.Password)" />
-                </MudItem>
+            <MudItem xs="12" md="6">
+                <MudTextField @bind-Value="RegisterModel!.ConfirmPassword"
+                              Label="@L["ConfirmPassword"]"
+                              Variant="Variant.Outlined"
+                              InputType="@_confirmPasswordInputType"
+                              Required="true"
+                              Adornment="Adornment.End"
+                              AdornmentIcon="@(_showConfirmPassword ? Icons.Material.Filled.Visibility : Icons.Material.Filled.VisibilityOff)"
+                              OnAdornmentClick="ToggleConfirmPasswordVisibility"
+                              For="@(() => RegisterModel!.ConfirmPassword)" />
+            </MudItem>
+        </MudGrid>
 
-                <MudItem xs="12" sm="6">
-                    <MudTextField @bind-Value="RegisterModel!.ConfirmPassword"
-                                  Label="@L["ConfirmPassword"]"
-                                  Variant="Variant.Outlined"
-                                  InputType="InputType.Password"
-                                  Margin="Margin.Dense"
-                                  Required="true"
-                                  For="@(() => RegisterModel!.ConfirmPassword)" />
-                </MudItem>
+        <MudStack Row="true" AlignItems="AlignItems.Center" Justify="Justify.FlexEnd" Spacing="3" Class="mt-6">
+            <MudButton Variant="Variant.Outlined"
+                       Color="Color.Secondary"
+                       OnClick="@(() => NavigationManager.NavigateTo("/auth/login"))"
+                       Disabled="_isLoading">
+                @L["Cancel"]
+            </MudButton>
 
-                <MudItem xs="12">
-                    <MudButton ButtonType="ButtonType.Submit"
-                               Variant="Variant.Filled"
-                               Color="Color.Primary"
-                               FullWidth="true"
-                               Size="Size.Large"
-                               Disabled="_isLoading">
-                        @if (_isLoading)
-                        {
-                            <MudProgressCircular Class="ms-n1" Size="Size.Small" Indeterminate="true" />
-                            <MudText Class="ms-2">@L["Register"]...</MudText>
-                        }
-                        else
-                        {
-                            @L["Register"]
-                        }
-                    </MudButton>
-                </MudItem>
-
-                <MudItem xs="12">
-                    <MudText Align="Align.Center">
-                        <MudLink Href="/auth/login" Color="Color.Primary">
-                            @L["BackToLogin"]
-                        </MudLink>
-                    </MudText>
-                </MudItem>
-            </MudGrid>
-        </EditForm>
-    </MudPaper>
-</MudContainer>
+            <MudButton ButtonType="ButtonType.Submit"
+                       Variant="Variant.Filled"
+                       Color="Color.Primary"
+                       StartIcon="@Icons.Material.Filled.PersonAdd"
+                       Style="min-width: 160px;"
+                       Disabled="_isLoading">
+                @if (_isLoading)
+                {
+                    <MudProgressCircular Class="mr-2" Size="Size.Small" Indeterminate="true" />
+                    <MudText>@L["LoadingText"]</MudText>
+                }
+                else
+                {
+                    @L["Register"]
+                }
+            </MudButton>
+        </MudStack>
+    </EditForm>
+</MudPaper>
 
 @code {
     [SupplyParameterFromForm]
@@ -122,10 +155,26 @@
     private bool _isLoading;
     private string? _errorMessage;
     private bool _successMessage;
+    private bool _showPassword;
+    private bool _showConfirmPassword;
+    private InputType _passwordInputType = InputType.Password;
+    private InputType _confirmPasswordInputType = InputType.Password;
 
     protected override void OnInitialized()
     {
         RegisterModel ??= new();
+    }
+
+    private void TogglePasswordVisibility()
+    {
+        _showPassword = !_showPassword;
+        _passwordInputType = _showPassword ? InputType.Text : InputType.Password;
+    }
+
+    private void ToggleConfirmPasswordVisibility()
+    {
+        _showConfirmPassword = !_showConfirmPassword;
+        _confirmPasswordInputType = _showConfirmPassword ? InputType.Text : InputType.Password;
     }
 
     private async Task HandleRegister()
@@ -151,7 +200,7 @@
             if (result.IsSuccess)
             {
                 _successMessage = true;
-                RegisterModel = new(); // Reset form
+                StateHasChanged();
 
                 // Redirect to login after 2 seconds
                 await Task.Delay(2000);

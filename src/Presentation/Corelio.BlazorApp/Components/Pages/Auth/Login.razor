@@ -1,4 +1,5 @@
 @page "/auth/login"
+@layout AuthLayout
 @rendermode InteractiveServer
 @using Corelio.BlazorApp.Models.Authentication
 @using Corelio.BlazorApp.Models.ViewModels
@@ -10,73 +11,91 @@
 
 <PageTitle>@L["LoginPageTitle"]</PageTitle>
 
-<MudContainer MaxWidth="MaxWidth.Small" Class="d-flex align-center" Style="height: 100vh;">
-    <MudPaper Elevation="3" Class="pa-8" Style="width: 100%;">
-        <MudText Typo="Typo.h4" Align="Align.Center" GutterBottom="true">
-            @L["Login"]
+<div class="auth-hero">
+    <div class="auth-icon-circle">
+        <MudIcon Icon="@Icons.Material.Filled.Store" />
+    </div>
+    <div class="auth-title">@L["AppTitle"]</div>
+    <MudText Typo="Typo.body1" Class="auth-subtitle">
+        @L["AppSubtitle"]
+    </MudText>
+</div>
+
+<MudPaper Class="auth-card" Elevation="8">
+    @if (_sessionExpired)
+    {
+        <MudAlert Severity="Severity.Warning" Variant="Variant.Outlined" Icon="@Icons.Material.Filled.Warning" Class="mb-4">
+            @L["SessionExpired"]
+        </MudAlert>
+    }
+
+    @if (!string.IsNullOrEmpty(_errorMessage))
+    {
+        <MudAlert Severity="Severity.Error" Variant="Variant.Filled" Icon="@Icons.Material.Filled.Error" Class="mb-4">
+            @_errorMessage
+        </MudAlert>
+    }
+
+    <EditForm Model="LoginModel!" OnValidSubmit="HandleLogin" FormName="loginForm">
+        <DataAnnotationsValidator />
+
+        <MudTextField @bind-Value="LoginModel!.Email"
+                      Label="@L["Email"]"
+                      Variant="Variant.Outlined"
+                      InputType="InputType.Email"
+                      Required="true"
+                      HelperText="@L["EmailHelperText"]"
+                      Adornment="Adornment.Start"
+                      AdornmentIcon="@Icons.Material.Filled.Email"
+                      Class="mb-4"
+                      For="@(() => LoginModel!.Email)" />
+
+        <MudTextField @bind-Value="LoginModel!.Password"
+                      Label="@L["Password"]"
+                      Variant="Variant.Outlined"
+                      InputType="@_passwordInputType"
+                      Required="true"
+                      Adornment="Adornment.End"
+                      AdornmentIcon="@(_showPassword ? Icons.Material.Filled.Visibility : Icons.Material.Filled.VisibilityOff)"
+                      OnAdornmentClick="TogglePasswordVisibility"
+                      Class="mb-6"
+                      For="@(() => LoginModel!.Password)" />
+
+        <MudButton ButtonType="ButtonType.Submit"
+                   Variant="Variant.Filled"
+                   Color="Color.Primary"
+                   FullWidth="true"
+                   Class="auth-submit-button mb-4"
+                   Disabled="_isLoading">
+            @if (_isLoading)
+            {
+                <MudProgressCircular Class="mr-2" Size="Size.Small" Indeterminate="true" />
+                <MudText>@L["LoadingText"]</MudText>
+            }
+            else
+            {
+                @L["Login"]
+            }
+        </MudButton>
+
+        <MudText Align="Align.Center" Class="mb-6">
+            <MudLink Href="/auth/forgot-password" Class="auth-link">
+                @L["ForgotPassword"]
+            </MudLink>
         </MudText>
 
-        @if (_sessionExpired)
-        {
-            <MudAlert Severity="Severity.Warning" Class="mb-4">
-                @L["SessionExpired"]
-            </MudAlert>
-        }
+        <MudDivider Class="my-6" />
 
-        @if (!string.IsNullOrEmpty(_errorMessage))
-        {
-            <MudAlert Severity="Severity.Error" Class="mb-4">
-                @_errorMessage
-            </MudAlert>
-        }
-
-        <EditForm Model="LoginModel!" OnValidSubmit="HandleLogin" FormName="loginForm">
-            <DataAnnotationsValidator />
-
-            <MudTextField @bind-Value="LoginModel!.Email"
-                          Label="@L["Email"]"
-                          Variant="Variant.Outlined"
-                          InputType="InputType.Email"
-                          Margin="Margin.Dense"
-                          Required="true"
-                          Class="mb-4"
-                          For="@(() => LoginModel!.Email)" />
-
-            <MudTextField @bind-Value="LoginModel!.Password"
-                          Label="@L["Password"]"
-                          Variant="Variant.Outlined"
-                          InputType="InputType.Password"
-                          Margin="Margin.Dense"
-                          Required="true"
-                          Class="mb-4"
-                          For="@(() => LoginModel!.Password)" />
-
-            <MudButton ButtonType="ButtonType.Submit"
-                       Variant="Variant.Filled"
-                       Color="Color.Primary"
-                       FullWidth="true"
-                       Size="Size.Large"
-                       Disabled="_isLoading"
-                       Class="mb-3">
-                @if (_isLoading)
-                {
-                    <MudProgressCircular Class="ms-n1" Size="Size.Small" Indeterminate="true" />
-                    <MudText Class="ms-2">@L["Login"]...</MudText>
-                }
-                else
-                {
-                    @L["Login"]
-                }
-            </MudButton>
-
-            <MudText Align="Align.Center">
-                <MudLink Href="/auth/forgot-password" Color="Color.Primary">
-                    @L["ForgotPassword"]
-                </MudLink>
+        <MudStack AlignItems="AlignItems.Center" Spacing="1">
+            <MudText Typo="Typo.body2" Color="Color.Secondary">
+                @L["NoAccount"]
             </MudText>
-        </EditForm>
-    </MudPaper>
-</MudContainer>
+            <MudText Typo="Typo.body2" Color="Color.Secondary">
+                @L["ContactAdministrator"]
+            </MudText>
+        </MudStack>
+    </EditForm>
+</MudPaper>
 
 @code {
     [SupplyParameterFromForm]
@@ -85,6 +104,8 @@
     private bool _isLoading;
     private string? _errorMessage;
     private bool _sessionExpired;
+    private bool _showPassword;
+    private InputType _passwordInputType = InputType.Password;
 
     [SupplyParameterFromQuery(Name = "expired")]
     public bool SessionExpired { get; set; }
@@ -93,21 +114,16 @@
     {
         LoginModel ??= new();
         _sessionExpired = SessionExpired;
-        Console.WriteLine($"OnInitialized - LoginModel created: {LoginModel != null}");
     }
 
-    protected override void OnAfterRender(bool firstRender)
+    private void TogglePasswordVisibility()
     {
-        if (!firstRender && LoginModel != null)
-        {
-            Console.WriteLine($"OnAfterRender - Email: '{LoginModel.Email}', Password: '{LoginModel.Password}'");
-        }
+        _showPassword = !_showPassword;
+        _passwordInputType = _showPassword ? InputType.Text : InputType.Password;
     }
 
     private async Task HandleLogin()
     {
-        Console.WriteLine($"HandleLogin called - Email: {LoginModel?.Email}, Password length: {LoginModel?.Password?.Length ?? 0}");
-
         _isLoading = true;
         _errorMessage = null;
 
@@ -119,26 +135,19 @@
                 Password = LoginModel!.Password
             };
 
-            Console.WriteLine($"Calling AuthService.LoginAsync with email: {request.Email}");
             var result = await AuthService.LoginAsync(request);
-            Console.WriteLine($"LoginAsync result: IsSuccess={result.IsSuccess}, Error={result.Error}");
 
             if (result.IsSuccess)
             {
-                Console.WriteLine("Login successful, redirecting to home");
-                // Redirect to home page
                 NavigationManager.NavigateTo("/", forceLoad: true);
             }
             else
             {
-                Console.WriteLine($"Login failed: {result.Error}");
                 _errorMessage = L["LoginFailed"];
             }
         }
-        catch (Exception ex)
+        catch (Exception)
         {
-            Console.WriteLine($"Login exception: {ex.Message}");
-            Console.WriteLine($"Stack trace: {ex.StackTrace}");
             _errorMessage = L["UnexpectedError"];
         }
         finally
