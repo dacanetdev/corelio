@@ -5,9 +5,10 @@
 
 <AuthorizeView>
     <Authorized>
-        <MudText Typo="Typo.body2" Color="Color.Info">
-            <MudIcon Icon="@Icons.Material.Filled.Business" Size="Size.Small" /> @_tenantName
-        </MudText>
+        <div class="tenant-display-badge" title="@_tenantName">
+            <MudIcon Icon="@Icons.Material.Filled.Store" Size="Size.Small" Class="tenant-display-icon" />
+            <span class="tenant-display-name">@_tenantName</span>
+        </div>
     </Authorized>
 </AuthorizeView>
 

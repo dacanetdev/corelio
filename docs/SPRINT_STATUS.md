@@ -1,9 +1,9 @@
 # Corelio - Sprint Status Tracking
 
-## Current Sprint: Sprint 3 - Products & Categories
+## Current Sprint: Sprint 4 - UI/UX Design System (Phase 1-2)
 
-**Sprint Start:** 2026-01-13
-**Sprint End:** 2026-01-17
+**Sprint Start:** 2026-01-27
+**Sprint End:** 2026-02-03
 **Status:** 🟡 In Progress
 
 ---
@@ -13,6 +13,68 @@
 | User Story | Status | Progress | Notes |
 |------------|--------|----------|-------|
 | US-3.1: Product Management | 🔵 Not Started | 0/10 tasks | Product entities, CQRS, categories, UI |
+
+---
+
+## Sprint 4 Planning: UI/UX Design System (Phase 1-2)
+
+**Sprint Goal:** Implement professional, distinctive design system with "Industrial Terracotta" theme and multi-tenant branding capabilities
+
+**Epic:** Epic-DESIGN-001 - UI/UX Design System Implementation
+
+| User Story | Priority | Story Points | Hours | Status | Notes |
+|------------|----------|--------------|-------|--------|-------|
+| US-4.1: Core Theme Infrastructure | P0 Critical | 5 | 6-8 | 🟢 Completed | ✅ MudTheme with Terracotta theme, CSS variables, Inter font loaded, Bootstrap removed |
+| US-4.2: Authentication Pages Redesign | P0 Critical | 8 | 8-10 | 🟢 Completed | ✅ AuthLayout, Login/Register/ForgotPassword/ResetPassword with new design, hero sections, gradient backgrounds, fade-in animations, mobile responsive |
+| US-4.3: Core Reusable Components | P1 High | 5 | 6-8 | 🟢 Completed | ✅ PageHeader, LoadingState, EmptyState components created; TenantDisplay/UserDisplay enhanced with pill badges, avatars, dropdown menus |
+| US-4.4: Multi-Tenant Theming Infrastructure | P1 High | 8 | 10-12 | 🔵 Not Started | Database migration, TenantThemeService, DynamicThemeService, API endpoints, Redis caching |
+
+**Total Sprint 4:** 26 SP (30-38 hours)
+
+**Dependencies:**
+- Sprint 2 authentication pages (will be redesigned in US-4.2)
+- Sprint 2 TenantDisplay/UserDisplay components (will be enhanced in US-4.3)
+- Redis infrastructure (already available from Sprint 2)
+
+**Deliverables:**
+- ✅ Professional "Industrial Terracotta" theme (#E74C3C primary color)
+- ✅ Redesigned authentication experience (Login, Register, ForgotPassword, ResetPassword)
+- ✅ Reusable component library (PageHeader, LoadingState, EmptyState)
+- ✅ Enhanced tenant/user display components
+- ✅ Multi-tenant theming (primary color customization, Redis caching)
+- ✅ API endpoints for theme management (GET/PUT /api/v1/tenants/theme)
+
+**Success Criteria:**
+- [ ] Login page looks professional and distinctive (not generic MudBlazor)
+- [ ] Inter font loads successfully, Bootstrap CSS completely removed
+- [ ] All pages use design system colors, typography, spacing
+- [ ] Tenant admin can change primary color via API
+- [ ] Theme changes persist across page navigations
+- [ ] Mobile-responsive (tested at 375px width - iPhone SE)
+- [ ] Spanish (es-MX) localization maintained
+
+---
+
+## Sprint 5 Planning: UI/UX Design System (Phase 3) + Polish
+
+**Sprint Goal:** Apply design system to existing pages for consistency
+
+| User Story | Priority | Story Points | Hours | Status | Notes |
+|------------|----------|--------------|-------|--------|-------|
+| US-5.1: Apply Design System to Existing Pages | P2 Medium | 3 | 4-6 | 🔵 Not Started | ProductList, ProductForm redesign with design system patterns |
+
+**Total Sprint 5:** 3 SP (4-6 hours)
+
+**Dependencies:**
+- Sprint 4 complete (design system infrastructure and components)
+- Sprint 3 complete (Product pages exist to be redesigned)
+
+**Deliverables:**
+- ✅ ProductList page uses PageHeader, LoadingState, EmptyState components
+- ✅ ProductList table styling consistent with design system
+- ✅ ProductForm uses section headers, two-column grid, consistent styling
+- ✅ All currency formatted with es-MX culture
+- ✅ All dates formatted dd/MM/yyyy
 
 ---
 
@@ -93,13 +155,36 @@
 | Sprint 1 | Foundation & Project Setup | 🟢 Completed | 21 | 21 | 2025-01-08 - 2026-01-10 |
 | Sprint 2 | Multi-Tenancy & Auth | 🟢 Completed | 34 | 34 | 2026-01-12 - 2026-01-13 |
 | Sprint 3 | Products & Categories | 🟡 In Progress | 21 | - | 2026-01-13 - 2026-01-17 |
-| Sprint 4 | Inventory & Customers | 🔵 Not Started | 26 | - | TBD |
-| Sprint 5 | POS Backend & UI | 🔵 Not Started | 34 | - | TBD |
-| Sprint 6 | POS Features & Sales Mgmt | 🔵 Not Started | 21 | - | TBD |
-| Sprint 7 | CFDI Integration | 🔵 Not Started | 34 | - | TBD |
-| Sprint 8 | Testing, QA & Deployment | 🔵 Not Started | 34 | - | TBD |
+| **Sprint 4** | **UI/UX Design System (Phase 1-2)** | 🔵 Not Started | **26** | - | **TBD** |
+| **Sprint 5** | **UI/UX Design System (Phase 3) + Polish** | 🔵 Not Started | **3** | - | **TBD** |
+| Sprint 6 | Inventory & Customers | 🔵 Not Started | 26 | - | TBD |
+| Sprint 7 | POS Backend & UI | 🔵 Not Started | 34 | - | TBD |
+| Sprint 8 | POS Features & Sales Mgmt | 🔵 Not Started | 21 | - | TBD |
+| Sprint 9 | CFDI Integration | 🔵 Not Started | 34 | - | TBD |
+| Sprint 10 | Testing, QA & Deployment | 🔵 Not Started | 34 | - | TBD |
 
-**Total Story Points:** 225 SP
+**Total Story Points:** 254 SP (+29 SP from UI/UX Design System Epic)
+
+---
+
+## UI/UX Design System Documentation
+
+**Epic:** Epic-DESIGN-001 - UI/UX Design System Implementation
+
+**Comprehensive Documentation:**
+- 📋 **User Stories:** `docs/backlog/UI-UX-Design-System-User-Stories.md` - Production-ready user stories with detailed acceptance criteria
+- 📊 **Executive Summary:** `docs/recommendations/EXECUTIVE-SUMMARY.md` - One-page decision document for stakeholders
+- 📐 **Design Specification:** `docs/recommendations/UI-UX-Design-System-Recommendation.md` - Full business case and technical specifications
+- 🎨 **Visual Reference:** `docs/recommendations/Design-System-Visual-Reference.md` - Visual mockups and design patterns
+- 🛠️ **Implementation Guide:** `docs/recommendations/UI-UX-Implementation-Guide.md` - Technical implementation details for developers
+
+**Business Value:**
+- **Market Differentiation:** Distinctive "Industrial Terracotta" theme separates Corelio from generic MudBlazor apps
+- **Mobile-First:** Optimized for hardware store owners using tablets/phones in-store (375px width tested)
+- **Tenant Branding:** Primary color customization enables basic multi-tenant branding
+- **Development Velocity:** Reusable component library reduces development time by ~30%
+
+**Total Investment:** 29 SP (34-44 hours) across 2 sprints (Sprint 4-5)
 
 ---
 
@@ -107,8 +192,9 @@
 
 | ID | Description | Impact | Mitigation | Status | Owner |
 |----|-------------|--------|------------|--------|-------|
-| BLOCK-001 | Frontend missing for US-2.1 and US-2.2 | **CRITICAL** - Sprint 3 blocked, stakeholder demos impossible | Created US-2.2.1 (13 SP) and US-2.1.1 (5 SP), implementation plan approved | 🔴 Active | Team |
+| BLOCK-001 | Frontend missing for US-2.1 and US-2.2 | **CRITICAL** - Sprint 3 blocked, stakeholder demos impossible | Created US-2.2.1 (13 SP) and US-2.1.1 (5 SP), implementation plan approved | 🟢 Resolved | Team |
 | RISK-001 | Backend-only pattern may repeat in future sprints | **HIGH** - More frontend debt accumulation | Updated Definition of Done, updated PR template with frontend checklist | 🟡 Mitigated | Team |
+| RISK-002 | UI/UX Design System may cause rework on existing pages | **MEDIUM** - Sprint 3 Product pages may need redesign | Sprint 5 allocated for applying design system to existing pages (3 SP) | 🟡 Planned | Team |
 
 ---
 
@@ -147,6 +233,7 @@
 | 2026-01-12 | Sprint 2 | US-2.1 | Multi-Tenancy Services Implementation | Multiple | ITenantService interface, TenantService impl, TenantMiddleware, Redis caching, DI registration, 12 unit tests |
 | 2026-01-13 | Sprint 2 | US-2.2 | Authentication & Authorization | 177eadc, 6cdeee5, 3779a93, fe4b422 | JWT service, auth endpoints, refresh tokens, BCrypt hashing, 35 authentication tests, Swagger replaced with Scalar |
 | 2026-01-21 | Sprint 1 | US-1.4 | Database Migration & Seed Data (Technical Debt) | d53549e, 0957ae1 | InitialSchemaWithSeedData migration, DataSeeder with 1 tenant, 3 roles, 17 permissions, 3 test users, automatic migration on startup |
+| 2026-01-28 | Sprint 4 | US-4.3 | Core Reusable Components | 9807b85 | PageHeader, LoadingState, EmptyState components; TenantDisplay/UserDisplay enhanced |
 
 ---
 
@@ -315,6 +402,38 @@
 
 ---
 
+### 2026-01-28 (Sprint 4 - Core Reusable Components)
+**Yesterday:**
+- Completed US-4.1 and US-4.2 (Core Theme Infrastructure and Authentication Pages Redesign)
+
+**Today:**
+- **Completed US-4.3: Core Reusable Components (5 SP)**
+  - ✅ Created PageHeader.razor component with Title, Description, Breadcrumbs (MudBlazor.BreadcrumbItem), and Actions slot
+  - ✅ Created LoadingState.razor component with centered spinner and localized message
+  - ✅ Created EmptyState.razor component with icon, title, description, and optional action button
+  - ✅ Enhanced TenantDisplay.razor with pill-shaped badge, gradient background, border styling, and responsive behavior
+  - ✅ Enhanced UserDisplay.razor with avatar initials, user info, dropdown menu (Profile/Settings/Logout), and responsive behavior
+  - ✅ Added comprehensive CSS styles for all components in app.css
+  - ✅ Added localization keys (MyProfile, Settings, Home, Loading, NoItemsFound, NoDataAvailable, CreateFirst)
+  - ✅ Solution builds successfully with zero errors
+
+**Components Created:**
+- `Components/Shared/PageHeader.razor` - Page headers with breadcrumbs and actions
+- `Components/Shared/LoadingState.razor` - Centered loading spinner with message
+- `Components/Shared/EmptyState.razor` - Empty state with icon, text, and action
+
+**Components Enhanced:**
+- `Components/Layout/TenantDisplay.razor` - Pill badge with gradient and hover effects
+- `Components/Layout/UserDisplay.razor` - Avatar with initials, dropdown menu
+
+**Blockers:**
+- None
+
+**Next Steps:**
+- Start US-4.4: Multi-Tenant Theming Infrastructure
+
+---
+
 ## Sprint 1 Retrospective (Completed: 2026-01-12)
 
 ### What went well?
@@ -400,4 +519,45 @@
 
 ---
 
-**Last Updated:** 2026-01-12 (Sprint 2 Started)
+---
+
+## UI/UX Design System Prioritization Rationale
+
+**Why Sprint 4-5? (Before Inventory, POS, and CFDI)**
+
+1. **Foundation for Future UI Work:**
+   - All future Blazor pages (Inventory, POS, CFDI) will benefit from design system and component library
+   - Prevents rework - better to establish design patterns early
+   - 30% development velocity improvement on new pages
+
+2. **Immediate Business Value:**
+   - First impression critical - Login page is first thing users/tenants see
+   - Market differentiation - separates Corelio from generic MudBlazor competitors
+   - Mobile-first design enables in-store usage (tablets/phones)
+
+3. **Low Risk, High Reward:**
+   - No breaking changes to business logic
+   - Isolated changes to UI/styling only
+   - Phased implementation (2 sprints, 29 SP total)
+
+4. **Enables Multi-Tenant Branding:**
+   - Competitive advantage - tenants can customize primary color
+   - Increases tenant engagement and retention
+   - Simple implementation (Redis caching, 2-hour TTL)
+
+5. **Reusable Components Accelerate Sprint 6+:**
+   - PageHeader, LoadingState, EmptyState used in all future pages
+   - Consistent patterns eliminate design decisions
+   - Faster sprint velocity for Sprint 6-10
+
+**Trade-Off Analysis:**
+- **Cost:** 29 SP (2 sprints) upfront investment
+- **Benefit:** 30% faster development on ~50 future pages = ~45 SP saved over project lifetime
+- **ROI:** Positive after ~5 pages built with design system
+- **Risk:** Low - Sprint 5 applies design system to Sprint 3 Product pages retroactively (3 SP)
+
+**Decision:** ✅ **Prioritize UI/UX Design System in Sprint 4-5**
+
+---
+
+**Last Updated:** 2026-01-27 (Sprint 3 In Progress, Sprint 4-5 UI/UX Planned)

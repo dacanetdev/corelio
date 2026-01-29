@@ -26,6 +26,16 @@ builder.Services.Configure<RequestLocalizationOptions>(options =>
 });
 
 // Add Authentication services
+// Even though Blazor uses AuthenticationStateProvider, we need to register
+// an authentication scheme for the authorization middleware to work with [Authorize]
+builder.Services.AddAuthentication("Cookies")
+    .AddCookie("Cookies", options =>
+    {
+        options.LoginPath = "/auth/login";
+        options.LogoutPath = "/auth/logout";
+        options.AccessDeniedPath = "/auth/access-denied";
+    });
+
 builder.Services.AddAuthorizationCore();
 builder.Services.AddScoped<ITokenService, TokenService>();
 builder.Services.AddScoped<CustomAuthenticationStateProvider>();
@@ -101,9 +111,9 @@ if (!app.Environment.IsDevelopment())
 
 app.UseAntiforgery();
 
-// Note: Blazor Server uses AuthenticationStateProvider for authentication
-// UseAuthentication() middleware is not needed and would cause errors
-// Authorization is handled by the custom AuthenticationStateProvider
+// Authentication middleware is required for authorization to work with [Authorize] attributes
+app.UseAuthentication();
+app.UseAuthorization();
 
 app.MapStaticAssets();
 app.MapRazorComponents<App>()
