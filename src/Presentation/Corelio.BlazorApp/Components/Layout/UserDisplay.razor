@@ -6,30 +6,75 @@
 
 <AuthorizeView>
     <Authorized>
-        <MudMenu Icon="@Icons.Material.Filled.Person" Color="Color.Inherit" AnchorOrigin="Origin.BottomRight" TransformOrigin="Origin.TopRight">
+        <MudMenu AnchorOrigin="Origin.BottomRight" TransformOrigin="Origin.TopRight" Dense="true">
+            <ActivatorContent>
+                <div class="user-display-activator">
+                    <MudAvatar Color="Color.Primary" Size="Size.Small" Class="user-display-avatar">
+                        @_initials
+                    </MudAvatar>
+                    <div class="user-display-info">
+                        <span class="user-display-name">@_userInfo?.FullName</span>
+                        <span class="user-display-email">@_userInfo?.Email</span>
+                    </div>
+                    <MudIcon Icon="@Icons.Material.Filled.KeyboardArrowDown" Size="Size.Small" Class="user-display-dropdown-icon" />
+                </div>
+            </ActivatorContent>
             <ChildContent>
-                <MudText Typo="Typo.body2" Class="px-4 py-2">
-                    <strong>@_userInfo?.FullName</strong><br />
-                    <small>@_userInfo?.Email</small>
-                </MudText>
-                <MudDivider />
-                <MudMenuItem Icon="@Icons.Material.Filled.Logout" OnClick="HandleLogout">
+                <MudMenuItem Icon="@Icons.Material.Filled.Person" OnClick="@(() => NavigateToProfile())">
+                    @L["MyProfile"]
+                </MudMenuItem>
+                <MudMenuItem Icon="@Icons.Material.Filled.Settings" OnClick="@(() => NavigateToSettings())">
+                    @L["Settings"]
+                </MudMenuItem>
+                <MudDivider Class="my-2" />
+                <MudMenuItem Icon="@Icons.Material.Filled.Logout" OnClick="HandleLogout" Class="user-display-logout">
                     @L["Logout"]
                 </MudMenuItem>
             </ChildContent>
         </MudMenu>
     </Authorized>
     <NotAuthorized>
-        <MudIconButton Icon="@Icons.Material.Filled.Login" Color="Color.Inherit" Href="/auth/login" />
+        <MudButton Variant="Variant.Outlined" Color="Color.Primary" Href="/auth/login" StartIcon="@Icons.Material.Filled.Login" Size="Size.Small">
+            @L["Login"]
+        </MudButton>
     </NotAuthorized>
 </AuthorizeView>
 
 @code {
     private Models.Authentication.UserInfo? _userInfo;
+    private string _initials = string.Empty;
 
     protected override async Task OnInitializedAsync()
     {
         _userInfo = await AuthService.GetCurrentUserAsync();
+        if (_userInfo is not null)
+        {
+            _initials = GetInitials(_userInfo.FullName);
+        }
+    }
+
+    private static string GetInitials(string fullName)
+    {
+        if (string.IsNullOrWhiteSpace(fullName))
+            return "?";
+
+        var parts = fullName.Split(' ', StringSplitOptions.RemoveEmptyEntries);
+        return parts.Length switch
+        {
+            0 => "?",
+            1 => parts[0][..1].ToUpperInvariant(),
+            _ => $"{parts[0][..1]}{parts[^1][..1]}".ToUpperInvariant()
+        };
+    }
+
+    private void NavigateToProfile()
+    {
+        NavigationManager.NavigateTo("/profile");
+    }
+
+    private void NavigateToSettings()
+    {
+        NavigationManager.NavigateTo("/settings");
     }
 
     private void HandleLogout()

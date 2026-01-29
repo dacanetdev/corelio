@@ -1,0 +1,71 @@
+@using Corelio.BlazorApp.Resources
+@using Microsoft.Extensions.Localization
+@inject IStringLocalizer<SharedResource> L
+@inject NavigationManager NavigationManager
+
+<div class="page-header">
+    <div class="page-header-content">
+        @if (Breadcrumbs?.Any() == true)
+        {
+            <MudBreadcrumbs Items="@Breadcrumbs" Class="page-header-breadcrumbs">
+                <ItemTemplate Context="item">
+                    @if (string.IsNullOrEmpty(item.Href))
+                    {
+                        <MudText Typo="Typo.body2" Color="Color.Secondary">@item.Text</MudText>
+                    }
+                    else
+                    {
+                        <MudLink Href="@item.Href" Typo="Typo.body2" Color="Color.Primary" Underline="Underline.Hover">@item.Text</MudLink>
+                    }
+                </ItemTemplate>
+                <SeparatorTemplate>
+                    <MudIcon Icon="@Icons.Material.Filled.ChevronRight" Size="Size.Small" Color="Color.Secondary" />
+                </SeparatorTemplate>
+            </MudBreadcrumbs>
+        }
+
+        <div class="page-header-title-row">
+            <div class="page-header-title-section">
+                <MudText Typo="Typo.h4" Class="page-header-title">@Title</MudText>
+                @if (!string.IsNullOrEmpty(Description))
+                {
+                    <MudText Typo="Typo.body2" Color="Color.Secondary" Class="page-header-description">@Description</MudText>
+                }
+            </div>
+
+            @if (Actions is not null)
+            {
+                <div class="page-header-actions">
+                    @Actions
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+@code {
+    /// <summary>
+    /// The title of the page (required).
+    /// </summary>
+    [Parameter, EditorRequired]
+    public string Title { get; set; } = string.Empty;
+
+    /// <summary>
+    /// Optional description text displayed below the title.
+    /// </summary>
+    [Parameter]
+    public string? Description { get; set; }
+
+    /// <summary>
+    /// Optional breadcrumb items. Use MudBlazor's BreadcrumbItem class.
+    /// Example: [new BreadcrumbItem("Home", "/"), new BreadcrumbItem("Products", "/products"), new BreadcrumbItem("Current", null, disabled: true)]
+    /// </summary>
+    [Parameter]
+    public List<MudBlazor.BreadcrumbItem>? Breadcrumbs { get; set; }
+
+    /// <summary>
+    /// Optional action buttons rendered on the right side.
+    /// </summary>
+    [Parameter]
+    public RenderFragment? Actions { get; set; }
+}

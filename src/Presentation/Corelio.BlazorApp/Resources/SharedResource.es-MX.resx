@@ -380,4 +380,28 @@
   <data name="ResetPasswordDescription" xml:space="preserve">
     <value>Ingrese su nueva contraseña</value>
   </data>
+
+  <!-- User Display Menu -->
+  <data name="MyProfile" xml:space="preserve">
+    <value>Mi Perfil</value>
+  </data>
+  <data name="Settings" xml:space="preserve">
+    <value>Configuracion</value>
+  </data>
+
+  <!-- Page Header & Components -->
+  <data name="Home" xml:space="preserve">
+    <value>Inicio</value>
+  </data>
+
+  <!-- Empty State Messages -->
+  <data name="NoItemsFound" xml:space="preserve">
+    <value>No se encontraron elementos</value>
+  </data>
+  <data name="NoDataAvailable" xml:space="preserve">
+    <value>No hay datos disponibles</value>
+  </data>
+  <data name="CreateFirst" xml:space="preserve">
+    <value>Crea el primero</value>
+  </data>
 </root>

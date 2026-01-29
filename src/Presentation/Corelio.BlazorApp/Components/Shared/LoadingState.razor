@@ -1,0 +1,18 @@
+@using Corelio.BlazorApp.Resources
+@using Microsoft.Extensions.Localization
+@inject IStringLocalizer<SharedResource> L
+
+<div class="loading-state">
+    <MudProgressCircular Color="Color.Primary" Size="Size.Large" Indeterminate="true" />
+    <MudText Typo="Typo.body1" Color="Color.Secondary" Class="loading-state-message">
+        @(Message ?? L["Loading"])
+    </MudText>
+</div>
+
+@code {
+    /// <summary>
+    /// Optional loading message (defaults to localized "Cargando...").
+    /// </summary>
+    [Parameter]
+    public string? Message { get; set; }
+}
