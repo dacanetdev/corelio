@@ -195,4 +195,31 @@
   <data name="BackToLogin" xml:space="preserve">
     <value>Back to Login</value>
   </data>
+
+  <!-- User Display Menu -->
+  <data name="MyProfile" xml:space="preserve">
+    <value>My Profile</value>
+  </data>
+  <data name="Settings" xml:space="preserve">
+    <value>Settings</value>
+  </data>
+
+  <!-- Page Header & Components -->
+  <data name="Home" xml:space="preserve">
+    <value>Home</value>
+  </data>
+  <data name="Loading" xml:space="preserve">
+    <value>Loading...</value>
+  </data>
+
+  <!-- Empty State Messages -->
+  <data name="NoItemsFound" xml:space="preserve">
+    <value>No items found</value>
+  </data>
+  <data name="NoDataAvailable" xml:space="preserve">
+    <value>No data available</value>
+  </data>
+  <data name="CreateFirst" xml:space="preserve">
+    <value>Create the first one</value>
+  </data>
 </root>

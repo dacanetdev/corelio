@@ -3,6 +3,7 @@ using System;
 using Corelio.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Corelio.Infrastructure.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260127191123_CheckPendingChanges")]
+    partial class CheckPendingChanges
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -367,399 +370,6 @@ namespace Corelio.Infrastructure.Migrations
                             Module = "Settings",
                             Name = "Edit Settings"
                         });
-                });
-
-            modelBuilder.Entity("Corelio.Domain.Entities.Product", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .HasColumnType("uuid")
-                        .HasColumnName("id");
-
-                    b.Property<string>("Barcode")
-                        .HasMaxLength(100)
-                        .HasColumnType("character varying(100)")
-                        .HasColumnName("barcode");
-
-                    b.Property<string>("BarcodeType")
-                        .IsRequired()
-                        .HasMaxLength(20)
-                        .HasColumnType("character varying(20)")
-                        .HasColumnName("barcode_type");
-
-                    b.Property<string>("Brand")
-                        .HasMaxLength(100)
-                        .HasColumnType("character varying(100)")
-                        .HasColumnName("brand");
-
-                    b.Property<Guid?>("CategoryId")
-                        .HasColumnType("uuid")
-                        .HasColumnName("category_id");
-
-                    b.Property<decimal>("CostPrice")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("decimal(15,2)")
-                        .HasDefaultValue(0.00m)
-                        .HasColumnName("cost_price");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("created_at");
-
-                    b.Property<Guid?>("CreatedBy")
-                        .HasColumnType("uuid")
-                        .HasColumnName("created_by");
-
-                    b.Property<DateTime?>("DeletedAt")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("deleted_at");
-
-                    b.Property<Guid?>("DeletedBy")
-                        .HasColumnType("uuid")
-                        .HasColumnName("deleted_by");
-
-                    b.Property<string>("Description")
-                        .HasColumnType("text")
-                        .HasColumnName("description");
-
-                    b.Property<decimal?>("HeightCm")
-                        .HasColumnType("decimal(10,2)")
-                        .HasColumnName("height_cm");
-
-                    b.Property<string>("ImagesJson")
-                        .HasColumnType("jsonb")
-                        .HasColumnName("images_json");
-
-                    b.Property<bool>("IsActive")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("boolean")
-                        .HasDefaultValue(true)
-                        .HasColumnName("is_active");
-
-                    b.Property<bool>("IsBundle")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("boolean")
-                        .HasDefaultValue(false)
-                        .HasColumnName("is_bundle");
-
-                    b.Property<bool>("IsDeleted")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("boolean")
-                        .HasDefaultValue(false)
-                        .HasColumnName("is_deleted");
-
-                    b.Property<bool>("IsFeatured")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("boolean")
-                        .HasDefaultValue(false)
-                        .HasColumnName("is_featured");
-
-                    b.Property<bool>("IsService")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("boolean")
-                        .HasDefaultValue(false)
-                        .HasColumnName("is_service");
-
-                    b.Property<bool>("IsTaxExempt")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("boolean")
-                        .HasDefaultValue(false)
-                        .HasColumnName("is_tax_exempt");
-
-                    b.Property<bool>("IsVariantParent")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("boolean")
-                        .HasDefaultValue(false)
-                        .HasColumnName("is_variant_parent");
-
-                    b.Property<decimal?>("LengthCm")
-                        .HasColumnType("decimal(10,2)")
-                        .HasColumnName("length_cm");
-
-                    b.Property<string>("Manufacturer")
-                        .HasMaxLength(200)
-                        .HasColumnType("character varying(200)")
-                        .HasColumnName("manufacturer");
-
-                    b.Property<decimal?>("MaxStockLevel")
-                        .HasColumnType("decimal(10,2)")
-                        .HasColumnName("max_stock_level");
-
-                    b.Property<string>("MetaDescription")
-                        .HasMaxLength(500)
-                        .HasColumnType("character varying(500)")
-                        .HasColumnName("meta_description");
-
-                    b.Property<string>("MetaKeywords")
-                        .HasMaxLength(500)
-                        .HasColumnType("character varying(500)")
-                        .HasColumnName("meta_keywords");
-
-                    b.Property<string>("MetaTitle")
-                        .HasMaxLength(200)
-                        .HasColumnType("character varying(200)")
-                        .HasColumnName("meta_title");
-
-                    b.Property<decimal>("MinStockLevel")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("decimal(10,2)")
-                        .HasDefaultValue(0m)
-                        .HasColumnName("min_stock_level");
-
-                    b.Property<string>("ModelNumber")
-                        .HasMaxLength(100)
-                        .HasColumnType("character varying(100)")
-                        .HasColumnName("model_number");
-
-                    b.Property<decimal?>("Msrp")
-                        .HasColumnType("decimal(15,2)")
-                        .HasColumnName("msrp");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasMaxLength(300)
-                        .HasColumnType("character varying(300)")
-                        .HasColumnName("name");
-
-                    b.Property<string>("PrimaryImageUrl")
-                        .HasMaxLength(500)
-                        .HasColumnType("character varying(500)")
-                        .HasColumnName("primary_image_url");
-
-                    b.Property<decimal?>("ReorderPoint")
-                        .HasColumnType("decimal(10,2)")
-                        .HasColumnName("reorder_point");
-
-                    b.Property<decimal?>("ReorderQuantity")
-                        .HasColumnType("decimal(10,2)")
-                        .HasColumnName("reorder_quantity");
-
-                    b.Property<decimal>("SalePrice")
-                        .HasColumnType("decimal(15,2)")
-                        .HasColumnName("sale_price");
-
-                    b.Property<string>("SatHazardousMaterial")
-                        .HasMaxLength(4)
-                        .HasColumnType("character varying(4)")
-                        .HasColumnName("sat_hazardous_material");
-
-                    b.Property<string>("SatProductCode")
-                        .HasMaxLength(8)
-                        .HasColumnType("character varying(8)")
-                        .HasColumnName("sat_product_code");
-
-                    b.Property<string>("SatUnitCode")
-                        .HasMaxLength(3)
-                        .HasColumnType("character varying(3)")
-                        .HasColumnName("sat_unit_code");
-
-                    b.Property<string>("ShortDescription")
-                        .HasMaxLength(500)
-                        .HasColumnType("character varying(500)")
-                        .HasColumnName("short_description");
-
-                    b.Property<string>("Sku")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("character varying(100)")
-                        .HasColumnName("sku");
-
-                    b.Property<string>("Slug")
-                        .HasMaxLength(300)
-                        .HasColumnType("character varying(300)")
-                        .HasColumnName("slug");
-
-                    b.Property<decimal>("TaxRate")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("decimal(5,4)")
-                        .HasDefaultValue(0.1600m)
-                        .HasColumnName("tax_rate");
-
-                    b.Property<Guid>("TenantId")
-                        .HasColumnType("uuid")
-                        .HasColumnName("tenant_id");
-
-                    b.Property<bool>("TrackInventory")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("boolean")
-                        .HasDefaultValue(true)
-                        .HasColumnName("track_inventory");
-
-                    b.Property<string>("UnitOfMeasure")
-                        .IsRequired()
-                        .HasMaxLength(20)
-                        .HasColumnType("character varying(20)")
-                        .HasColumnName("unit_of_measure");
-
-                    b.Property<DateTime>("UpdatedAt")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("updated_at");
-
-                    b.Property<Guid?>("UpdatedBy")
-                        .HasColumnType("uuid")
-                        .HasColumnName("updated_by");
-
-                    b.Property<decimal?>("VolumeCm3")
-                        .HasColumnType("decimal(15,2)")
-                        .HasColumnName("volume_cm3");
-
-                    b.Property<decimal?>("WeightKg")
-                        .HasColumnType("decimal(10,3)")
-                        .HasColumnName("weight_kg");
-
-                    b.Property<decimal?>("WholesalePrice")
-                        .HasColumnType("decimal(15,2)")
-                        .HasColumnName("wholesale_price");
-
-                    b.Property<decimal?>("WidthCm")
-                        .HasColumnType("decimal(10,2)")
-                        .HasColumnName("width_cm");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("CategoryId")
-                        .HasDatabaseName("ix_products_category_id");
-
-                    b.HasIndex("IsActive")
-                        .HasDatabaseName("ix_products_is_active");
-
-                    b.HasIndex("IsFeatured")
-                        .HasDatabaseName("ix_products_is_featured")
-                        .HasFilter("is_featured = true AND is_deleted = false");
-
-                    b.HasIndex("Name")
-                        .HasDatabaseName("ix_products_name")
-                        .HasFilter("is_deleted = false");
-
-                    b.HasIndex("TenantId")
-                        .HasDatabaseName("ix_products_tenant_id")
-                        .HasFilter("is_deleted = false");
-
-                    b.HasIndex("TenantId", "Barcode")
-                        .IsUnique()
-                        .HasDatabaseName("ix_products_tenant_barcode")
-                        .HasFilter("barcode IS NOT NULL AND is_deleted = false");
-
-                    b.HasIndex("TenantId", "Sku")
-                        .IsUnique()
-                        .HasDatabaseName("ix_products_tenant_sku")
-                        .HasFilter("is_deleted = false");
-
-                    b.ToTable("products", (string)null);
-                });
-
-            modelBuilder.Entity("Corelio.Domain.Entities.ProductCategory", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .HasColumnType("uuid")
-                        .HasColumnName("id");
-
-                    b.Property<string>("ColorHex")
-                        .HasMaxLength(7)
-                        .HasColumnType("character varying(7)")
-                        .HasColumnName("color_hex");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("created_at");
-
-                    b.Property<Guid?>("CreatedBy")
-                        .HasColumnType("uuid")
-                        .HasColumnName("created_by");
-
-                    b.Property<DateTime?>("DeletedAt")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("deleted_at");
-
-                    b.Property<Guid?>("DeletedBy")
-                        .HasColumnType("uuid")
-                        .HasColumnName("deleted_by");
-
-                    b.Property<string>("Description")
-                        .HasColumnType("text")
-                        .HasColumnName("description");
-
-                    b.Property<string>("IconName")
-                        .HasMaxLength(50)
-                        .HasColumnType("character varying(50)")
-                        .HasColumnName("icon_name");
-
-                    b.Property<string>("ImageUrl")
-                        .HasMaxLength(500)
-                        .HasColumnType("character varying(500)")
-                        .HasColumnName("image_url");
-
-                    b.Property<bool>("IsActive")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("boolean")
-                        .HasDefaultValue(true)
-                        .HasColumnName("is_active");
-
-                    b.Property<bool>("IsDeleted")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("boolean")
-                        .HasDefaultValue(false)
-                        .HasColumnName("is_deleted");
-
-                    b.Property<int>("Level")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer")
-                        .HasDefaultValue(0)
-                        .HasColumnName("level");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasMaxLength(200)
-                        .HasColumnType("character varying(200)")
-                        .HasColumnName("name");
-
-                    b.Property<Guid?>("ParentCategoryId")
-                        .HasColumnType("uuid")
-                        .HasColumnName("parent_category_id");
-
-                    b.Property<string>("Path")
-                        .HasMaxLength(500)
-                        .HasColumnType("character varying(500)")
-                        .HasColumnName("path");
-
-                    b.Property<int>("SortOrder")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer")
-                        .HasDefaultValue(0)
-                        .HasColumnName("sort_order");
-
-                    b.Property<Guid>("TenantId")
-                        .HasColumnType("uuid")
-                        .HasColumnName("tenant_id");
-
-                    b.Property<DateTime>("UpdatedAt")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("updated_at");
-
-                    b.Property<Guid?>("UpdatedBy")
-                        .HasColumnType("uuid")
-                        .HasColumnName("updated_by");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("IsActive")
-                        .HasDatabaseName("ix_product_categories_is_active");
-
-                    b.HasIndex("ParentCategoryId")
-                        .HasDatabaseName("ix_product_categories_parent_id");
-
-                    b.HasIndex("Path")
-                        .HasDatabaseName("ix_product_categories_path");
-
-                    b.HasIndex("TenantId")
-                        .HasDatabaseName("ix_product_categories_tenant_id")
-                        .HasFilter("is_deleted = false");
-
-                    b.HasIndex("TenantId", "Name")
-                        .IsUnique()
-                        .HasDatabaseName("ix_product_categories_tenant_name")
-                        .HasFilter("is_deleted = false");
-
-                    b.ToTable("product_categories", (string)null);
                 });
 
             modelBuilder.Entity("Corelio.Domain.Entities.Product", b =>
@@ -2155,7 +1765,7 @@ namespace Corelio.Infrastructure.Migrations
                             IsActive = true,
                             IsEmailConfirmed = true,
                             LastName = "User",
-                            PasswordHash = "$2a$12$LQv3c1yqBWVHxkd0LHAkCOYz6TtxMQJqhN8/LewY5GyYIq7MRnH.m",
+                            PasswordHash = "$2a$12$9XY1aM3lapFOiGY/FhoPe.7yFNQEM5I7mV.0FvWHdiwcfbI/1/xPa",
                             TenantId = new Guid("b0000000-0000-0000-0000-000000000001"),
                             TwoFactorEnabled = false,
                             UpdatedAt = new DateTime(2026, 1, 21, 0, 0, 0, 0, DateTimeKind.Utc),
@@ -2171,7 +1781,7 @@ namespace Corelio.Infrastructure.Migrations
                             IsActive = true,
                             IsEmailConfirmed = true,
                             LastName = "User",
-                            PasswordHash = "$2a$12$LQv3c1yqBWVHxkd0LHAkCOYz6TtxMQJqhN8/LewY5GyYIq7MRnH.m",
+                            PasswordHash = "$2a$12$C0aR7VAyIrwnpVXnyJgghu1U7J/TSDPUBOToWBqTJd.KmNdktsGea",
                             TenantId = new Guid("b0000000-0000-0000-0000-000000000001"),
                             TwoFactorEnabled = false,
                             UpdatedAt = new DateTime(2026, 1, 21, 0, 0, 0, 0, DateTimeKind.Utc),
@@ -2187,7 +1797,7 @@ namespace Corelio.Infrastructure.Migrations
                             IsActive = true,
                             IsEmailConfirmed = true,
                             LastName = "User",
-                            PasswordHash = "$2a$12$LQv3c1yqBWVHxkd0LHAkCOYz6TtxMQJqhN8/LewY5GyYIq7MRnH.m",
+                            PasswordHash = "$2a$12$p0.21IB1wquXLAtxzYNNE.u8tr4lrGyNXU75ovrtUTLZsnrsJYLBe",
                             TenantId = new Guid("b0000000-0000-0000-0000-000000000001"),
                             TwoFactorEnabled = false,
                             UpdatedAt = new DateTime(2026, 1, 21, 0, 0, 0, 0, DateTimeKind.Utc),
@@ -2250,26 +1860,6 @@ namespace Corelio.Infrastructure.Migrations
                             RoleId = new Guid("d3333333-3333-3333-3333-333333333333"),
                             AssignedAt = new DateTime(2026, 1, 21, 0, 0, 0, 0, DateTimeKind.Utc)
                         });
-                });
-
-            modelBuilder.Entity("Corelio.Domain.Entities.Product", b =>
-                {
-                    b.HasOne("Corelio.Domain.Entities.ProductCategory", "Category")
-                        .WithMany("Products")
-                        .HasForeignKey("CategoryId")
-                        .OnDelete(DeleteBehavior.SetNull);
-
-                    b.Navigation("Category");
-                });
-
-            modelBuilder.Entity("Corelio.Domain.Entities.ProductCategory", b =>
-                {
-                    b.HasOne("Corelio.Domain.Entities.ProductCategory", "ParentCategory")
-                        .WithMany("ChildCategories")
-                        .HasForeignKey("ParentCategoryId")
-                        .OnDelete(DeleteBehavior.Restrict);
-
-                    b.Navigation("ParentCategory");
                 });
 
             modelBuilder.Entity("Corelio.Domain.Entities.Product", b =>
