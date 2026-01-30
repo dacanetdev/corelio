@@ -40,7 +40,7 @@ public record UpdateTenantThemeRequest(
 /// <summary>
 /// HTTP service implementation for tenant theme management.
 /// </summary>
-public class TenantThemeHttpService(
+public partial class TenantThemeHttpService(
     IHttpClientFactory httpClientFactory,
     ILogger<TenantThemeHttpService> logger) : ITenantThemeHttpService
 {
@@ -56,7 +56,7 @@ public class TenantThemeHttpService(
 
             if (!response.IsSuccessStatusCode)
             {
-                logger.LogWarning("Failed to get tenant theme: {StatusCode}", response.StatusCode);
+                LogGetThemeFailed(logger, response.StatusCode);
                 return null;
             }
 
@@ -64,7 +64,7 @@ public class TenantThemeHttpService(
         }
         catch (Exception ex)
         {
-            logger.LogError(ex, "Error fetching tenant theme");
+            LogGetThemeError(logger, ex);
             return null;
         }
     }
@@ -79,7 +79,7 @@ public class TenantThemeHttpService(
 
             if (!response.IsSuccessStatusCode)
             {
-                logger.LogWarning("Failed to update tenant theme: {StatusCode}", response.StatusCode);
+                LogUpdateThemeFailed(logger, response.StatusCode);
                 return false;
             }
 
@@ -87,8 +87,20 @@ public class TenantThemeHttpService(
         }
         catch (Exception ex)
         {
-            logger.LogError(ex, "Error updating tenant theme");
+            LogUpdateThemeError(logger, ex);
             return false;
         }
     }
+
+    [LoggerMessage(Level = LogLevel.Warning, Message = "Failed to get tenant theme: {StatusCode}")]
+    private static partial void LogGetThemeFailed(ILogger logger, System.Net.HttpStatusCode statusCode);
+
+    [LoggerMessage(Level = LogLevel.Error, Message = "Error fetching tenant theme")]
+    private static partial void LogGetThemeError(ILogger logger, Exception ex);
+
+    [LoggerMessage(Level = LogLevel.Warning, Message = "Failed to update tenant theme: {StatusCode}")]
+    private static partial void LogUpdateThemeFailed(ILogger logger, System.Net.HttpStatusCode statusCode);
+
+    [LoggerMessage(Level = LogLevel.Error, Message = "Error updating tenant theme")]
+    private static partial void LogUpdateThemeError(ILogger logger, Exception ex);
 }
