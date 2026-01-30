@@ -163,6 +163,23 @@ public class TenantConfiguration : AuditableEntity
     /// </summary>
     public bool FeaturePurchaseOrders { get; set; } = false;
 
+    // Branding Settings
+    /// <summary>
+    /// Whether the tenant uses a custom theme instead of the default.
+    /// </summary>
+    public bool UseCustomTheme { get; set; } = false;
+
+    /// <summary>
+    /// Custom primary color in hex format (e.g., #E74C3C).
+    /// Only applies when UseCustomTheme is true.
+    /// </summary>
+    public string? PrimaryColor { get; set; }
+
+    /// <summary>
+    /// URL to the tenant's logo image.
+    /// </summary>
+    public string? LogoUrl { get; set; }
+
     // Notification Settings
     /// <summary>
     /// Whether email notifications are enabled.

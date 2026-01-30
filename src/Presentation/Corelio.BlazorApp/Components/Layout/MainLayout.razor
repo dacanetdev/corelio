@@ -1,7 +1,13 @@
-﻿@inherits LayoutComponentBase
+@inherits LayoutComponentBase
+@implements IDisposable
 @using Corelio.BlazorApp.Services
+@using Corelio.BlazorApp.Services.Theming
+@using Microsoft.AspNetCore.Components.Authorization
+@inject IDynamicThemeService DynamicThemeService
+@inject ITenantThemeHttpService TenantThemeHttpService
+@inject AuthenticationStateProvider AuthenticationStateProvider
 
-<MudThemeProvider Theme="@ThemeConfiguration.CorelioDefaultTheme" />
+<MudThemeProvider Theme="@_currentTheme" />
 <MudPopoverProvider />
 <MudDialogProvider />
 <MudSnackbarProvider />
@@ -36,9 +42,63 @@
 
 @code {
     private bool _drawerOpen = true;
+    private MudBlazor.MudTheme _currentTheme = ThemeConfiguration.CorelioDefaultTheme;
+
+    protected override async Task OnInitializedAsync()
+    {
+        // Subscribe to authentication state changes
+        AuthenticationStateProvider.AuthenticationStateChanged += OnAuthenticationStateChanged;
+
+        // Try to load theme on initial render
+        await LoadTenantThemeAsync();
+    }
+
+    private async void OnAuthenticationStateChanged(Task<AuthenticationState> task)
+    {
+        await LoadTenantThemeAsync();
+        await InvokeAsync(StateHasChanged);
+    }
+
+    private async Task LoadTenantThemeAsync()
+    {
+        try
+        {
+            var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+
+            if (authState.User?.Identity?.IsAuthenticated == true)
+            {
+                // User is authenticated, try to load tenant theme
+                var themeResponse = await TenantThemeHttpService.GetCurrentThemeAsync();
+
+                if (themeResponse is { UseCustomTheme: true })
+                {
+                    _currentTheme = DynamicThemeService.GetThemeForTenant(themeResponse.PrimaryColor);
+                }
+                else
+                {
+                    _currentTheme = ThemeConfiguration.CorelioDefaultTheme;
+                }
+            }
+            else
+            {
+                // Not authenticated, use default theme
+                _currentTheme = ThemeConfiguration.CorelioDefaultTheme;
+            }
+        }
+        catch
+        {
+            // If theme loading fails, continue with default theme
+            _currentTheme = ThemeConfiguration.CorelioDefaultTheme;
+        }
+    }
 
     private void ToggleDrawer()
     {
         _drawerOpen = !_drawerOpen;
+    }
+
+    public void Dispose()
+    {
+        AuthenticationStateProvider.AuthenticationStateChanged -= OnAuthenticationStateChanged;
     }
 }

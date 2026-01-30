@@ -148,6 +148,19 @@ public class TenantConfigurationEntityConfiguration : IEntityTypeConfiguration<T
             .HasColumnName("feature_purchase_orders")
             .HasDefaultValue(false);
 
+        // Branding Settings
+        builder.Property(tc => tc.UseCustomTheme)
+            .HasColumnName("use_custom_theme")
+            .HasDefaultValue(false);
+
+        builder.Property(tc => tc.PrimaryColor)
+            .HasColumnName("primary_color")
+            .HasMaxLength(7); // #RRGGBB format
+
+        builder.Property(tc => tc.LogoUrl)
+            .HasColumnName("logo_url")
+            .HasMaxLength(500);
+
         // Notification Settings
         builder.Property(tc => tc.EmailNotificationsEnabled)
             .HasColumnName("email_notifications_enabled")
