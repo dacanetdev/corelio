@@ -4,7 +4,7 @@
 ### Multi-tenant theming with dynamic color customization
 ### Scalar Docs: {{baseUrl}}/scalar/v1
 
-@baseUrl = https://localhost:5001
+@baseUrl = http://localhost:5105
 
 ### -----------------------------------------
 ### Step 1: Login first to get auth token
@@ -26,7 +26,7 @@ Content-Type: application/json
 
 ### Get current tenant's theme configuration
 GET {{baseUrl}}/api/v1/tenants/theme/current
-Authorization: Bearer {{login.response.body.accessToken}}
+Authorization: Bearer {{login.response.body.tokens.accessToken}}
 
 ###
 
@@ -36,7 +36,7 @@ Authorization: Bearer {{login.response.body.accessToken}}
 
 ### Enable custom theme - Orange
 PUT {{baseUrl}}/api/v1/tenants/theme
-Authorization: Bearer {{login.response.body.accessToken}}
+Authorization: Bearer {{login.response.body.tokens.accessToken}}
 Content-Type: application/json
 
 {
@@ -48,7 +48,7 @@ Content-Type: application/json
 
 ### Enable custom theme - Blue
 PUT {{baseUrl}}/api/v1/tenants/theme
-Authorization: Bearer {{login.response.body.accessToken}}
+Authorization: Bearer {{login.response.body.tokens.accessToken}}
 Content-Type: application/json
 
 {
@@ -60,7 +60,7 @@ Content-Type: application/json
 
 ### Enable custom theme - Green
 PUT {{baseUrl}}/api/v1/tenants/theme
-Authorization: Bearer {{login.response.body.accessToken}}
+Authorization: Bearer {{login.response.body.tokens.accessToken}}
 Content-Type: application/json
 
 {
@@ -72,7 +72,7 @@ Content-Type: application/json
 
 ### Enable custom theme - Purple
 PUT {{baseUrl}}/api/v1/tenants/theme
-Authorization: Bearer {{login.response.body.accessToken}}
+Authorization: Bearer {{login.response.body.tokens.accessToken}}
 Content-Type: application/json
 
 {
@@ -84,7 +84,7 @@ Content-Type: application/json
 
 ### Enable custom theme - Teal
 PUT {{baseUrl}}/api/v1/tenants/theme
-Authorization: Bearer {{login.response.body.accessToken}}
+Authorization: Bearer {{login.response.body.tokens.accessToken}}
 Content-Type: application/json
 
 {
@@ -96,7 +96,7 @@ Content-Type: application/json
 
 ### Enable custom theme - Deep Orange
 PUT {{baseUrl}}/api/v1/tenants/theme
-Authorization: Bearer {{login.response.body.accessToken}}
+Authorization: Bearer {{login.response.body.tokens.accessToken}}
 Content-Type: application/json
 
 {
@@ -108,7 +108,7 @@ Content-Type: application/json
 
 ### Reset to default Corelio theme
 PUT {{baseUrl}}/api/v1/tenants/theme
-Authorization: Bearer {{login.response.body.accessToken}}
+Authorization: Bearer {{login.response.body.tokens.accessToken}}
 Content-Type: application/json
 
 {
@@ -124,7 +124,7 @@ Content-Type: application/json
 
 ### Invalid hex color format (should return 400)
 PUT {{baseUrl}}/api/v1/tenants/theme
-Authorization: Bearer {{login.response.body.accessToken}}
+Authorization: Bearer {{login.response.body.tokens.accessToken}}
 Content-Type: application/json
 
 {
@@ -136,7 +136,7 @@ Content-Type: application/json
 
 ### Invalid hex color - missing # prefix (should return 400)
 PUT {{baseUrl}}/api/v1/tenants/theme
-Authorization: Bearer {{login.response.body.accessToken}}
+Authorization: Bearer {{login.response.body.tokens.accessToken}}
 Content-Type: application/json
 
 {
@@ -148,7 +148,7 @@ Content-Type: application/json
 
 ### Invalid hex color - wrong length (should return 400)
 PUT {{baseUrl}}/api/v1/tenants/theme
-Authorization: Bearer {{login.response.body.accessToken}}
+Authorization: Bearer {{login.response.body.tokens.accessToken}}
 Content-Type: application/json
 
 {
