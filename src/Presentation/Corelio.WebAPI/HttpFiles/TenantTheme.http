@@ -1,0 +1,162 @@
+### ============================================
+### Tenant Theme Module (US-4.4)
+### ============================================
+### Multi-tenant theming with dynamic color customization
+### Scalar Docs: {{baseUrl}}/scalar/v1
+
+@baseUrl = https://localhost:5001
+
+### -----------------------------------------
+### Step 1: Login first to get auth token
+### -----------------------------------------
+# @name login
+POST {{baseUrl}}/api/v1/auth/login
+Content-Type: application/json
+
+{
+  "email": "admin@demo.corelio.app",
+  "password": "Admin123!"
+}
+
+###
+
+### -----------------------------------------
+### Theme Read Operations
+### -----------------------------------------
+
+### Get current tenant's theme configuration
+GET {{baseUrl}}/api/v1/tenants/theme/current
+Authorization: Bearer {{login.response.body.accessToken}}
+
+###
+
+### -----------------------------------------
+### Theme Update Operations
+### -----------------------------------------
+
+### Enable custom theme - Orange
+PUT {{baseUrl}}/api/v1/tenants/theme
+Authorization: Bearer {{login.response.body.accessToken}}
+Content-Type: application/json
+
+{
+  "primaryColor": "#FF5722",
+  "useCustomTheme": true
+}
+
+###
+
+### Enable custom theme - Blue
+PUT {{baseUrl}}/api/v1/tenants/theme
+Authorization: Bearer {{login.response.body.accessToken}}
+Content-Type: application/json
+
+{
+  "primaryColor": "#2196F3",
+  "useCustomTheme": true
+}
+
+###
+
+### Enable custom theme - Green
+PUT {{baseUrl}}/api/v1/tenants/theme
+Authorization: Bearer {{login.response.body.accessToken}}
+Content-Type: application/json
+
+{
+  "primaryColor": "#4CAF50",
+  "useCustomTheme": true
+}
+
+###
+
+### Enable custom theme - Purple
+PUT {{baseUrl}}/api/v1/tenants/theme
+Authorization: Bearer {{login.response.body.accessToken}}
+Content-Type: application/json
+
+{
+  "primaryColor": "#9C27B0",
+  "useCustomTheme": true
+}
+
+###
+
+### Enable custom theme - Teal
+PUT {{baseUrl}}/api/v1/tenants/theme
+Authorization: Bearer {{login.response.body.accessToken}}
+Content-Type: application/json
+
+{
+  "primaryColor": "#009688",
+  "useCustomTheme": true
+}
+
+###
+
+### Enable custom theme - Deep Orange
+PUT {{baseUrl}}/api/v1/tenants/theme
+Authorization: Bearer {{login.response.body.accessToken}}
+Content-Type: application/json
+
+{
+  "primaryColor": "#E64A19",
+  "useCustomTheme": true
+}
+
+###
+
+### Reset to default Corelio theme
+PUT {{baseUrl}}/api/v1/tenants/theme
+Authorization: Bearer {{login.response.body.accessToken}}
+Content-Type: application/json
+
+{
+  "primaryColor": null,
+  "useCustomTheme": false
+}
+
+###
+
+### -----------------------------------------
+### Validation Error Cases
+### -----------------------------------------
+
+### Invalid hex color format (should return 400)
+PUT {{baseUrl}}/api/v1/tenants/theme
+Authorization: Bearer {{login.response.body.accessToken}}
+Content-Type: application/json
+
+{
+  "primaryColor": "not-a-color",
+  "useCustomTheme": true
+}
+
+###
+
+### Invalid hex color - missing # prefix (should return 400)
+PUT {{baseUrl}}/api/v1/tenants/theme
+Authorization: Bearer {{login.response.body.accessToken}}
+Content-Type: application/json
+
+{
+  "primaryColor": "FF5722",
+  "useCustomTheme": true
+}
+
+###
+
+### Invalid hex color - wrong length (should return 400)
+PUT {{baseUrl}}/api/v1/tenants/theme
+Authorization: Bearer {{login.response.body.accessToken}}
+Content-Type: application/json
+
+{
+  "primaryColor": "#FFF",
+  "useCustomTheme": true
+}
+
+###
+
+### Unauthorized - no token (should return 401)
+GET {{baseUrl}}/api/v1/tenants/theme/current

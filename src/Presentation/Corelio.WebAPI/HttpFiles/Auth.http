@@ -1,0 +1,75 @@
+### ============================================
+### Authentication Module
+### ============================================
+### Scalar Docs: {{baseUrl}}/scalar/v1
+### Demo Users:
+###   - admin@demo.corelio.app / Admin123!
+###   - manager@demo.corelio.app / Admin123!
+###   - cashier@demo.corelio.app / Admin123!
+
+@baseUrl = https://localhost:5001
+
+### Login with Admin user
+# @name loginAdmin
+POST {{baseUrl}}/api/v1/auth/login
+Content-Type: application/json
+
+{
+  "email": "admin@demo.corelio.app",
+  "password": "Admin123!"
+}
+
+###
+
+### Login with Manager user
+# @name loginManager
+POST {{baseUrl}}/api/v1/auth/login
+Content-Type: application/json
+
+{
+  "email": "manager@demo.corelio.app",
+  "password": "Admin123!"
+}
+
+###
+
+### Login with Cashier user
+# @name loginCashier
+POST {{baseUrl}}/api/v1/auth/login
+Content-Type: application/json
+
+{
+  "email": "cashier@demo.corelio.app",
+  "password": "Admin123!"
+}
+
+###
+
+### Refresh access token
+POST {{baseUrl}}/api/v1/auth/refresh
+Content-Type: application/json
+
+{
+  "refreshToken": "{{loginAdmin.response.body.refreshToken}}"
+}
+
+###
+
+### Logout (Revoke refresh token)
+POST {{baseUrl}}/api/v1/auth/logout
+Authorization: Bearer {{loginAdmin.response.body.accessToken}}
+Content-Type: application/json
+
+{
+  "refreshToken": "{{loginAdmin.response.body.refreshToken}}"
+}
+
+###
+
+### Request password reset
+POST {{baseUrl}}/api/v1/auth/forgot-password
+Content-Type: application/json
+
+{
+  "email": "admin@demo.corelio.app"
+}

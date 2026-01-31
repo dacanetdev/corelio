@@ -1,0 +1,14 @@
+### ============================================
+### Health Check Endpoints
+### ============================================
+### No authentication required
+
+@baseUrl = https://localhost:5001
+
+### Alive check (simple liveness probe)
+GET {{baseUrl}}/alive
+
+###
+
+### Health check (detailed health status)
+GET {{baseUrl}}/health
