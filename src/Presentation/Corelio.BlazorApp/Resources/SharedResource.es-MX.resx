@@ -404,4 +404,42 @@
   <data name="CreateFirst" xml:space="preserve">
     <value>Crea el primero</value>
   </data>
+
+  <!-- Theme Settings -->
+  <data name="ThemeSettings" xml:space="preserve">
+    <value>Configuración de Tema</value>
+  </data>
+  <data name="ThemeSettingsDescription" xml:space="preserve">
+    <value>Personaliza los colores de tu empresa</value>
+  </data>
+  <data name="PrimaryColor" xml:space="preserve">
+    <value>Color Principal</value>
+  </data>
+  <data name="PrimaryColorHelperText" xml:space="preserve">
+    <value>Formato hexadecimal: #RRGGBB (ej. #E74C3C)</value>
+  </data>
+  <data name="UseCustomTheme" xml:space="preserve">
+    <value>Usar Tema Personalizado</value>
+  </data>
+  <data name="UseDefaultTheme" xml:space="preserve">
+    <value>Usar Tema Predeterminado</value>
+  </data>
+  <data name="ThemeSavedSuccessfully" xml:space="preserve">
+    <value>Tema guardado exitosamente</value>
+  </data>
+  <data name="ThemeSaveError" xml:space="preserve">
+    <value>Error al guardar el tema</value>
+  </data>
+  <data name="InvalidColorFormat" xml:space="preserve">
+    <value>Formato de color inválido. Use formato hexadecimal (#RRGGBB)</value>
+  </data>
+  <data name="PreviewTheme" xml:space="preserve">
+    <value>Vista Previa</value>
+  </data>
+  <data name="ResetToDefault" xml:space="preserve">
+    <value>Restablecer a Predeterminado</value>
+  </data>
+  <data name="ThemeCustomization" xml:space="preserve">
+    <value>Personalización de Marca</value>
+  </data>
 </root>

@@ -7,13 +7,15 @@ builder.Configuration["DASHBOARD__OTLP__AUTHMODE"] = "Unsecured";
 builder.Configuration["ASPIRE_ALLOW_UNSECURED_TRANSPORT"] = "true";
 
 // PostgreSQL with Aspire auto-generated password
-// Testing without data volumes first to isolate password issue
+// Using WithLifetime to ensure fresh database on each restart during development
 var postgres = builder.AddPostgres("postgres")
+    .WithLifetime(ContainerLifetime.Session)
     .WithPgAdmin()
     .AddDatabase("corelioDb");
 
-// Redis cache (testing without data volume)
-var redis = builder.AddRedis("redis");
+// Redis cache (using session lifetime for fresh start)
+var redis = builder.AddRedis("redis")
+    .WithLifetime(ContainerLifetime.Session);
 
 var api = builder.AddProject<Projects.Corelio_WebAPI>("api")
     .WithReference(postgres)

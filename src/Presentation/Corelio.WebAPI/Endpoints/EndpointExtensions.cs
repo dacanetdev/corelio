@@ -14,6 +14,7 @@ public static class EndpointExtensions
     {
         app.MapAuthEndpoints();
         app.MapTenantEndpoints();
+        app.MapTenantThemeEndpoints();
 
         return app;
     }

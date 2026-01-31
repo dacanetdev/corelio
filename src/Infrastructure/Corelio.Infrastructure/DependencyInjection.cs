@@ -40,6 +40,9 @@ public static class DependencyInjection
         // Register tenant service
         services.AddScoped<ITenantService, TenantService>();
 
+        // Register tenant theme service
+        services.AddScoped<ITenantThemeService, TenantThemeService>();
+
         // Register current user provider
         services.AddScoped<ICurrentUserProvider, CurrentUserProvider>();
 
@@ -120,6 +123,9 @@ public static class DependencyInjection
 
         // Register tenant service
         builder.Services.AddScoped<ITenantService, TenantService>();
+
+        // Register tenant theme service
+        builder.Services.AddScoped<ITenantThemeService, TenantThemeService>();
 
         // Register current user provider
         builder.Services.AddScoped<ICurrentUserProvider, CurrentUserProvider>();

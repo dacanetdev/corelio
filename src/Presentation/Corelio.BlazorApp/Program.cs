@@ -1,8 +1,10 @@
 using System.Globalization;
 using Blazored.LocalStorage;
 using Corelio.BlazorApp.Components;
+using Corelio.BlazorApp.Services;
 using Corelio.BlazorApp.Services.Authentication;
 using Corelio.BlazorApp.Services.Products;
+using Corelio.BlazorApp.Services.Theming;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Localization;
 using MudBlazor.Services;
@@ -83,6 +85,10 @@ builder.Services.AddScoped<IAuthService, AuthService>();
 
 // Add Product service
 builder.Services.AddScoped<IProductService, ProductService>();
+
+// Add Theme services
+builder.Services.AddScoped<IDynamicThemeService, DynamicThemeService>();
+builder.Services.AddScoped<ITenantThemeHttpService, TenantThemeHttpService>();
 
 // Add Razor Components
 builder.Services.AddRazorComponents()
