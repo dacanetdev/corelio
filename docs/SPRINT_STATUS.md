@@ -12,7 +12,7 @@
 
 | User Story | Status | Progress | Notes |
 |------------|--------|----------|-------|
-| US-3.1: Product Management | 🔵 Not Started | 0/10 tasks | Product entities, CQRS, categories, UI |
+| US-3.1: Product Management | 🟡 In Progress | 7/10 tasks | API endpoints complete, Blazor UI exists, unit tests pending |
 
 ---
 
@@ -55,26 +55,32 @@
 
 ---
 
-## Sprint 5 Planning: UI/UX Design System (Phase 3) + Polish
+## Sprint 5 Progress: UI/UX Design System (Phase 3) + Polish
 
 **Sprint Goal:** Apply design system to existing pages for consistency
 
+**Sprint Start:** 2026-02-03
+**Sprint End:** 2026-02-03
+**Status:** 🟢 Completed
+
 | User Story | Priority | Story Points | Hours | Status | Notes |
 |------------|----------|--------------|-------|--------|-------|
-| US-5.1: Apply Design System to Existing Pages | P2 Medium | 3 | 4-6 | 🔵 Not Started | ProductList, ProductForm redesign with design system patterns |
+| US-5.1: Apply Design System to Existing Pages | P2 Medium | 3 | 2 | 🟢 Completed | ProductList, ProductForm redesigned with design system components |
 
-**Total Sprint 5:** 3 SP (4-6 hours)
+**Total Sprint 5:** 3 SP (2 hours actual)
 
 **Dependencies:**
-- Sprint 4 complete (design system infrastructure and components)
-- Sprint 3 complete (Product pages exist to be redesigned)
+- ✅ Sprint 4 complete (design system infrastructure and components)
+- ✅ Sprint 3 API endpoints exist (Product pages to be redesigned)
 
 **Deliverables:**
 - ✅ ProductList page uses PageHeader, LoadingState, EmptyState components
-- ✅ ProductList table styling consistent with design system
-- ✅ ProductForm uses section headers, two-column grid, consistent styling
+- ✅ ProductList responsive filter bar with MudGrid layout
+- ✅ ProductForm uses section cards with icons and consistent styling
+- ✅ ProductForm uses PageHeader with breadcrumbs (Home > Products > New/Edit)
+- ✅ All hardcoded Spanish text replaced with localization keys
 - ✅ All currency formatted with es-MX culture
-- ✅ All dates formatted dd/MM/yyyy
+- ✅ New form-section CSS styles added to design system
 
 ---
 
@@ -126,6 +132,26 @@
 
 ---
 
+## Sprint 6 Burndown
+
+| Day | Planned SP | Actual SP | Remaining SP |
+|-----|------------|-----------|--------------|
+| 1 | 49 | 8 | 41 |
+| 2 | 45 | - | - |
+| 3 | 41 | - | - |
+| 4 | 36 | - | - |
+| 5 | 31 | - | - |
+| 6 | 26 | - | - |
+| 7 | 21 | - | - |
+| 8 | 16 | - | - |
+| 9 | 10 | - | - |
+| 10 | 5 | - | - |
+| 11 | 0 | - | - |
+
+**Burn Rate:** Target ~4.5 SP/day (49 SP ÷ 11 days ≈ 4.5)
+
+---
+
 ## Sprint 2 Burndown (Completed)
 
 | Day | Planned SP | Actual SP | Remaining SP |
@@ -156,14 +182,67 @@
 | Sprint 2 | Multi-Tenancy & Auth | 🟢 Completed | 34 | 34 | 2026-01-12 - 2026-01-13 |
 | Sprint 3 | Products & Categories | 🟡 In Progress | 21 | - | 2026-01-13 - 2026-01-17 |
 | Sprint 4 | UI/UX Design System (Phase 1-2) | 🟢 Completed | 26 | 26 | 2026-01-27 - 2026-01-29 |
-| **Sprint 5** | **UI/UX Design System (Phase 3) + Polish** | 🔵 Not Started | **3** | - | **TBD** |
-| Sprint 6 | Inventory & Customers | 🔵 Not Started | 26 | - | TBD |
+| Sprint 5 | UI/UX Design System (Phase 3) + Polish | 🟢 Completed | 3 | 3 | 2026-02-03 |
+| Sprint 6 | Tenant-Configurable Pricing Module | 🟡 In Progress | 49 | - | 2026-02-06 - TBD |
 | Sprint 7 | POS Backend & UI | 🔵 Not Started | 34 | - | TBD |
 | Sprint 8 | POS Features & Sales Mgmt | 🔵 Not Started | 21 | - | TBD |
 | Sprint 9 | CFDI Integration | 🔵 Not Started | 34 | - | TBD |
 | Sprint 10 | Testing, QA & Deployment | 🔵 Not Started | 34 | - | TBD |
 
 **Total Story Points:** 254 SP (+29 SP from UI/UX Design System Epic)
+
+---
+
+## Sprint 6 Planning: Tenant-Configurable Pricing Module
+
+**Sprint Start:** 2026-02-06
+**Sprint End:** TBD (estimated 2-3 weeks)
+**Status:** 🟡 In Progress
+
+**Sprint Goal:** Replace FERRESYS's rigid 6-tier pricing structure with a tenant-configurable pricing module that allows hardware store owners to define their own discount tiers (1-6) and margin/price tiers (1-5), manage list prices, and perform bulk price changes efficiently.
+
+**Epic:** Epic-PRICING-001 - Tenant-Configurable Pricing Module
+
+| User Story | Priority | Story Points | Hours | Status | Notes |
+|------------|----------|--------------|-------|--------|-------|
+| US-6.1: Pricing Domain Model & Infrastructure | P0 Critical | 8 | 10-12 | 🟢 Completed | 5 new entities, 5 EF Core configs, migration, 2 repositories, 3 Product columns |
+| US-6.2: Pricing Calculation Engine & CQRS | P0 Critical | 13 | 16-18 | 🔵 Not Started | Static calculation service, 7 CQRS handlers, 3 validators, unit tests >90% coverage |
+| US-6.3: Pricing API & Service Layer | P0 Critical | 5 | 6-8 | 🔵 Not Started | 7 Minimal API endpoints, Blazor HTTP service, 9 models |
+| US-6.4: Pricing Configuration UI | P1 High | 5 | 6-8 | 🔵 Not Started | PricingSettings.razor at /settings/pricing, ~60 localization keys |
+| US-6.5: Product Pricing Management UI | P0 Critical | 13 | 16-18 | 🔵 Not Started | ProductCostos component, ProductForm tabs, PriceChange.razor, BulkPriceChangeDialog, ~100 localization keys |
+| US-6.6: Pricing Module Testing | P1 High | 5 | 6-8 | 🔵 Not Started | Handler tests, validator tests, integration tests, >70% coverage |
+
+**Total Sprint 6:** 49 SP (60-74 hours)
+
+**Dependencies:**
+- Sprint 3 Product Management API endpoints (US-3.1) - ProductRepository and Product entity required
+- Redis infrastructure (already available from Sprint 2) - for caching pricing configurations
+- Multi-tenancy query filters (Sprint 1/2) - all pricing entities must enforce tenant isolation
+
+**Deliverables:**
+- [x] 5 new database tables (tenant_pricing_configurations, discount_tier_definitions, margin_tier_definitions, product_discounts, product_margin_prices)
+- [x] 3 new columns on products table (ListPrice, NetCost, IvaEnabled)
+- [ ] PricingCalculationService with cascading discount math matching FERRESYS exactly
+- [ ] 7 API endpoints for pricing operations (GET/PUT tenant config, GET list/single product pricing, PUT single, POST calculate, POST bulk-update)
+- [ ] PricingSettings.razor page at /settings/pricing (tenant configuration)
+- [ ] ProductForm.razor with tabbed layout (Datos/Costos tabs)
+- [ ] PriceChange.razor page at /pricing (mass price management)
+- [ ] BulkPriceChangeDialog.razor (bulk updates: %, fixed amount, new margin)
+- [ ] ~160 Spanish localization keys
+- [ ] >70% test coverage on Application layer pricing code
+
+**Success Criteria:**
+- [ ] Tenant can configure 1-6 discount tiers and 1-5 margin tiers with custom names
+- [ ] Product form Costos tab displays all pricing tiers correctly
+- [ ] Cascading discount calculation matches FERRESYS logic with 100% accuracy (validated via unit tests)
+- [ ] NetCost = ListPrice × (1-D1/100) × (1-D2/100) × ... × (1-Dn/100) verified
+- [ ] SalePrice = NetCost / (1 - MarginPercent/100) verified
+- [ ] PriceWithIva = SalePrice × 1.16 verified
+- [ ] Bulk price change updates 100 products in < 10 seconds
+- [ ] Multi-tenancy isolation verified (Tenant A cannot see/update Tenant B's pricing)
+- [ ] Mobile-responsive (tested at 375px width - iPhone SE)
+- [ ] Spanish (es-MX) localization complete (all ~160 keys)
+- [ ] Zero compilation errors, solution builds successfully
 
 ---
 
@@ -506,6 +585,112 @@
 
 ---
 
+### 2026-02-01 (Sprint 3 - Product Management API Endpoints)
+**Yesterday:**
+- Sprint 4 completed, PR #40 merged
+
+**Today:**
+- **Completed US-3.1: Product Management API Endpoints (7/10 tasks)**
+  - ✅ Created `ProductEndpoints.cs` with full CRUD operations
+    - GET /api/v1/products (paginated list with filtering)
+    - GET /api/v1/products/{id} (get by ID)
+    - GET /api/v1/products/search (POS-optimized search)
+    - POST /api/v1/products (create)
+    - PUT /api/v1/products/{id} (update)
+    - DELETE /api/v1/products/{id} (soft delete)
+  - ✅ Created `ProductCategoryEndpoints.cs` with full CRUD operations
+    - GET /api/v1/product-categories (list all)
+    - GET /api/v1/product-categories/{id} (get by ID)
+    - POST /api/v1/product-categories (create)
+    - PUT /api/v1/product-categories/{id} (update)
+    - DELETE /api/v1/product-categories/{id} (soft delete)
+  - ✅ Created `ResultExtensions.cs` for shared error mapping
+  - ✅ Created `UpdateProductRequest.cs` and `UpdateCategoryRequest.cs` DTOs
+  - ✅ Registered endpoints in `EndpointExtensions.cs`
+  - ✅ Created missing CQRS handlers for categories:
+    - GetCategoriesQuery + Handler
+    - GetCategoryByIdQuery + Handler
+    - UpdateCategoryCommand + Handler + Validator
+    - DeleteCategoryCommand + Handler + Validator
+  - ✅ Added `GetAllAsync` method to IProductCategoryRepository
+  - ✅ Added `Forbidden` to ErrorType enum
+  - ✅ Created `Products.http` for API testing
+  - ✅ Added 30+ Spanish localization keys for categories and product fields
+  - ✅ Solution builds with zero errors
+
+**Blockers:**
+- Pre-existing test failures in TenantServiceTests (Moq can't mock primary constructors) - not related to US-3.1
+
+**Files Created:**
+- `WebAPI/Endpoints/ProductEndpoints.cs`
+- `WebAPI/Endpoints/ProductCategoryEndpoints.cs`
+- `WebAPI/Extensions/ResultExtensions.cs`
+- `WebAPI/Contracts/Products/UpdateProductRequest.cs`
+- `WebAPI/Contracts/ProductCategories/UpdateCategoryRequest.cs`
+- `Application/ProductCategories/Queries/GetCategories/GetCategoriesQuery.cs`
+- `Application/ProductCategories/Queries/GetCategories/GetCategoriesQueryHandler.cs`
+- `Application/ProductCategories/Queries/GetCategoryById/GetCategoryByIdQuery.cs`
+- `Application/ProductCategories/Queries/GetCategoryById/GetCategoryByIdQueryHandler.cs`
+- `Application/ProductCategories/Commands/UpdateCategory/UpdateCategoryCommand.cs`
+- `Application/ProductCategories/Commands/UpdateCategory/UpdateCategoryCommandHandler.cs`
+- `Application/ProductCategories/Commands/UpdateCategory/UpdateCategoryCommandValidator.cs`
+- `Application/ProductCategories/Commands/DeleteCategory/DeleteCategoryCommand.cs`
+- `Application/ProductCategories/Commands/DeleteCategory/DeleteCategoryCommandHandler.cs`
+- `Application/ProductCategories/Commands/DeleteCategory/DeleteCategoryCommandValidator.cs`
+- `WebAPI/HttpFiles/Products.http`
+
+**Remaining for US-3.1:**
+- [ ] Unit tests for Product handlers (>70% coverage)
+- [ ] Integration tests with multi-tenancy verification
+- [ ] Manual end-to-end testing via Blazor UI
+
+**Next Steps:**
+- Create unit tests for Product command/query handlers
+- Test Product CRUD via Aspire + Blazor UI
+
+---
+
+### 2026-02-03 (Sprint 5 - Apply Design System to Existing Pages)
+**Yesterday:**
+- Sprint 4 complete, Sprint 3 API endpoints implemented
+
+**Today:**
+- **Completed US-5.1: Apply Design System to Existing Pages (3 SP)**
+  - ✅ Updated ProductList.razor with design system components:
+    - Replaced manual header with PageHeader component
+    - Added breadcrumbs (Home > Products)
+    - Replaced MudProgressLinear with LoadingState component
+    - Replaced MudAlert empty state with EmptyState component (with action button)
+    - Redesigned filter bar with responsive MudGrid layout
+    - Added bg-light styling to filter section
+  - ✅ Updated ProductForm.razor with design system components:
+    - Replaced manual header with PageHeader component
+    - Added breadcrumbs (Home > Products > New/Edit)
+    - Replaced MudProgressLinear with LoadingState component
+    - Wrapped form sections in styled cards (.form-section)
+    - Added section icons (Info, AttachMoney, Inventory, Tune)
+    - Replaced all hardcoded Spanish text with localization keys
+  - ✅ Added CSS styles to app.css:
+    - .form-section with background, padding, rounded corners
+    - .form-section-title with primary color accent and border
+    - Data table enhancements (.mud-table-row:hover)
+    - Status badge styles for active/inactive
+  - ✅ Added 10+ localization keys to SharedResource.es-MX.resx:
+    - NoProductsDescription, ProductListDescription
+    - ProductNotFound, Saving
+    - UnitPieces, UnitKilograms, UnitMeters, UnitLiters, UnitBoxes, UnitPacks
+  - ✅ Solution builds with zero errors
+
+**Blockers:**
+- None
+
+**Sprint 5 Complete!**
+- US-5.1 completed (3 Story Points)
+- All Product pages now use design system components consistently
+- Ready for Sprint 6: Inventory & Customers
+
+---
+
 ## Sprint 1 Retrospective (Completed: 2026-01-12)
 
 ### What went well?
@@ -587,7 +772,9 @@
 | Sprint 1 | 21 | 21 | 21 |
 | Sprint 2 | 34 | 34 | 34 |
 
-### Average Velocity: 27.5 SP
+### Average Velocity: 27.5 SP (Sprints 1-5 completed)
+
+**Note:** Sprint 6 has 49 SP (1.8× average velocity) due to pricing module scope. Estimated 2-3 weeks for completion.
 
 ---
 
@@ -632,4 +819,57 @@
 
 ---
 
-**Last Updated:** 2026-01-31 (Sprint 4 Complete, PR #40 pending merge)
+### 2026-02-06 (Sprint 6 - Day 1: Pricing Domain Model & Infrastructure)
+**Yesterday:**
+- Sprint 5 complete, design system applied to product pages
+
+**Today:**
+- **Completed US-6.1: Pricing Domain Model & Infrastructure (8 SP)**
+  - ✅ Created 5 new domain entities:
+    - TenantPricingConfiguration (tenant-configurable discount/margin tier counts, IVA settings)
+    - DiscountTierDefinition (custom tier names, 1-6 tiers)
+    - MarginTierDefinition (custom tier names, 1-5 tiers)
+    - ProductDiscount (per-product discount percentages per tier)
+    - ProductMarginPrice (per-product margin/sale price/IVA per tier)
+  - ✅ Modified Product entity: added ListPrice, NetCost, IvaEnabled properties and Discounts/MarginPrices navigation properties
+  - ✅ Created 2 repository interfaces: ITenantPricingConfigurationRepository, IProductPricingRepository
+  - ✅ Created 5 EF Core configurations with CHECK constraints, unique indexes, cascade deletes
+  - ✅ Modified ProductConfiguration with 3 new column mappings and 2 relationships
+  - ✅ Updated ApplicationDbContext with 5 DbSets and 5 tenant query filters
+  - ✅ Created 2 repository implementations with Include/ThenInclude patterns
+  - ✅ Registered both repositories in DI (both Aspire and non-Aspire methods)
+  - ✅ Generated AddPricingModuleSchema migration (5 tables, 3 product columns, 7 indexes, 8 CHECK constraints)
+  - ✅ Solution builds with zero errors
+  - ✅ All 68 Domain + Application tests passing (13 pre-existing Infrastructure test failures unrelated)
+
+**Files Created (14 + migration):**
+- `Domain/Entities/TenantPricingConfiguration.cs`
+- `Domain/Entities/DiscountTierDefinition.cs`
+- `Domain/Entities/MarginTierDefinition.cs`
+- `Domain/Entities/ProductDiscount.cs`
+- `Domain/Entities/ProductMarginPrice.cs`
+- `Domain/Repositories/ITenantPricingConfigurationRepository.cs`
+- `Domain/Repositories/IProductPricingRepository.cs`
+- `Infrastructure/.../Configurations/TenantPricingConfigurationConfiguration.cs`
+- `Infrastructure/.../Configurations/DiscountTierDefinitionConfiguration.cs`
+- `Infrastructure/.../Configurations/MarginTierDefinitionConfiguration.cs`
+- `Infrastructure/.../Configurations/ProductDiscountConfiguration.cs`
+- `Infrastructure/.../Configurations/ProductMarginPriceConfiguration.cs`
+- `Infrastructure/.../Repositories/TenantPricingConfigurationRepository.cs`
+- `Infrastructure/.../Repositories/ProductPricingRepository.cs`
+
+**Files Modified (4):**
+- `Domain/Entities/Product.cs` - +3 properties, +2 nav props
+- `Infrastructure/.../Configurations/ProductConfiguration.cs` - +3 columns, +2 relationships
+- `Infrastructure/.../Persistence/ApplicationDbContext.cs` - +5 DbSets, +5 query filters
+- `Infrastructure/.../DependencyInjection.cs` - +2 repo registrations (both methods)
+
+**Blockers:**
+- None
+
+**Next Steps:**
+- Start US-6.2: Pricing Calculation Engine & CQRS
+
+---
+
+**Last Updated:** 2026-02-06 (Sprint 6 Day 1 - US-6.1 Pricing Domain Model & Infrastructure complete)

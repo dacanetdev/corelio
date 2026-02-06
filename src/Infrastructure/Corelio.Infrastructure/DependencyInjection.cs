@@ -63,6 +63,8 @@ public static class DependencyInjection
         services.AddScoped<ITenantConfigurationRepository, TenantConfigurationRepository>();
         services.AddScoped<IProductRepository, ProductRepository>();
         services.AddScoped<IProductCategoryRepository, ProductCategoryRepository>();
+        services.AddScoped<ITenantPricingConfigurationRepository, TenantPricingConfigurationRepository>();
+        services.AddScoped<IProductPricingRepository, ProductPricingRepository>();
         services.AddScoped<IUnitOfWork, UnitOfWork>();
 
         // Register distributed cache (for tenant caching)
@@ -147,6 +149,8 @@ public static class DependencyInjection
         builder.Services.AddScoped<ITenantConfigurationRepository, TenantConfigurationRepository>();
         builder.Services.AddScoped<IProductRepository, ProductRepository>();
         builder.Services.AddScoped<IProductCategoryRepository, ProductCategoryRepository>();
+        builder.Services.AddScoped<ITenantPricingConfigurationRepository, TenantPricingConfigurationRepository>();
+        builder.Services.AddScoped<IProductPricingRepository, ProductPricingRepository>();
         builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 
         // Register interceptors (injected into ApplicationDbContext via constructor)

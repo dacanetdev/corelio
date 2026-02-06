@@ -40,6 +40,13 @@ public class ApplicationDbContext(
     public DbSet<Product> Products => Set<Product>();
     public DbSet<ProductCategory> ProductCategories => Set<ProductCategory>();
 
+    // Pricing entities
+    public DbSet<TenantPricingConfiguration> TenantPricingConfigurations => Set<TenantPricingConfiguration>();
+    public DbSet<DiscountTierDefinition> DiscountTierDefinitions => Set<DiscountTierDefinition>();
+    public DbSet<MarginTierDefinition> MarginTierDefinitions => Set<MarginTierDefinition>();
+    public DbSet<ProductDiscount> ProductDiscounts => Set<ProductDiscount>();
+    public DbSet<ProductMarginPrice> ProductMarginPrices => Set<ProductMarginPrice>();
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
@@ -93,5 +100,25 @@ public class ApplicationDbContext(
         // ProductCategory - strict tenant isolation
         modelBuilder.Entity<ProductCategory>()
             .HasQueryFilter(pc => !tenantProvider.HasTenantContext || pc.TenantId == tenantProvider.TenantId);
+
+        // TenantPricingConfiguration - strict tenant isolation
+        modelBuilder.Entity<TenantPricingConfiguration>()
+            .HasQueryFilter(tpc => !tenantProvider.HasTenantContext || tpc.TenantId == tenantProvider.TenantId);
+
+        // DiscountTierDefinition - strict tenant isolation
+        modelBuilder.Entity<DiscountTierDefinition>()
+            .HasQueryFilter(d => !tenantProvider.HasTenantContext || d.TenantId == tenantProvider.TenantId);
+
+        // MarginTierDefinition - strict tenant isolation
+        modelBuilder.Entity<MarginTierDefinition>()
+            .HasQueryFilter(m => !tenantProvider.HasTenantContext || m.TenantId == tenantProvider.TenantId);
+
+        // ProductDiscount - strict tenant isolation
+        modelBuilder.Entity<ProductDiscount>()
+            .HasQueryFilter(pd => !tenantProvider.HasTenantContext || pd.TenantId == tenantProvider.TenantId);
+
+        // ProductMarginPrice - strict tenant isolation
+        modelBuilder.Entity<ProductMarginPrice>()
+            .HasQueryFilter(pm => !tenantProvider.HasTenantContext || pm.TenantId == tenantProvider.TenantId);
     }
 }
