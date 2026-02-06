@@ -89,6 +89,19 @@ public class ProductConfiguration : IEntityTypeConfiguration<Product>
             .HasColumnName("msrp")
             .HasColumnType("decimal(15,2)");
 
+        builder.Property(p => p.ListPrice)
+            .HasColumnName("list_price")
+            .HasColumnType("decimal(18,2)");
+
+        builder.Property(p => p.NetCost)
+            .HasColumnName("net_cost")
+            .HasColumnType("decimal(18,2)");
+
+        builder.Property(p => p.IvaEnabled)
+            .HasColumnName("iva_enabled")
+            .HasDefaultValue(false)
+            .IsRequired();
+
         // Tax
         builder.Property(p => p.TaxRate)
             .HasColumnName("tax_rate")
@@ -282,6 +295,16 @@ public class ProductConfiguration : IEntityTypeConfiguration<Product>
             .WithMany(pc => pc.Products)
             .HasForeignKey(p => p.CategoryId)
             .OnDelete(DeleteBehavior.SetNull);
+
+        builder.HasMany(p => p.Discounts)
+            .WithOne(pd => pd.Product)
+            .HasForeignKey(pd => pd.ProductId)
+            .OnDelete(DeleteBehavior.Cascade);
+
+        builder.HasMany(p => p.MarginPrices)
+            .WithOne(pm => pm.Product)
+            .HasForeignKey(pm => pm.ProductId)
+            .OnDelete(DeleteBehavior.Cascade);
 
         // Query filter for soft delete
         builder.HasQueryFilter(p => !p.IsDeleted);

@@ -82,6 +82,22 @@ public class Product : TenantAuditableEntity, ISoftDeletable
     /// </summary>
     public decimal? Msrp { get; set; }
 
+    /// <summary>
+    /// List price ("Precio Lista") before cascading discounts are applied.
+    /// </summary>
+    public decimal? ListPrice { get; set; }
+
+    /// <summary>
+    /// Net cost ("Costo Neto") after applying all cascading discounts to ListPrice.
+    /// Calculated as: ListPrice × (1-D1/100) × (1-D2/100) × ... × (1-Dn/100)
+    /// </summary>
+    public decimal? NetCost { get; set; }
+
+    /// <summary>
+    /// Whether IVA (VAT) is enabled for this product.
+    /// </summary>
+    public bool IvaEnabled { get; set; } = false;
+
     // Tax
     /// <summary>
     /// Tax rate (default 0.16 for IVA 16% in Mexico).
@@ -248,6 +264,16 @@ public class Product : TenantAuditableEntity, ISoftDeletable
     /// Product category.
     /// </summary>
     public ProductCategory? Category { get; set; }
+
+    /// <summary>
+    /// Product discount tiers (cascading discounts applied to ListPrice).
+    /// </summary>
+    public List<ProductDiscount> Discounts { get; set; } = [];
+
+    /// <summary>
+    /// Product margin/price tiers (margin percentages and calculated prices).
+    /// </summary>
+    public List<ProductMarginPrice> MarginPrices { get; set; } = [];
 
     // Calculated Properties
     /// <summary>
