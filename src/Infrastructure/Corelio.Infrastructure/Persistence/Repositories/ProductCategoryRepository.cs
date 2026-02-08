@@ -16,6 +16,24 @@ public class ProductCategoryRepository(ApplicationDbContext context) : IProductC
             .FirstOrDefaultAsync(pc => pc.Id == id, cancellationToken);
     }
 
+    public async Task<List<ProductCategory>> GetAllAsync(bool includeInactive = false, CancellationToken cancellationToken = default)
+    {
+        var query = context.ProductCategories
+            .Include(pc => pc.ParentCategory)
+            .AsQueryable();
+
+        if (!includeInactive)
+        {
+            query = query.Where(pc => pc.IsActive);
+        }
+
+        return await query
+            .OrderBy(pc => pc.Level)
+            .ThenBy(pc => pc.SortOrder)
+            .ThenBy(pc => pc.Name)
+            .ToListAsync(cancellationToken);
+    }
+
     public async Task<List<ProductCategory>> GetRootCategoriesAsync(CancellationToken cancellationToken = default)
     {
         return await context.ProductCategories

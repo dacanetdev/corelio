@@ -3,6 +3,7 @@ using Blazored.LocalStorage;
 using Corelio.BlazorApp.Components;
 using Corelio.BlazorApp.Services;
 using Corelio.BlazorApp.Services.Authentication;
+using Corelio.BlazorApp.Services.Pricing;
 using Corelio.BlazorApp.Services.Products;
 using Corelio.BlazorApp.Services.Theming;
 using Microsoft.AspNetCore.Components.Authorization;
@@ -72,9 +73,9 @@ builder.Services.AddHttpClient("api-auth", ConfigureApiClient)
     .AddServiceDiscovery();
 
 // HttpClient for protected endpoints (with authorization handler)
-builder.Services.AddScoped<AuthorizationMessageHandler>();
+builder.Services.AddTransient<AuthorizationMessageHandler>();
 builder.Services.AddHttpClient("api", ConfigureApiClient)
-    .ConfigurePrimaryHttpMessageHandler<AuthorizationMessageHandler>()
+    .AddHttpMessageHandler<AuthorizationMessageHandler>()
     .AddServiceDiscovery();
 
 // Register default HttpClient for general use (with auth handler)
@@ -85,6 +86,9 @@ builder.Services.AddScoped<IAuthService, AuthService>();
 
 // Add Product service
 builder.Services.AddScoped<IProductService, ProductService>();
+
+// Add Pricing service
+builder.Services.AddScoped<IPricingService, PricingService>();
 
 // Add Theme services
 builder.Services.AddScoped<IDynamicThemeService, DynamicThemeService>();

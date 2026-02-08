@@ -1,32 +1,51 @@
 namespace Corelio.BlazorApp.Models.Authentication;
 
 /// <summary>
-/// Response model for successful login.
+/// Response model for successful login (matches API response structure).
 /// </summary>
 public record LoginResponse
 {
     /// <summary>
-    /// JWT access token (short-lived, typically 15 minutes).
+    /// User ID.
     /// </summary>
+    public Guid UserId { get; init; }
+
+    /// <summary>
+    /// User email.
+    /// </summary>
+    public string Email { get; init; } = string.Empty;
+
+    /// <summary>
+    /// Tenant ID.
+    /// </summary>
+    public Guid TenantId { get; init; }
+
+    /// <summary>
+    /// User roles.
+    /// </summary>
+    public List<string> Roles { get; init; } = [];
+
+    /// <summary>
+    /// User permissions.
+    /// </summary>
+    public List<string> Permissions { get; init; } = [];
+
+    /// <summary>
+    /// Token information.
+    /// </summary>
+    public TokenInfo Tokens { get; init; } = new();
+
+    // Convenience properties to access tokens directly
+    public string AccessToken => Tokens?.AccessToken ?? string.Empty;
+    public string RefreshToken => Tokens?.RefreshToken ?? string.Empty;
+}
+
+/// <summary>
+/// Token information from login response.
+/// </summary>
+public record TokenInfo
+{
     public string AccessToken { get; init; } = string.Empty;
-
-    /// <summary>
-    /// Refresh token (long-lived, typically 7 days).
-    /// </summary>
     public string RefreshToken { get; init; } = string.Empty;
-
-    /// <summary>
-    /// User information.
-    /// </summary>
-    public UserInfo User { get; init; } = new();
-
-    /// <summary>
-    /// Token expiration time in seconds.
-    /// </summary>
-    public int ExpiresIn { get; init; }
-
-    /// <summary>
-    /// Token type (typically "Bearer").
-    /// </summary>
-    public string TokenType { get; init; } = "Bearer";
+    public DateTime ExpiresAt { get; init; }
 }
