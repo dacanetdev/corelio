@@ -16,6 +16,14 @@ public interface IProductCategoryRepository
     Task<ProductCategory?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default);
 
     /// <summary>
+    /// Gets all product categories.
+    /// </summary>
+    /// <param name="includeInactive">Whether to include inactive categories.</param>
+    /// <param name="cancellationToken">Cancellation token.</param>
+    /// <returns>List of all categories.</returns>
+    Task<List<ProductCategory>> GetAllAsync(bool includeInactive = false, CancellationToken cancellationToken = default);
+
+    /// <summary>
     /// Gets all root-level categories (no parent).
     /// </summary>
     /// <param name="cancellationToken">Cancellation token.</param>

@@ -32,31 +32,49 @@ public class AuthService : IAuthService
     {
         try
         {
+            Console.WriteLine($"[AuthService] Attempting login for: {request.Email}");
+            Console.WriteLine($"[AuthService] API Base URL: {_httpClient.BaseAddress}");
+
             var response = await _httpClient.PostAsJsonAsync($"{BaseUrl}/login", request);
+            Console.WriteLine($"[AuthService] Response status: {response.StatusCode}");
 
             if (response.IsSuccessStatusCode)
             {
+                var content = await response.Content.ReadAsStringAsync();
+                Console.WriteLine($"[AuthService] Response content: {content[..Math.Min(200, content.Length)]}...");
+
                 var loginResponse = await response.Content.ReadFromJsonAsync<LoginResponse>();
                 if (loginResponse is not null)
                 {
+                    Console.WriteLine($"[AuthService] Parsed response - UserId: {loginResponse.UserId}, AccessToken length: {loginResponse.AccessToken?.Length ?? 0}");
+
                     // Store tokens in localStorage
-                    await _tokenService.SetTokensAsync(loginResponse.AccessToken, loginResponse.RefreshToken);
+                    Console.WriteLine("[AuthService] Storing tokens...");
+                    await _tokenService.SetTokensAsync(loginResponse.AccessToken ?? "", loginResponse.RefreshToken ?? "");
+                    Console.WriteLine("[AuthService] Tokens stored successfully");
 
                     // Notify authentication state changed
+                    Console.WriteLine("[AuthService] Notifying auth state change...");
                     if (_authenticationStateProvider is CustomAuthenticationStateProvider customProvider)
                     {
                         customProvider.NotifyAuthenticationStateChanged();
                     }
+                    Console.WriteLine("[AuthService] Auth state notified, returning success");
 
                     return Result<LoginResponse>.Success(loginResponse);
                 }
+
+                Console.WriteLine("[AuthService] Failed to parse login response");
+                return Result<LoginResponse>.Failure("Failed to parse login response");
             }
 
             var errorMessage = await response.Content.ReadAsStringAsync();
+            Console.WriteLine($"[AuthService] Login failed: {errorMessage}");
             return Result<LoginResponse>.Failure(errorMessage ?? "Login failed");
         }
         catch (Exception ex)
         {
+            Console.WriteLine($"[AuthService] Exception: {ex}");
             return Result<LoginResponse>.Failure($"Login error: {ex.Message}");
         }
     }

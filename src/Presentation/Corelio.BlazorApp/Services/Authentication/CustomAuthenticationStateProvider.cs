@@ -17,10 +17,13 @@ public class CustomAuthenticationStateProvider(ITokenService tokenService) : Aut
     /// </summary>
     public override async Task<AuthenticationState> GetAuthenticationStateAsync()
     {
+        Console.WriteLine("[AuthStateProvider] GetAuthenticationStateAsync called");
         var token = await tokenService.GetAccessTokenAsync();
+        Console.WriteLine($"[AuthStateProvider] Token length: {token?.Length ?? 0}");
 
         if (string.IsNullOrWhiteSpace(token))
         {
+            Console.WriteLine("[AuthStateProvider] No token, returning anonymous");
             return new AuthenticationState(new ClaimsPrincipal(new ClaimsIdentity()));
         }
 
@@ -45,6 +48,7 @@ public class CustomAuthenticationStateProvider(ITokenService tokenService) : Aut
             var identity = new ClaimsIdentity(claims, "jwt");
             var user = new ClaimsPrincipal(identity);
 
+            Console.WriteLine($"[AuthStateProvider] Authenticated as: {user.Identity?.Name ?? "unknown"}");
             return new AuthenticationState(user);
         }
         catch

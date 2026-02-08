@@ -1,0 +1,265 @@
+### ============================================
+### Product Management Module
+### ============================================
+### Prerequisites:
+###   1. Login first using Auth.http to get accessToken
+###   2. Replace {{accessToken}} with actual token
+### Permissions Required: products.view, products.create, products.update, products.delete
+
+@baseUrl = https://localhost:5001
+@accessToken = YOUR_ACCESS_TOKEN_HERE
+
+### ============================================
+### Product Categories
+### ============================================
+
+### Get all categories (active only)
+GET {{baseUrl}}/api/v1/product-categories?includeInactive=false
+Authorization: Bearer {{accessToken}}
+
+###
+
+### Get all categories (including inactive)
+GET {{baseUrl}}/api/v1/product-categories?includeInactive=true
+Authorization: Bearer {{accessToken}}
+
+###
+
+### Get category by ID
+GET {{baseUrl}}/api/v1/product-categories/{{categoryId}}
+Authorization: Bearer {{accessToken}}
+
+###
+
+### Create a new category
+# @name createCategory
+POST {{baseUrl}}/api/v1/product-categories
+Authorization: Bearer {{accessToken}}
+Content-Type: application/json
+
+{
+  "name": "Herramientas Manuales",
+  "description": "Categoría de herramientas manuales para ferretería",
+  "colorHex": "#E74C3C",
+  "iconName": "Wrench",
+  "sortOrder": 1,
+  "isActive": true
+}
+
+###
+
+### Create a subcategory
+POST {{baseUrl}}/api/v1/product-categories
+Authorization: Bearer {{accessToken}}
+Content-Type: application/json
+
+{
+  "name": "Martillos",
+  "description": "Todo tipo de martillos",
+  "parentCategoryId": "{{createCategory.response.body.categoryId}}",
+  "colorHex": "#3498DB",
+  "sortOrder": 1,
+  "isActive": true
+}
+
+###
+
+### Update a category
+PUT {{baseUrl}}/api/v1/product-categories/{{createCategory.response.body.categoryId}}
+Authorization: Bearer {{accessToken}}
+Content-Type: application/json
+
+{
+  "name": "Herramientas Manuales Actualizado",
+  "description": "Categoría actualizada de herramientas manuales",
+  "colorHex": "#2ECC71",
+  "iconName": "Tools",
+  "sortOrder": 2,
+  "isActive": true
+}
+
+###
+
+### Delete a category
+DELETE {{baseUrl}}/api/v1/product-categories/{{categoryId}}
+Authorization: Bearer {{accessToken}}
+
+###
+
+### ============================================
+### Products
+### ============================================
+
+### Get products (paginated)
+GET {{baseUrl}}/api/v1/products?pageNumber=1&pageSize=20
+Authorization: Bearer {{accessToken}}
+
+###
+
+### Get products with filters
+GET {{baseUrl}}/api/v1/products?pageNumber=1&pageSize=20&searchTerm=martillo&isActive=true
+Authorization: Bearer {{accessToken}}
+
+###
+
+### Get products by category
+GET {{baseUrl}}/api/v1/products?pageNumber=1&pageSize=20&categoryId={{categoryId}}
+Authorization: Bearer {{accessToken}}
+
+###
+
+### Search products (POS optimized)
+GET {{baseUrl}}/api/v1/products/search?q=MART&limit=10
+Authorization: Bearer {{accessToken}}
+
+###
+
+### Get product by ID
+GET {{baseUrl}}/api/v1/products/{{productId}}
+Authorization: Bearer {{accessToken}}
+
+###
+
+### Create a new product
+# @name createProduct
+POST {{baseUrl}}/api/v1/products
+Authorization: Bearer {{accessToken}}
+Content-Type: application/json
+
+{
+  "sku": "MART-001",
+  "name": "Martillo de Garra 16oz Stanley",
+  "description": "Martillo profesional con mango de fibra de vidrio",
+  "salePrice": 289.00,
+  "costPrice": 185.00,
+  "unitOfMeasure": 0,
+  "barcode": "7501234567890",
+  "barcodeType": 0,
+  "brand": "Stanley",
+  "manufacturer": "Stanley Black & Decker",
+  "modelNumber": "51-110",
+  "taxRate": 0.16,
+  "isTaxExempt": false,
+  "trackInventory": true,
+  "minStockLevel": 5,
+  "maxStockLevel": 50,
+  "reorderPoint": 10,
+  "reorderQuantity": 20,
+  "weightKg": 0.68,
+  "satProductCode": "27111701",
+  "satUnitCode": "H87",
+  "isActive": true,
+  "isFeatured": false
+}
+
+###
+
+### Create a service (non-inventory)
+POST {{baseUrl}}/api/v1/products
+Authorization: Bearer {{accessToken}}
+Content-Type: application/json
+
+{
+  "sku": "SERV-001",
+  "name": "Servicio de Corte de Madera",
+  "description": "Servicio de corte por metro lineal",
+  "salePrice": 25.00,
+  "costPrice": 10.00,
+  "unitOfMeasure": 4,
+  "taxRate": 0.16,
+  "trackInventory": false,
+  "isService": true,
+  "satProductCode": "95141800",
+  "satUnitCode": "E48",
+  "isActive": true
+}
+
+###
+
+### Update a product
+PUT {{baseUrl}}/api/v1/products/{{createProduct.response.body.productId}}
+Authorization: Bearer {{accessToken}}
+Content-Type: application/json
+
+{
+  "sku": "MART-001",
+  "name": "Martillo de Garra 16oz Stanley Pro",
+  "description": "Martillo profesional con mango de fibra de vidrio - Edición Pro",
+  "salePrice": 299.00,
+  "costPrice": 185.00,
+  "unitOfMeasure": 0,
+  "barcode": "7501234567890",
+  "barcodeType": 0,
+  "brand": "Stanley",
+  "manufacturer": "Stanley Black & Decker",
+  "modelNumber": "51-110-PRO",
+  "taxRate": 0.16,
+  "isTaxExempt": false,
+  "trackInventory": true,
+  "minStockLevel": 10,
+  "maxStockLevel": 100,
+  "reorderPoint": 15,
+  "reorderQuantity": 30,
+  "weightKg": 0.68,
+  "satProductCode": "27111701",
+  "satUnitCode": "H87",
+  "isActive": true,
+  "isFeatured": true
+}
+
+###
+
+### Delete a product (soft delete)
+DELETE {{baseUrl}}/api/v1/products/{{productId}}
+Authorization: Bearer {{accessToken}}
+
+###
+
+### ============================================
+### Validation Test Cases
+### ============================================
+
+### Create product with duplicate SKU (should fail)
+POST {{baseUrl}}/api/v1/products
+Authorization: Bearer {{accessToken}}
+Content-Type: application/json
+
+{
+  "sku": "MART-001",
+  "name": "Producto Duplicado",
+  "salePrice": 100.00,
+  "unitOfMeasure": 0
+}
+
+###
+
+### Create product with invalid barcode format
+POST {{baseUrl}}/api/v1/products
+Authorization: Bearer {{accessToken}}
+Content-Type: application/json
+
+{
+  "sku": "TEST-INVALID",
+  "name": "Producto con barcode invalido",
+  "salePrice": 100.00,
+  "unitOfMeasure": 0,
+  "barcode": "123"
+}
+
+###
+
+### Create category at max depth (should fail if parent is level 5)
+POST {{baseUrl}}/api/v1/product-categories
+Authorization: Bearer {{accessToken}}
+Content-Type: application/json
+
+{
+  "name": "Categoria Nivel 6 (Error)",
+  "parentCategoryId": "GUID_OF_LEVEL_5_CATEGORY"
+}
+
+###
+
+### Delete category with products (should fail)
+DELETE {{baseUrl}}/api/v1/product-categories/{{categoryWithProductsId}}
+Authorization: Bearer {{accessToken}}

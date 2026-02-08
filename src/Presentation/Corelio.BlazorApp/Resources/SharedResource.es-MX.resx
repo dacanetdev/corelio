@@ -273,6 +273,12 @@
   <data name="NoProductsFound" xml:space="preserve">
     <value>No se encontraron productos</value>
   </data>
+  <data name="NoProductsDescription" xml:space="preserve">
+    <value>Comienza agregando tu primer producto al catálogo</value>
+  </data>
+  <data name="ProductListDescription" xml:space="preserve">
+    <value>Gestiona tu catálogo de productos</value>
+  </data>
   <data name="ProductNameRequired" xml:space="preserve">
     <value>El nombre del producto es requerido</value>
   </data>
@@ -403,6 +409,159 @@
   </data>
   <data name="CreateFirst" xml:space="preserve">
     <value>Crea el primero</value>
+  </data>
+
+  <!-- Product Categories -->
+  <data name="Categories" xml:space="preserve">
+    <value>Categorías</value>
+  </data>
+  <data name="CategoryList" xml:space="preserve">
+    <value>Lista de Categorías</value>
+  </data>
+  <data name="AddCategory" xml:space="preserve">
+    <value>Agregar Categoría</value>
+  </data>
+  <data name="EditCategory" xml:space="preserve">
+    <value>Editar Categoría</value>
+  </data>
+  <data name="DeleteCategory" xml:space="preserve">
+    <value>Eliminar Categoría</value>
+  </data>
+  <data name="CategoryName" xml:space="preserve">
+    <value>Nombre de la Categoría</value>
+  </data>
+  <data name="ParentCategory" xml:space="preserve">
+    <value>Categoría Padre</value>
+  </data>
+  <data name="SelectCategory" xml:space="preserve">
+    <value>Seleccionar Categoría</value>
+  </data>
+  <data name="NoCategoriesFound" xml:space="preserve">
+    <value>No se encontraron categorías</value>
+  </data>
+  <data name="DeleteCategoryConfirmation" xml:space="preserve">
+    <value>¿Estás seguro de que deseas eliminar esta categoría?</value>
+  </data>
+  <data name="CategoryCreatedSuccessfully" xml:space="preserve">
+    <value>Categoría creada exitosamente</value>
+  </data>
+  <data name="CategoryUpdatedSuccessfully" xml:space="preserve">
+    <value>Categoría actualizada exitosamente</value>
+  </data>
+  <data name="CategoryDeletedSuccessfully" xml:space="preserve">
+    <value>Categoría eliminada exitosamente</value>
+  </data>
+  <data name="CategoryNameRequired" xml:space="preserve">
+    <value>El nombre de la categoría es requerido</value>
+  </data>
+  <data name="CategoryHasProducts" xml:space="preserve">
+    <value>No se puede eliminar la categoría porque tiene productos asignados</value>
+  </data>
+  <data name="CategoryHasChildren" xml:space="preserve">
+    <value>No se puede eliminar la categoría porque tiene subcategorías</value>
+  </data>
+  <data name="SortOrder" xml:space="preserve">
+    <value>Orden</value>
+  </data>
+  <data name="IconName" xml:space="preserve">
+    <value>Nombre del Ícono</value>
+  </data>
+  <data name="ColorHex" xml:space="preserve">
+    <value>Color (Hex)</value>
+  </data>
+
+  <!-- Additional Product Fields -->
+  <data name="TaxRate" xml:space="preserve">
+    <value>Tasa de Impuesto</value>
+  </data>
+  <data name="TaxExempt" xml:space="preserve">
+    <value>Exento de Impuesto</value>
+  </data>
+  <data name="Manufacturer" xml:space="preserve">
+    <value>Fabricante</value>
+  </data>
+  <data name="ModelNumber" xml:space="preserve">
+    <value>Número de Modelo</value>
+  </data>
+  <data name="WholesalePrice" xml:space="preserve">
+    <value>Precio Mayoreo</value>
+  </data>
+  <data name="MSRP" xml:space="preserve">
+    <value>Precio Sugerido</value>
+  </data>
+  <data name="Featured" xml:space="preserve">
+    <value>Destacado</value>
+  </data>
+  <data name="IsService" xml:space="preserve">
+    <value>Es Servicio</value>
+  </data>
+  <data name="MaxStockLevel" xml:space="preserve">
+    <value>Nivel Máximo de Stock</value>
+  </data>
+  <data name="ReorderPoint" xml:space="preserve">
+    <value>Punto de Reorden</value>
+  </data>
+  <data name="ReorderQuantity" xml:space="preserve">
+    <value>Cantidad de Reorden</value>
+  </data>
+  <data name="SATProductCode" xml:space="preserve">
+    <value>Código SAT Producto</value>
+  </data>
+  <data name="SATUnitCode" xml:space="preserve">
+    <value>Código SAT Unidad</value>
+  </data>
+  <data name="BasicInformation" xml:space="preserve">
+    <value>Información Básica</value>
+  </data>
+  <data name="PricingSection" xml:space="preserve">
+    <value>Precios</value>
+  </data>
+  <data name="InventorySection" xml:space="preserve">
+    <value>Inventario</value>
+  </data>
+  <data name="StatusSection" xml:space="preserve">
+    <value>Estado</value>
+  </data>
+  <data name="AllCategories" xml:space="preserve">
+    <value>Todas las Categorías</value>
+  </data>
+  <data name="AllStatuses" xml:space="preserve">
+    <value>Todos los Estados</value>
+  </data>
+  <data name="NewProduct" xml:space="preserve">
+    <value>Nuevo Producto</value>
+  </data>
+  <data name="Image" xml:space="preserve">
+    <value>Imagen</value>
+  </data>
+  <data name="ProfitMargin" xml:space="preserve">
+    <value>Margen de Ganancia</value>
+  </data>
+  <data name="Saving" xml:space="preserve">
+    <value>Guardando...</value>
+  </data>
+  <data name="ProductNotFound" xml:space="preserve">
+    <value>Producto no encontrado</value>
+  </data>
+
+  <!-- Unit of Measure -->
+  <data name="UnitPieces" xml:space="preserve">
+    <value>Piezas (PZA)</value>
+  </data>
+  <data name="UnitKilograms" xml:space="preserve">
+    <value>Kilogramos (KG)</value>
+  </data>
+  <data name="UnitMeters" xml:space="preserve">
+    <value>Metros (M)</value>
+  </data>
+  <data name="UnitLiters" xml:space="preserve">
+    <value>Litros (L)</value>
+  </data>
+  <data name="UnitBoxes" xml:space="preserve">
+    <value>Cajas (CAJA)</value>
+  </data>
+  <data name="UnitPacks" xml:space="preserve">
+    <value>Paquetes (PAQ)</value>
   </data>
 
   <!-- Theme Settings -->

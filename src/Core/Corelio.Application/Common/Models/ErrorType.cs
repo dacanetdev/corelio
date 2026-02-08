@@ -26,6 +26,11 @@ public enum ErrorType
     Conflict,
 
     /// <summary>
+    /// User is authenticated but not allowed to perform the action.
+    /// </summary>
+    Forbidden,
+
+    /// <summary>
     /// General operation failure.
     /// </summary>
     Failure

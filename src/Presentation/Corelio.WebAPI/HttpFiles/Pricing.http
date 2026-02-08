@@ -1,0 +1,264 @@
+### =============================================================
+### Corelio API - Pricing Module Endpoints
+### =============================================================
+### Base URL: https://localhost:7001
+### Docs: https://localhost:7001/scalar/v1
+### =============================================================
+
+@baseUrl = https://localhost:7001
+
+### ----- Authentication -----
+### Login as Admin to get access token
+# @name loginAdmin
+POST {{baseUrl}}/api/v1/auth/login
+Content-Type: application/json
+
+{
+  "email": "admin@demo.com",
+  "password": "Admin123!"
+}
+
+###
+@accessToken = {{loginAdmin.response.body.accessToken}}
+
+
+### =============================================================
+### TENANT PRICING CONFIGURATION
+### =============================================================
+
+### Get Tenant Pricing Configuration
+# @name getTenantConfig
+GET {{baseUrl}}/api/v1/pricing/tenant-config
+Authorization: Bearer {{accessToken}}
+
+### Create/Update Tenant Pricing Configuration
+### Standard setup: 3 discount tiers (Desc1, Desc2, Desc3), 3 margin tiers (Mayoreo, Medio Mayoreo, Menudeo)
+# @name updateTenantConfig
+PUT {{baseUrl}}/api/v1/pricing/tenant-config
+Content-Type: application/json
+Authorization: Bearer {{accessToken}}
+
+{
+  "discountTierCount": 3,
+  "marginTierCount": 3,
+  "defaultIvaEnabled": true,
+  "ivaPercentage": 16.00,
+  "discountTiers": [
+    { "tierNumber": 1, "tierName": "Descuento 1", "isActive": true },
+    { "tierNumber": 2, "tierName": "Descuento 2", "isActive": true },
+    { "tierNumber": 3, "tierName": "Descuento 3", "isActive": true }
+  ],
+  "marginTiers": [
+    { "tierNumber": 1, "tierName": "Mayoreo", "isActive": true },
+    { "tierNumber": 2, "tierName": "Medio Mayoreo", "isActive": true },
+    { "tierNumber": 3, "tierName": "Menudeo", "isActive": true }
+  ]
+}
+
+### Update with 4 discount tiers and custom IVA
+# @name updateTenantConfig4Tiers
+PUT {{baseUrl}}/api/v1/pricing/tenant-config
+Content-Type: application/json
+Authorization: Bearer {{accessToken}}
+
+{
+  "discountTierCount": 4,
+  "marginTierCount": 3,
+  "defaultIvaEnabled": true,
+  "ivaPercentage": 16.00,
+  "discountTiers": [
+    { "tierNumber": 1, "tierName": "Descuento Comercial", "isActive": true },
+    { "tierNumber": 2, "tierName": "Descuento Pronto Pago", "isActive": true },
+    { "tierNumber": 3, "tierName": "Descuento Volumen", "isActive": true },
+    { "tierNumber": 4, "tierName": "Descuento Especial", "isActive": true }
+  ],
+  "marginTiers": [
+    { "tierNumber": 1, "tierName": "Mayoreo", "isActive": true },
+    { "tierNumber": 2, "tierName": "Medio Mayoreo", "isActive": true },
+    { "tierNumber": 3, "tierName": "Menudeo", "isActive": true }
+  ]
+}
+
+
+### =============================================================
+### PRODUCT PRICING
+### =============================================================
+
+### Get Products Pricing List (paged)
+# @name getProductsPricing
+GET {{baseUrl}}/api/v1/pricing/products?pageNumber=1&pageSize=20
+Authorization: Bearer {{accessToken}}
+
+### Get Products Pricing with search filter
+# @name getProductsPricingSearch
+GET {{baseUrl}}/api/v1/pricing/products?pageNumber=1&pageSize=20&searchTerm=martillo
+Authorization: Bearer {{accessToken}}
+
+### Get Products Pricing by category
+# @name getProductsPricingByCategory
+GET {{baseUrl}}/api/v1/pricing/products?pageNumber=1&pageSize=20&categoryId=00000000-0000-0000-0000-000000000001
+Authorization: Bearer {{accessToken}}
+
+### Get Single Product Pricing
+### Replace {productId} with an actual product GUID
+@productId = 00000000-0000-0000-0000-000000000001
+# @name getProductPricing
+GET {{baseUrl}}/api/v1/pricing/products/{{productId}}
+Authorization: Bearer {{accessToken}}
+
+### Update Product Pricing
+### Sets list price, 3 discount tiers, and 3 margin tiers
+# @name updateProductPricing
+PUT {{baseUrl}}/api/v1/pricing/products/{{productId}}
+Content-Type: application/json
+Authorization: Bearer {{accessToken}}
+
+{
+  "listPrice": 250.00,
+  "ivaEnabled": true,
+  "discounts": [
+    { "tierNumber": 1, "discountPercentage": 30.00 },
+    { "tierNumber": 2, "discountPercentage": 10.00 },
+    { "tierNumber": 3, "discountPercentage": 5.00 }
+  ],
+  "marginPrices": [
+    { "tierNumber": 1, "marginPercentage": 15.00, "salePrice": null },
+    { "tierNumber": 2, "marginPercentage": 25.00, "salePrice": null },
+    { "tierNumber": 3, "marginPercentage": 35.00, "salePrice": null }
+  ]
+}
+
+### Update Product Pricing with sale price (instead of margin)
+# @name updateProductPricingSalePrice
+PUT {{baseUrl}}/api/v1/pricing/products/{{productId}}
+Content-Type: application/json
+Authorization: Bearer {{accessToken}}
+
+{
+  "listPrice": 250.00,
+  "ivaEnabled": true,
+  "discounts": [
+    { "tierNumber": 1, "discountPercentage": 30.00 },
+    { "tierNumber": 2, "discountPercentage": 10.00 },
+    { "tierNumber": 3, "discountPercentage": 5.00 }
+  ],
+  "marginPrices": [
+    { "tierNumber": 1, "marginPercentage": null, "salePrice": 180.00 },
+    { "tierNumber": 2, "marginPercentage": null, "salePrice": 200.00 },
+    { "tierNumber": 3, "marginPercentage": null, "salePrice": 220.00 }
+  ]
+}
+
+
+### =============================================================
+### PRICING CALCULATOR (Preview - no persistence)
+### =============================================================
+
+### Calculate Prices - Standard scenario
+### List price $250, three cascading discounts (30%, 10%, 5%)
+# @name calculatePrices
+POST {{baseUrl}}/api/v1/pricing/calculate
+Content-Type: application/json
+Authorization: Bearer {{accessToken}}
+
+{
+  "listPrice": 250.00,
+  "discounts": [30.00, 10.00, 5.00],
+  "ivaEnabled": true,
+  "ivaPercentage": 16.00
+}
+
+### Calculate Prices - No discounts
+# @name calculatePricesNoDiscount
+POST {{baseUrl}}/api/v1/pricing/calculate
+Content-Type: application/json
+Authorization: Bearer {{accessToken}}
+
+{
+  "listPrice": 500.00,
+  "discounts": [],
+  "ivaEnabled": false,
+  "ivaPercentage": 16.00
+}
+
+### Calculate Prices - Single discount, IVA disabled
+# @name calculatePricesSingleDiscount
+POST {{baseUrl}}/api/v1/pricing/calculate
+Content-Type: application/json
+Authorization: Bearer {{accessToken}}
+
+{
+  "listPrice": 1000.00,
+  "discounts": [25.00],
+  "ivaEnabled": false,
+  "ivaPercentage": 16.00
+}
+
+
+### =============================================================
+### BULK PRICING UPDATES
+### =============================================================
+
+### Bulk Update - Percentage Increase (10%)
+# @name bulkPercentageIncrease
+POST {{baseUrl}}/api/v1/pricing/bulk-update
+Content-Type: application/json
+Authorization: Bearer {{accessToken}}
+
+{
+  "productIds": [
+    "00000000-0000-0000-0000-000000000001",
+    "00000000-0000-0000-0000-000000000002",
+    "00000000-0000-0000-0000-000000000003"
+  ],
+  "updateType": "PercentageIncrease",
+  "value": 10.00,
+  "tierNumber": null
+}
+
+### Bulk Update - Percentage Decrease (5%)
+# @name bulkPercentageDecrease
+POST {{baseUrl}}/api/v1/pricing/bulk-update
+Content-Type: application/json
+Authorization: Bearer {{accessToken}}
+
+{
+  "productIds": [
+    "00000000-0000-0000-0000-000000000001",
+    "00000000-0000-0000-0000-000000000002"
+  ],
+  "updateType": "PercentageDecrease",
+  "value": 5.00,
+  "tierNumber": null
+}
+
+### Bulk Update - Fixed Amount Increase ($50)
+# @name bulkFixedIncrease
+POST {{baseUrl}}/api/v1/pricing/bulk-update
+Content-Type: application/json
+Authorization: Bearer {{accessToken}}
+
+{
+  "productIds": [
+    "00000000-0000-0000-0000-000000000001"
+  ],
+  "updateType": "FixedAmountIncrease",
+  "value": 50.00,
+  "tierNumber": null
+}
+
+### Bulk Update - Set New Margin (35% on tier 3)
+# @name bulkSetNewMargin
+POST {{baseUrl}}/api/v1/pricing/bulk-update
+Content-Type: application/json
+Authorization: Bearer {{accessToken}}
+
+{
+  "productIds": [
+    "00000000-0000-0000-0000-000000000001",
+    "00000000-0000-0000-0000-000000000002"
+  ],
+  "updateType": "SetNewMargin",
+  "value": 35.00,
+  "tierNumber": 3
+}

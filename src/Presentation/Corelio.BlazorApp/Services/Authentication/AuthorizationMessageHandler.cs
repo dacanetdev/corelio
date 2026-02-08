@@ -1,5 +1,4 @@
 using System.Net.Http.Headers;
-using Microsoft.AspNetCore.Components;
 
 namespace Corelio.BlazorApp.Services.Authentication;
 
@@ -9,8 +8,7 @@ namespace Corelio.BlazorApp.Services.Authentication;
 /// </summary>
 public class AuthorizationMessageHandler(
     ITokenService tokenService,
-    IAuthService authService,
-    NavigationManager navigationManager) : DelegatingHandler
+    IServiceProvider serviceProvider) : DelegatingHandler
 {
     /// <summary>
     /// Intercepts HTTP requests to add Authorization header with JWT token.
@@ -41,27 +39,28 @@ public class AuthorizationMessageHandler(
 
             if (!string.IsNullOrWhiteSpace(refreshToken))
             {
-                // Attempt to refresh the access token
-                var refreshResult = await authService.RefreshTokenAsync(refreshToken);
+                // Try to get AuthService - might not be available in all contexts
+                var authService = serviceProvider.GetService<IAuthService>();
+                if (authService is not null)
+                {
+                    // Attempt to refresh the access token
+                    var refreshResult = await authService.RefreshTokenAsync(refreshToken);
 
-                if (refreshResult.IsSuccess && refreshResult.Value is not null)
-                {
-                    // Retry the original request with new token
-                    request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", refreshResult.Value.AccessToken);
-                    response = await base.SendAsync(request, cancellationToken);
-                }
-                else
-                {
-                    // Refresh failed, redirect to login
-                    await tokenService.ClearTokensAsync();
-                    navigationManager.NavigateTo("/auth/login?expired=true", forceLoad: true);
+                    if (refreshResult.IsSuccess && refreshResult.Value is not null)
+                    {
+                        // Retry the original request with new token
+                        request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", refreshResult.Value.AccessToken);
+                        response = await base.SendAsync(request, cancellationToken);
+                    }
+                    else
+                    {
+                        // Refresh failed, clear tokens (navigation handled by caller)
+                        await tokenService.ClearTokensAsync();
+                    }
                 }
             }
-            else
-            {
-                // No refresh token, redirect to login
-                navigationManager.NavigateTo("/auth/login", forceLoad: true);
-            }
+            // Note: Don't redirect here - let the caller handle 401 responses
+            // Redirecting from a message handler causes issues during prerendering
         }
 
         return response;

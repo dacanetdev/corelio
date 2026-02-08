@@ -139,16 +139,19 @@
 
             if (result.IsSuccess)
             {
-                NavigationManager.NavigateTo("/", forceLoad: true);
+                Console.WriteLine("[Login] Login successful, navigating to /");
+                NavigationManager.NavigateTo("/");
+                Console.WriteLine("[Login] Navigation called");
             }
             else
             {
-                _errorMessage = L["LoginFailed"];
+                Console.WriteLine($"[Login] Login failed: {result.Error}");
+                _errorMessage = result.Error ?? L["LoginFailed"];
             }
         }
-        catch (Exception)
+        catch (Exception ex)
         {
-            _errorMessage = L["UnexpectedError"];
+            _errorMessage = $"Error: {ex.Message}";
         }
         finally
         {
