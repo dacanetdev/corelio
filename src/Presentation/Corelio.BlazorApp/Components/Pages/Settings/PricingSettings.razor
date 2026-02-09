@@ -1,0 +1,357 @@
+@page "/settings/pricing"
+@using Corelio.BlazorApp.Components.Shared
+@using Corelio.BlazorApp.Models.Pricing
+@using Corelio.BlazorApp.Services.Pricing
+@attribute [Authorize]
+@inject IPricingService PricingService
+@inject NavigationManager NavigationManager
+@inject IStringLocalizer<SharedResource> L
+@inject ISnackbar Snackbar
+
+<PageTitle>@L["PricingConfiguration"] - Corelio</PageTitle>
+
+<MudContainer MaxWidth="MaxWidth.Large" Class="mt-4">
+    <MudPaper Elevation="2" Class="pa-6">
+        <PageHeader Title="@L["PricingConfiguration"]"
+                    Description="@L["PricingConfigDescription"]"
+                    Breadcrumbs="@_breadcrumbs" />
+
+        @if (_loading)
+        {
+            <LoadingState Message="@L["Loading"]" />
+        }
+        else if (!string.IsNullOrEmpty(_errorMessage))
+        {
+            <MudAlert Severity="Severity.Error" Class="mb-4">@_errorMessage</MudAlert>
+            <MudButton Variant="Variant.Outlined"
+                       Color="Color.Primary"
+                       OnClick="LoadConfigAsync"
+                       Class="mt-2">
+                @L["Retry"]
+            </MudButton>
+        }
+        else
+        {
+            <MudStack Spacing="4">
+                <!-- Discount Tiers Section -->
+                <div class="form-section">
+                    <MudText Typo="Typo.h6" Class="form-section-title">
+                        <MudIcon Icon="@Icons.Material.Filled.Discount" Class="mr-2" Size="Size.Small" />
+                        @L["DiscountTiers"]
+                    </MudText>
+                    <MudGrid Spacing="3">
+                        <MudItem xs="12" md="6">
+                            <MudNumericField Value="_config.DiscountTierCount"
+                                             Label="@L["NumberOfDiscountTiers"]"
+                                             Variant="Variant.Outlined"
+                                             Min="1"
+                                             Max="6"
+                                             T="int"
+                                             ValueChanged="OnDiscountTierCountChanged" />
+                        </MudItem>
+
+                        <MudItem xs="12">
+                            <MudStack Spacing="2">
+                                @for (var i = 0; i < _config.DiscountTiers.Count; i++)
+                                {
+                                    var index = i;
+                                    <MudGrid Spacing="2">
+                                        <MudItem xs="12" sm="7" md="8">
+                                            <MudTextField @bind-Value="_config.DiscountTiers[index].TierName"
+                                                          Label="@($"{L["TierName"]} {index + 1}")"
+                                                          Variant="Variant.Outlined"
+                                                          Required="true"
+                                                          RequiredError="@L["TierNameRequired"]"
+                                                          MaxLength="50" />
+                                        </MudItem>
+                                        <MudItem xs="12" sm="5" md="4" Class="d-flex align-center">
+                                            <MudSwitch @bind-Value="_config.DiscountTiers[index].IsActive"
+                                                       Label="@L["TierActive"]"
+                                                       Color="Color.Primary" />
+                                        </MudItem>
+                                    </MudGrid>
+                                }
+                            </MudStack>
+                        </MudItem>
+                    </MudGrid>
+                </div>
+
+                <!-- Margin Tiers Section -->
+                <div class="form-section">
+                    <MudText Typo="Typo.h6" Class="form-section-title">
+                        <MudIcon Icon="@Icons.Material.Filled.TrendingUp" Class="mr-2" Size="Size.Small" />
+                        @L["MarginTiers"]
+                    </MudText>
+                    <MudGrid Spacing="3">
+                        <MudItem xs="12" md="6">
+                            <MudNumericField Value="_config.MarginTierCount"
+                                             Label="@L["NumberOfMarginTiers"]"
+                                             Variant="Variant.Outlined"
+                                             Min="1"
+                                             Max="5"
+                                             T="int"
+                                             ValueChanged="OnMarginTierCountChanged" />
+                        </MudItem>
+
+                        <MudItem xs="12">
+                            <MudStack Spacing="2">
+                                @for (var i = 0; i < _config.MarginTiers.Count; i++)
+                                {
+                                    var index = i;
+                                    <MudGrid Spacing="2">
+                                        <MudItem xs="12" sm="7" md="8">
+                                            <MudTextField @bind-Value="_config.MarginTiers[index].TierName"
+                                                          Label="@($"{L["TierName"]} {index + 1}")"
+                                                          Variant="Variant.Outlined"
+                                                          Required="true"
+                                                          RequiredError="@L["TierNameRequired"]"
+                                                          MaxLength="50" />
+                                        </MudItem>
+                                        <MudItem xs="12" sm="5" md="4" Class="d-flex align-center">
+                                            <MudSwitch @bind-Value="_config.MarginTiers[index].IsActive"
+                                                       Label="@L["TierActive"]"
+                                                       Color="Color.Primary" />
+                                        </MudItem>
+                                    </MudGrid>
+                                }
+                            </MudStack>
+                        </MudItem>
+                    </MudGrid>
+                </div>
+
+                <!-- IVA Configuration Section -->
+                <div class="form-section">
+                    <MudText Typo="Typo.h6" Class="form-section-title">
+                        <MudIcon Icon="@Icons.Material.Filled.Receipt" Class="mr-2" Size="Size.Small" />
+                        @L["IvaConfiguration"]
+                    </MudText>
+                    <MudGrid Spacing="3">
+                        <MudItem xs="12" md="6" Class="d-flex align-center">
+                            <MudSwitch @bind-Value="_config.DefaultIvaEnabled"
+                                       Label="@L["DefaultIvaEnabled"]"
+                                       Color="Color.Primary" />
+                        </MudItem>
+
+                        <MudItem xs="12" md="6">
+                            <MudNumericField @bind-Value="_config.IvaPercentage"
+                                             Label="@L["IvaPercentage"]"
+                                             Variant="Variant.Outlined"
+                                             Format="N2"
+                                             Min="0m"
+                                             Max="100m"
+                                             Step="0.01m"
+                                             T="decimal"
+                                             Adornment="Adornment.End"
+                                             AdornmentText="%"
+                                             HelperText="@L["IvaHelpText"]" />
+                        </MudItem>
+                    </MudGrid>
+                </div>
+
+                <!-- Action Buttons -->
+                <MudStack Row="true" Spacing="2" Justify="Justify.FlexEnd" Class="mt-4">
+                    <MudButton Variant="Variant.Outlined"
+                               Color="Color.Secondary"
+                               OnClick="@(() => NavigationManager.NavigateTo("/"))">
+                        @L["Cancel"]
+                    </MudButton>
+                    <MudButton Variant="Variant.Filled"
+                               Color="Color.Primary"
+                               StartIcon="@Icons.Material.Filled.Save"
+                               OnClick="SaveAsync"
+                               Disabled="_saving">
+                        @if (_saving)
+                        {
+                            <MudProgressCircular Class="ms-n1" Size="Size.Small" Indeterminate="true" />
+                            <MudText Class="ms-2">@L["Saving"]</MudText>
+                        }
+                        else
+                        {
+                            @L["SaveChanges"]
+                        }
+                    </MudButton>
+                </MudStack>
+            </MudStack>
+        }
+    </MudPaper>
+</MudContainer>
+
+@code {
+    private bool _loading = true;
+    private bool _saving;
+    private string? _errorMessage;
+    private TenantPricingConfigModel _config = new();
+
+    private readonly List<BreadcrumbItem> _breadcrumbs = [];
+
+    private static readonly string[] DefaultDiscountTierNames =
+        ["Descuento 1", "Descuento 2", "Descuento 3", "Descuento 4", "Descuento 5", "Descuento 6"];
+
+    private static readonly string[] DefaultMarginTierNames =
+        ["Menudeo", "Semi-Mayoreo", "Mayoreo", "Precio Especial", "Precio Mínimo"];
+
+    protected override async Task OnInitializedAsync()
+    {
+        _breadcrumbs.AddRange(
+        [
+            new BreadcrumbItem(L["Home"], "/"),
+            new BreadcrumbItem(L["Settings"], null, disabled: true),
+            new BreadcrumbItem(L["PricingConfiguration"], null, disabled: true)
+        ]);
+
+        await LoadConfigAsync();
+    }
+
+    private async Task LoadConfigAsync()
+    {
+        _loading = true;
+        _errorMessage = null;
+        StateHasChanged();
+
+        try
+        {
+            var result = await PricingService.GetTenantConfigAsync();
+
+            if (result.IsSuccess && result.Value is not null)
+            {
+                _config = result.Value;
+            }
+            else
+            {
+                _config = CreateDefaultConfig();
+            }
+        }
+        catch
+        {
+            _config = CreateDefaultConfig();
+        }
+        finally
+        {
+            _loading = false;
+        }
+    }
+
+    private static TenantPricingConfigModel CreateDefaultConfig()
+    {
+        return new TenantPricingConfigModel
+        {
+            DiscountTierCount = 3,
+            MarginTierCount = 3,
+            DefaultIvaEnabled = true,
+            IvaPercentage = 16.00m,
+            DiscountTiers = Enumerable.Range(1, 3)
+                .Select(i => new DiscountTierModel
+                {
+                    TierNumber = i,
+                    TierName = DefaultDiscountTierNames[i - 1],
+                    IsActive = true
+                }).ToList(),
+            MarginTiers = Enumerable.Range(1, 3)
+                .Select(i => new MarginTierModel
+                {
+                    TierNumber = i,
+                    TierName = DefaultMarginTierNames[i - 1],
+                    IsActive = true
+                }).ToList()
+        };
+    }
+
+    private void OnDiscountTierCountChanged(int newCount)
+    {
+        if (newCount < 1 || newCount > 6)
+        {
+            return;
+        }
+
+        _config.DiscountTierCount = newCount;
+        AdjustDiscountTiers(newCount);
+    }
+
+    private void AdjustDiscountTiers(int targetCount)
+    {
+        var current = _config.DiscountTiers;
+
+        while (current.Count < targetCount)
+        {
+            var tierNumber = current.Count + 1;
+            current.Add(new DiscountTierModel
+            {
+                TierNumber = tierNumber,
+                TierName = tierNumber <= DefaultDiscountTierNames.Length
+                    ? DefaultDiscountTierNames[tierNumber - 1]
+                    : $"Descuento {tierNumber}",
+                IsActive = true
+            });
+        }
+
+        while (current.Count > targetCount)
+        {
+            current.RemoveAt(current.Count - 1);
+        }
+    }
+
+    private void OnMarginTierCountChanged(int newCount)
+    {
+        if (newCount < 1 || newCount > 5)
+        {
+            return;
+        }
+
+        _config.MarginTierCount = newCount;
+        AdjustMarginTiers(newCount);
+    }
+
+    private void AdjustMarginTiers(int targetCount)
+    {
+        var current = _config.MarginTiers;
+
+        while (current.Count < targetCount)
+        {
+            var tierNumber = current.Count + 1;
+            current.Add(new MarginTierModel
+            {
+                TierNumber = tierNumber,
+                TierName = tierNumber <= DefaultMarginTierNames.Length
+                    ? DefaultMarginTierNames[tierNumber - 1]
+                    : $"Margen {tierNumber}",
+                IsActive = true
+            });
+        }
+
+        while (current.Count > targetCount)
+        {
+            current.RemoveAt(current.Count - 1);
+        }
+    }
+
+    private async Task SaveAsync()
+    {
+        _saving = true;
+        _errorMessage = null;
+
+        try
+        {
+            var result = await PricingService.UpdateTenantConfigAsync(_config);
+
+            if (result.IsSuccess && result.Value is not null)
+            {
+                _config = result.Value;
+                Snackbar.Add(L["PricingConfigSaved"], Severity.Success);
+            }
+            else
+            {
+                _errorMessage = result.Error ?? L["PricingConfigSaveFailed"];
+                Snackbar.Add(_errorMessage, Severity.Error);
+            }
+        }
+        catch (Exception ex)
+        {
+            _errorMessage = $"{L["Error"]}: {ex.Message}";
+            Snackbar.Add(_errorMessage, Severity.Error);
+        }
+        finally
+        {
+            _saving = false;
+        }
+    }
+}
