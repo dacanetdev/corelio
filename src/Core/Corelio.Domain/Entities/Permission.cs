@@ -93,4 +93,8 @@ public static class Permissions
     // Settings
     public const string SettingsView = "settings.view";
     public const string SettingsEdit = "settings.edit";
+
+    // Pricing
+    public const string PricingView = "pricing.view";
+    public const string PricingManage = "pricing.manage";
 }

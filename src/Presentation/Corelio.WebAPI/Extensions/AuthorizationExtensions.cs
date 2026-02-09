@@ -116,7 +116,11 @@ public static class AuthorizationExtensions
             .AddPolicy("roles.view", policy => policy.RequireClaim("permissions", "roles.view"))
             .AddPolicy("roles.create", policy => policy.RequireClaim("permissions", "roles.create"))
             .AddPolicy("roles.update", policy => policy.RequireClaim("permissions", "roles.update"))
-            .AddPolicy("roles.delete", policy => policy.RequireClaim("permissions", "roles.delete"));
+            .AddPolicy("roles.delete", policy => policy.RequireClaim("permissions", "roles.delete"))
+
+            // Pricing policies
+            .AddPolicy("pricing.view", policy => policy.RequireClaim("permissions", "pricing.view"))
+            .AddPolicy("pricing.manage", policy => policy.RequireClaim("permissions", "pricing.manage"));
 
         return services;
     }
