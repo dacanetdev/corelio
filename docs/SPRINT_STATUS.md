@@ -137,8 +137,8 @@
 | Day | Planned SP | Actual SP | Remaining SP |
 |-----|------------|-----------|--------------|
 | 1 | 49 | 8 | 41 |
-| 2 | 45 | - | - |
-| 3 | 41 | - | - |
+| 2 | 45 | 13 | 28 |
+| 3 | 41 | 5 | 23 |
 | 4 | 36 | - | - |
 | 5 | 31 | - | - |
 | 6 | 26 | - | - |
@@ -206,9 +206,9 @@
 | User Story | Priority | Story Points | Hours | Status | Notes |
 |------------|----------|--------------|-------|--------|-------|
 | US-6.1: Pricing Domain Model & Infrastructure | P0 Critical | 8 | 10-12 | 🟢 Completed | 5 new entities, 5 EF Core configs, migration, 2 repositories, 3 Product columns |
-| US-6.2: Pricing Calculation Engine & CQRS | P0 Critical | 13 | 16-18 | 🔵 Not Started | Static calculation service, 7 CQRS handlers, 3 validators, unit tests >90% coverage |
-| US-6.3: Pricing API & Service Layer | P0 Critical | 5 | 6-8 | 🔵 Not Started | 7 Minimal API endpoints, Blazor HTTP service, 9 models |
-| US-6.4: Pricing Configuration UI | P1 High | 5 | 6-8 | 🔵 Not Started | PricingSettings.razor at /settings/pricing, ~60 localization keys |
+| US-6.2: Pricing Calculation Engine & CQRS | P0 Critical | 13 | 16-18 | 🟢 Completed | Static calculation service, 7 CQRS handlers, 3 validators, 75 unit tests (>90% coverage) |
+| US-6.3: Pricing API & Service Layer | P0 Critical | 5 | 6-8 | 🟢 Completed | 7 Minimal API endpoints, Blazor HTTP service, 9 models |
+| US-6.4: Pricing Configuration UI | P1 High | 5 | 6-8 | 🟢 Completed | PricingSettings.razor at /settings/pricing, 20 localization keys, nav menu updated |
 | US-6.5: Product Pricing Management UI | P0 Critical | 13 | 16-18 | 🔵 Not Started | ProductCostos component, ProductForm tabs, PriceChange.razor, BulkPriceChangeDialog, ~100 localization keys |
 | US-6.6: Pricing Module Testing | P1 High | 5 | 6-8 | 🔵 Not Started | Handler tests, validator tests, integration tests, >70% coverage |
 
@@ -222,9 +222,9 @@
 **Deliverables:**
 - [x] 5 new database tables (tenant_pricing_configurations, discount_tier_definitions, margin_tier_definitions, product_discounts, product_margin_prices)
 - [x] 3 new columns on products table (ListPrice, NetCost, IvaEnabled)
-- [ ] PricingCalculationService with cascading discount math matching FERRESYS exactly
-- [ ] 7 API endpoints for pricing operations (GET/PUT tenant config, GET list/single product pricing, PUT single, POST calculate, POST bulk-update)
-- [ ] PricingSettings.razor page at /settings/pricing (tenant configuration)
+- [x] PricingCalculationService with cascading discount math matching FERRESYS exactly
+- [x] 7 API endpoints for pricing operations (GET/PUT tenant config, GET list/single product pricing, PUT single, POST calculate, POST bulk-update)
+- [x] PricingSettings.razor page at /settings/pricing (tenant configuration)
 - [ ] ProductForm.razor with tabbed layout (Datos/Costos tabs)
 - [ ] PriceChange.razor page at /pricing (mass price management)
 - [ ] BulkPriceChangeDialog.razor (bulk updates: %, fixed amount, new margin)
@@ -232,17 +232,17 @@
 - [ ] >70% test coverage on Application layer pricing code
 
 **Success Criteria:**
-- [ ] Tenant can configure 1-6 discount tiers and 1-5 margin tiers with custom names
+- [x] Tenant can configure 1-6 discount tiers and 1-5 margin tiers with custom names
 - [ ] Product form Costos tab displays all pricing tiers correctly
-- [ ] Cascading discount calculation matches FERRESYS logic with 100% accuracy (validated via unit tests)
-- [ ] NetCost = ListPrice × (1-D1/100) × (1-D2/100) × ... × (1-Dn/100) verified
-- [ ] SalePrice = NetCost / (1 - MarginPercent/100) verified
-- [ ] PriceWithIva = SalePrice × 1.16 verified
+- [x] Cascading discount calculation matches FERRESYS logic with 100% accuracy (validated via unit tests)
+- [x] NetCost = ListPrice × (1-D1/100) × (1-D2/100) × ... × (1-Dn/100) verified
+- [x] SalePrice = NetCost / (1 - MarginPercent/100) verified
+- [x] PriceWithIva = SalePrice × 1.16 verified
 - [ ] Bulk price change updates 100 products in < 10 seconds
 - [ ] Multi-tenancy isolation verified (Tenant A cannot see/update Tenant B's pricing)
 - [ ] Mobile-responsive (tested at 375px width - iPhone SE)
 - [ ] Spanish (es-MX) localization complete (all ~160 keys)
-- [ ] Zero compilation errors, solution builds successfully
+- [x] Zero compilation errors, solution builds successfully
 
 ---
 
@@ -872,4 +872,38 @@
 
 ---
 
-**Last Updated:** 2026-02-06 (Sprint 6 Day 1 - US-6.1 Pricing Domain Model & Infrastructure complete)
+### 2026-02-08 (Sprint 6 - Day 3: Pricing Configuration UI)
+**Yesterday:**
+- Completed US-6.2 (Pricing Calculation Engine & CQRS) and US-6.3 (Pricing API & Service Layer)
+
+**Today:**
+- **Completed US-6.4: Pricing Configuration UI (5 SP)**
+  - Created PricingSettings.razor page at /settings/pricing
+  - Discount tiers section: configurable 1-6 tiers with custom names and active toggles
+  - Margin tiers section: configurable 1-5 tiers with custom names and active toggles
+  - IVA configuration section: default IVA enabled toggle and percentage field
+  - Dynamic tier adjustment: adding/removing tiers preserves existing data
+  - Default values: 3 discount tiers, 3 margin tiers, IVA 16%
+  - Graceful fallback to defaults when no config exists (new tenants)
+  - Added navigation menu item for pricing settings
+  - Added 20 Spanish (es-MX) localization keys
+  - Follows existing ProductForm.razor patterns (form-section, PageHeader, LoadingState)
+  - Save with success/error Snackbar feedback
+
+**Files Created (1):**
+- `BlazorApp/Components/Pages/Settings/PricingSettings.razor`
+
+**Files Modified (3):**
+- `BlazorApp/Components/Layout/NavMenu.razor` - Added pricing settings nav link
+- `BlazorApp/Resources/SharedResource.es-MX.resx` - +20 localization keys
+- `docs/SPRINT_STATUS.md` - Updated sprint tracking
+
+**Blockers:**
+- None
+
+**Next Steps:**
+- Start US-6.5: Product Pricing Management UI
+
+---
+
+**Last Updated:** 2026-02-08 (Sprint 6 Day 3 - US-6.4 Pricing Configuration UI complete)

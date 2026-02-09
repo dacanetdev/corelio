@@ -601,4 +601,60 @@
   <data name="ThemeCustomization" xml:space="preserve">
     <value>Personalización de Marca</value>
   </data>
+
+  <!-- Pricing Configuration -->
+  <data name="PricingConfiguration" xml:space="preserve">
+    <value>Configuración de Precios</value>
+  </data>
+  <data name="PricingConfigDescription" xml:space="preserve">
+    <value>Configura los niveles de descuento, márgenes de ganancia e IVA para tu empresa</value>
+  </data>
+  <data name="DiscountTiers" xml:space="preserve">
+    <value>Niveles de Descuento</value>
+  </data>
+  <data name="MarginTiers" xml:space="preserve">
+    <value>Niveles de Margen / Precio</value>
+  </data>
+  <data name="IvaConfiguration" xml:space="preserve">
+    <value>Configuración de IVA</value>
+  </data>
+  <data name="NumberOfDiscountTiers" xml:space="preserve">
+    <value>Número de Niveles de Descuento</value>
+  </data>
+  <data name="NumberOfMarginTiers" xml:space="preserve">
+    <value>Número de Niveles de Margen</value>
+  </data>
+  <data name="TierName" xml:space="preserve">
+    <value>Nombre del Nivel</value>
+  </data>
+  <data name="TierActive" xml:space="preserve">
+    <value>Activo</value>
+  </data>
+  <data name="DefaultIvaEnabled" xml:space="preserve">
+    <value>IVA Activado por Defecto</value>
+  </data>
+  <data name="IvaPercentage" xml:space="preserve">
+    <value>Porcentaje de IVA</value>
+  </data>
+  <data name="IvaHelpText" xml:space="preserve">
+    <value>El IVA se aplicará automáticamente a los nuevos productos</value>
+  </data>
+  <data name="SaveChanges" xml:space="preserve">
+    <value>Guardar Cambios</value>
+  </data>
+  <data name="PricingConfigSaved" xml:space="preserve">
+    <value>Configuración de precios guardada exitosamente</value>
+  </data>
+  <data name="PricingConfigSaveFailed" xml:space="preserve">
+    <value>Error al guardar la configuración de precios</value>
+  </data>
+  <data name="PricingConfigLoadFailed" xml:space="preserve">
+    <value>Error al cargar la configuración de precios</value>
+  </data>
+  <data name="TierNameRequired" xml:space="preserve">
+    <value>El nombre del nivel es requerido</value>
+  </data>
+  <data name="Retry" xml:space="preserve">
+    <value>Reintentar</value>
+  </data>
 </root>
