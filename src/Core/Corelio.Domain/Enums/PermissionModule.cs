@@ -43,5 +43,10 @@ public enum PermissionModule
     /// <summary>
     /// Settings module permissions.
     /// </summary>
-    Settings = 7
+    Settings = 7,
+
+    /// <summary>
+    /// Pricing module permissions.
+    /// </summary>
+    Pricing = 8
 }

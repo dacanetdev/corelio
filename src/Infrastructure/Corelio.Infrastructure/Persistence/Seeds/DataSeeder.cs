@@ -58,6 +58,10 @@ public static class DataSeeder
             // Settings Module
             new() { Id = Guid.Parse("a6666666-6666-6666-6666-666666666661"), Code = "settings.view", Name = "View Settings", Module = PermissionModule.Settings, Description = "View system settings", CreatedAt = SeedDate },
             new() { Id = Guid.Parse("a6666666-6666-6666-6666-666666666662"), Code = "settings.edit", Name = "Edit Settings", Module = PermissionModule.Settings, Description = "Modify system settings", IsDangerous = true, CreatedAt = SeedDate },
+
+            // Pricing Module
+            new() { Id = Guid.Parse("a7777777-7777-7777-7777-777777777771"), Code = "pricing.view", Name = "View Pricing", Module = PermissionModule.Pricing, Description = "View pricing configuration and product prices", CreatedAt = SeedDate },
+            new() { Id = Guid.Parse("a7777777-7777-7777-7777-777777777772"), Code = "pricing.manage", Name = "Manage Pricing", Module = PermissionModule.Pricing, Description = "Configure pricing tiers and update product prices", CreatedAt = SeedDate },
         };
 
         modelBuilder.Entity<Permission>().HasData(permissions);
@@ -185,6 +189,8 @@ public static class DataSeeder
             Guid.Parse("a5555555-5555-5555-5555-555555555552"),
             Guid.Parse("a6666666-6666-6666-6666-666666666661"),
             Guid.Parse("a6666666-6666-6666-6666-666666666662"),
+            Guid.Parse("a7777777-7777-7777-7777-777777777771"), // pricing.view
+            Guid.Parse("a7777777-7777-7777-7777-777777777772"), // pricing.manage
         };
 
         foreach (var permissionId in allPermissionIds)
@@ -214,6 +220,8 @@ public static class DataSeeder
             Guid.Parse("a5555555-5555-5555-5555-555555555551"), // reports.view
             Guid.Parse("a5555555-5555-5555-5555-555555555552"), // reports.export
             Guid.Parse("a6666666-6666-6666-6666-666666666661"), // settings.view
+            Guid.Parse("a7777777-7777-7777-7777-777777777771"), // pricing.view
+            Guid.Parse("a7777777-7777-7777-7777-777777777772"), // pricing.manage
         };
 
         foreach (var permissionId in managerPermissionIds)
