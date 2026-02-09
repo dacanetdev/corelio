@@ -232,17 +232,17 @@
 - [ ] >70% test coverage on Application layer pricing code
 
 **Success Criteria:**
-- [ ] Tenant can configure 1-6 discount tiers and 1-5 margin tiers with custom names
+- [x] Tenant can configure 1-6 discount tiers and 1-5 margin tiers with custom names
 - [ ] Product form Costos tab displays all pricing tiers correctly
-- [ ] Cascading discount calculation matches FERRESYS logic with 100% accuracy (validated via unit tests)
-- [ ] NetCost = ListPrice × (1-D1/100) × (1-D2/100) × ... × (1-Dn/100) verified
-- [ ] SalePrice = NetCost / (1 - MarginPercent/100) verified
-- [ ] PriceWithIva = SalePrice × 1.16 verified
+- [x] Cascading discount calculation matches FERRESYS logic with 100% accuracy (validated via unit tests)
+- [x] NetCost = ListPrice × (1-D1/100) × (1-D2/100) × ... × (1-Dn/100) verified
+- [x] SalePrice = NetCost / (1 - MarginPercent/100) verified
+- [x] PriceWithIva = SalePrice × 1.16 verified
 - [ ] Bulk price change updates 100 products in < 10 seconds
 - [ ] Multi-tenancy isolation verified (Tenant A cannot see/update Tenant B's pricing)
 - [ ] Mobile-responsive (tested at 375px width - iPhone SE)
 - [ ] Spanish (es-MX) localization complete (all ~160 keys)
-- [ ] Zero compilation errors, solution builds successfully
+- [x] Zero compilation errors, solution builds successfully
 
 ---
 
