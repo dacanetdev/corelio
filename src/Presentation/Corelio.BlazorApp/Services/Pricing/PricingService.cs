@@ -7,7 +7,7 @@ namespace Corelio.BlazorApp.Services.Pricing;
 /// <summary>
 /// Implementation of pricing service using HttpClient to call backend API.
 /// </summary>
-public class PricingService(HttpClient httpClient, ILogger<PricingService> logger) : IPricingService
+public partial class PricingService(HttpClient httpClient, ILogger<PricingService> logger) : IPricingService
 {
     private const string BaseUrl = "/api/v1/pricing";
 
@@ -17,9 +17,9 @@ public class PricingService(HttpClient httpClient, ILogger<PricingService> logge
     {
         try
         {
-            logger.LogInformation("Getting tenant pricing config from {Url}", $"{BaseUrl}/tenant-config");
+            LogGettingTenantConfig(logger, $"{BaseUrl}/tenant-config");
             var response = await httpClient.GetAsync($"{BaseUrl}/tenant-config", cancellationToken);
-            logger.LogInformation("GET tenant-config response: {StatusCode}", response.StatusCode);
+            LogGetTenantConfigResponse(logger, response.StatusCode);
 
             if (response.IsSuccessStatusCode)
             {
@@ -32,12 +32,12 @@ public class PricingService(HttpClient httpClient, ILogger<PricingService> logge
             }
 
             var errorMessage = await response.Content.ReadAsStringAsync(cancellationToken);
-            logger.LogWarning("GET tenant-config failed: {StatusCode} - {Error}", response.StatusCode, errorMessage);
+            LogGetTenantConfigFailed(logger, response.StatusCode, errorMessage);
             return Result<TenantPricingConfigModel>.Failure(errorMessage ?? "Failed to load pricing configuration");
         }
         catch (Exception ex)
         {
-            logger.LogError(ex, "Exception loading pricing configuration");
+            LogTenantConfigException(logger, ex);
             return Result<TenantPricingConfigModel>.Failure($"Error loading pricing configuration: {ex.Message}");
         }
     }
@@ -69,10 +69,9 @@ public class PricingService(HttpClient httpClient, ILogger<PricingService> logge
                 })
             };
 
-            logger.LogInformation("Updating tenant pricing config: {DiscountTiers} discount tiers, {MarginTiers} margin tiers, IVA={IvaPercentage}%",
-                model.DiscountTierCount, model.MarginTierCount, model.IvaPercentage);
+            LogUpdatingTenantConfig(logger, model.DiscountTierCount, model.MarginTierCount, model.IvaPercentage);
             var response = await httpClient.PutAsJsonAsync($"{BaseUrl}/tenant-config", request, cancellationToken);
-            logger.LogInformation("PUT tenant-config response: {StatusCode}", response.StatusCode);
+            LogPutTenantConfigResponse(logger, response.StatusCode);
 
             if (response.IsSuccessStatusCode)
             {
@@ -83,16 +82,16 @@ public class PricingService(HttpClient httpClient, ILogger<PricingService> logge
                     return Result<TenantPricingConfigModel>.Success(config);
                 }
 
-                logger.LogWarning("PUT tenant-config returned success but response body was null");
+                LogPutTenantConfigNullBody(logger);
             }
 
             var errorMessage = await response.Content.ReadAsStringAsync(cancellationToken);
-            logger.LogWarning("PUT tenant-config failed: {StatusCode} - {Error}", response.StatusCode, errorMessage);
+            LogPutTenantConfigFailed(logger, response.StatusCode, errorMessage);
             return Result<TenantPricingConfigModel>.Failure(errorMessage ?? "Failed to update pricing configuration");
         }
         catch (Exception ex)
         {
-            logger.LogError(ex, "Exception updating pricing configuration");
+            LogUpdateTenantConfigException(logger, ex);
             return Result<TenantPricingConfigModel>.Failure($"Error updating pricing configuration: {ex.Message}");
         }
     }
@@ -294,4 +293,33 @@ public class PricingService(HttpClient httpClient, ILogger<PricingService> logge
             return Result<int>.Failure($"Error applying bulk pricing update: {ex.Message}");
         }
     }
+
+    // High-performance logging via LoggerMessage source generator
+
+    [LoggerMessage(Level = LogLevel.Information, Message = "Getting tenant pricing config from {Url}")]
+    private static partial void LogGettingTenantConfig(ILogger logger, string url);
+
+    [LoggerMessage(Level = LogLevel.Information, Message = "GET tenant-config response: {StatusCode}")]
+    private static partial void LogGetTenantConfigResponse(ILogger logger, System.Net.HttpStatusCode statusCode);
+
+    [LoggerMessage(Level = LogLevel.Warning, Message = "GET tenant-config failed: {StatusCode} - {Error}")]
+    private static partial void LogGetTenantConfigFailed(ILogger logger, System.Net.HttpStatusCode statusCode, string error);
+
+    [LoggerMessage(Level = LogLevel.Error, Message = "Exception loading pricing configuration")]
+    private static partial void LogTenantConfigException(ILogger logger, Exception ex);
+
+    [LoggerMessage(Level = LogLevel.Information, Message = "Updating tenant pricing config: {DiscountTiers} discount tiers, {MarginTiers} margin tiers, IVA={IvaPercentage}%")]
+    private static partial void LogUpdatingTenantConfig(ILogger logger, int discountTiers, int marginTiers, decimal ivaPercentage);
+
+    [LoggerMessage(Level = LogLevel.Information, Message = "PUT tenant-config response: {StatusCode}")]
+    private static partial void LogPutTenantConfigResponse(ILogger logger, System.Net.HttpStatusCode statusCode);
+
+    [LoggerMessage(Level = LogLevel.Warning, Message = "PUT tenant-config returned success but response body was null")]
+    private static partial void LogPutTenantConfigNullBody(ILogger logger);
+
+    [LoggerMessage(Level = LogLevel.Warning, Message = "PUT tenant-config failed: {StatusCode} - {Error}")]
+    private static partial void LogPutTenantConfigFailed(ILogger logger, System.Net.HttpStatusCode statusCode, string error);
+
+    [LoggerMessage(Level = LogLevel.Error, Message = "Exception updating pricing configuration")]
+    private static partial void LogUpdateTenantConfigException(ILogger logger, Exception ex);
 }

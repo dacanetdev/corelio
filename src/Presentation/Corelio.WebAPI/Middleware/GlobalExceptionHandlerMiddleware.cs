@@ -7,7 +7,7 @@ namespace Corelio.WebAPI.Middleware;
 /// <summary>
 /// Middleware that catches unhandled exceptions and returns proper ProblemDetails responses.
 /// </summary>
-public class GlobalExceptionHandlerMiddleware(RequestDelegate next, ILogger<GlobalExceptionHandlerMiddleware> logger)
+public partial class GlobalExceptionHandlerMiddleware(RequestDelegate next, ILogger<GlobalExceptionHandlerMiddleware> logger)
 {
     public async Task InvokeAsync(HttpContext context)
     {
@@ -17,7 +17,7 @@ public class GlobalExceptionHandlerMiddleware(RequestDelegate next, ILogger<Glob
         }
         catch (ValidationException ex)
         {
-            logger.LogWarning(ex, "Validation failed for {Path}", context.Request.Path);
+            LogValidationFailed(logger, context.Request.Path, ex);
 
             var errors = ex.Errors
                 .GroupBy(e => e.PropertyName)
@@ -39,7 +39,7 @@ public class GlobalExceptionHandlerMiddleware(RequestDelegate next, ILogger<Glob
         }
         catch (Exception ex)
         {
-            logger.LogError(ex, "Unhandled exception for {Method} {Path}", context.Request.Method, context.Request.Path);
+            LogUnhandledException(logger, context.Request.Method, context.Request.Path, ex);
 
             var problemDetails = new ProblemDetails
             {
@@ -56,4 +56,10 @@ public class GlobalExceptionHandlerMiddleware(RequestDelegate next, ILogger<Glob
             await context.Response.WriteAsJsonAsync(problemDetails);
         }
     }
+
+    [LoggerMessage(Level = LogLevel.Warning, Message = "Validation failed for {Path}")]
+    private static partial void LogValidationFailed(ILogger logger, string path, Exception ex);
+
+    [LoggerMessage(Level = LogLevel.Error, Message = "Unhandled exception for {Method} {Path}")]
+    private static partial void LogUnhandledException(ILogger logger, string method, string path, Exception ex);
 }
