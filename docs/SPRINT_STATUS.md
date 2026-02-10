@@ -139,8 +139,8 @@
 | 1 | 49 | 8 | 41 |
 | 2 | 45 | 13 | 28 |
 | 3 | 41 | 5 | 23 |
-| 4 | 36 | - | - |
-| 5 | 31 | - | - |
+| 4 | 36 | 5 | 18 |
+| 5 | 31 | 13 | 5 |
 | 6 | 26 | - | - |
 | 7 | 21 | - | - |
 | 8 | 16 | - | - |
@@ -209,7 +209,7 @@
 | US-6.2: Pricing Calculation Engine & CQRS | P0 Critical | 13 | 16-18 | 🟢 Completed | Static calculation service, 7 CQRS handlers, 3 validators, 75 unit tests (>90% coverage) |
 | US-6.3: Pricing API & Service Layer | P0 Critical | 5 | 6-8 | 🟢 Completed | 7 Minimal API endpoints, Blazor HTTP service, 9 models |
 | US-6.4: Pricing Configuration UI | P1 High | 5 | 6-8 | 🟢 Completed | PricingSettings.razor at /settings/pricing, 20 localization keys, nav menu updated |
-| US-6.5: Product Pricing Management UI | P0 Critical | 13 | 16-18 | 🔵 Not Started | ProductCostos component, ProductForm tabs, PriceChange.razor, BulkPriceChangeDialog, ~100 localization keys |
+| US-6.5: Product Pricing Management UI | P0 Critical | 13 | 16-18 | 🟢 Completed | ProductCostos component, ProductForm tabs, PriceChange.razor, BulkPriceChangeDialog, ~80 localization keys |
 | US-6.6: Pricing Module Testing | P1 High | 5 | 6-8 | 🔵 Not Started | Handler tests, validator tests, integration tests, >70% coverage |
 
 **Total Sprint 6:** 49 SP (60-74 hours)
@@ -225,15 +225,15 @@
 - [x] PricingCalculationService with cascading discount math matching FERRESYS exactly
 - [x] 7 API endpoints for pricing operations (GET/PUT tenant config, GET list/single product pricing, PUT single, POST calculate, POST bulk-update)
 - [x] PricingSettings.razor page at /settings/pricing (tenant configuration)
-- [ ] ProductForm.razor with tabbed layout (Datos/Costos tabs)
-- [ ] PriceChange.razor page at /pricing (mass price management)
-- [ ] BulkPriceChangeDialog.razor (bulk updates: %, fixed amount, new margin)
-- [ ] ~160 Spanish localization keys
+- [x] ProductForm.razor with tabbed layout (Datos/Costos tabs)
+- [x] PriceChange.razor page at /pricing (mass price management)
+- [x] BulkPriceChangeDialog.razor (bulk updates: %, fixed amount, new margin)
+- [x] ~160 Spanish localization keys
 - [ ] >70% test coverage on Application layer pricing code
 
 **Success Criteria:**
 - [x] Tenant can configure 1-6 discount tiers and 1-5 margin tiers with custom names
-- [ ] Product form Costos tab displays all pricing tiers correctly
+- [x] Product form Costos tab displays all pricing tiers correctly
 - [x] Cascading discount calculation matches FERRESYS logic with 100% accuracy (validated via unit tests)
 - [x] NetCost = ListPrice × (1-D1/100) × (1-D2/100) × ... × (1-Dn/100) verified
 - [x] SalePrice = NetCost / (1 - MarginPercent/100) verified
@@ -906,4 +906,68 @@
 
 ---
 
-**Last Updated:** 2026-02-08 (Sprint 6 Day 3 - US-6.4 Pricing Configuration UI complete)
+### 2026-02-10 (Sprint 6 - Day 5: Product Pricing Management UI)
+**Yesterday:**
+- Completed US-6.4 (Pricing Configuration UI)
+
+**Today:**
+- **Completed US-6.5: Product Pricing Management UI (13 SP)**
+  - Created Phase 0 Foundation:
+    - ProductDiscountEditModel.cs - mutable form binding model
+    - ProductMarginPriceEditModel.cs - mutable form binding model
+    - PricingCalculator.cs - client-side pricing math helper (mirrors Application layer formulas)
+    - ~80 new Spanish localization keys in SharedResource.es-MX.resx
+    - Updated _Imports.razor with new @using directives
+  - Created ProductCostos.razor component:
+    - Reusable pricing editor with 3 sections (ListPrice/Discounts, IVA, SalePrice margins)
+    - Value+ValueChanged pattern on all fields (no @bind-Value conflicts)
+    - Live recalculation: discount changes cascade to net cost and all margin tiers
+    - Bidirectional: edit margin% to get sale price, or edit sale price to get margin%
+    - Guard against infinite loops with _isCalculating flag
+  - Modified ProductForm.razor:
+    - Added MudTabs with "Datos Generales" and "Costos y Precios" tabs
+    - Costos tab loads tenant config and product pricing from API
+    - Save button persists both product data and pricing data
+    - New products get default tier structure from tenant config
+  - Created PriceChange.razor page (/pricing):
+    - PageHeader with breadcrumbs + "Cambio Masivo" action button
+    - Filter bar (search by name/SKU, category dropdown, search button)
+    - MudTable with MultiSelection, dynamic margin tier columns from tenant config
+    - Inline editing: expand row with ProductCostos component, save/cancel
+    - Selection toolbar showing count + bulk action button
+    - Pagination matching ProductList pattern
+  - Created BulkPriceChangeDialog.razor:
+    - 5 update types (PercentageIncrease/Decrease, FixedAmount, SetNewMargin)
+    - Dynamic value input (% or $) and tier selector for SetNewMargin
+    - Preview calculation (before/after/difference) for first selected product
+    - Warning banner + loading state during apply
+    - Calls PricingService.BulkUpdatePricingAsync on apply
+  - Updated NavMenu.razor:
+    - Added "Cambio de Precios" navigation link with tags icon
+    - Added CSS for bi-tags-nav-menu icon
+  - Zero compilation errors (Debug build)
+  - All 47 passing tests still pass (13 pre-existing failures unchanged)
+
+**Files Created (6):**
+- `BlazorApp/Models/Pricing/ProductDiscountEditModel.cs`
+- `BlazorApp/Models/Pricing/ProductMarginPriceEditModel.cs`
+- `BlazorApp/Helpers/PricingCalculator.cs`
+- `BlazorApp/Components/Shared/ProductCostos.razor`
+- `BlazorApp/Components/Pages/Pricing/PriceChange.razor`
+- `BlazorApp/Components/Dialogs/BulkPriceChangeDialog.razor`
+
+**Files Modified (4):**
+- `BlazorApp/Components/Pages/Products/ProductForm.razor` - MudTabs + Costos tab
+- `BlazorApp/Components/Layout/NavMenu.razor` + `.css` - Cambio de Precios link
+- `BlazorApp/Components/_Imports.razor` - New @using directives
+- `BlazorApp/Resources/SharedResource.es-MX.resx` - ~80 new localization keys
+
+**Blockers:**
+- None
+
+**Next Steps:**
+- Start US-6.6: Pricing Module Testing
+
+---
+
+**Last Updated:** 2026-02-10 (Sprint 6 Day 5 - US-6.5 Product Pricing Management UI complete)
