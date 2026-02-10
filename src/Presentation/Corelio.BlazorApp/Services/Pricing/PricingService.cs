@@ -7,7 +7,7 @@ namespace Corelio.BlazorApp.Services.Pricing;
 /// <summary>
 /// Implementation of pricing service using HttpClient to call backend API.
 /// </summary>
-public class PricingService(HttpClient httpClient) : IPricingService
+public class PricingService(HttpClient httpClient, ILogger<PricingService> logger) : IPricingService
 {
     private const string BaseUrl = "/api/v1/pricing";
 
@@ -17,7 +17,9 @@ public class PricingService(HttpClient httpClient) : IPricingService
     {
         try
         {
+            logger.LogInformation("Getting tenant pricing config from {Url}", $"{BaseUrl}/tenant-config");
             var response = await httpClient.GetAsync($"{BaseUrl}/tenant-config", cancellationToken);
+            logger.LogInformation("GET tenant-config response: {StatusCode}", response.StatusCode);
 
             if (response.IsSuccessStatusCode)
             {
@@ -30,10 +32,12 @@ public class PricingService(HttpClient httpClient) : IPricingService
             }
 
             var errorMessage = await response.Content.ReadAsStringAsync(cancellationToken);
+            logger.LogWarning("GET tenant-config failed: {StatusCode} - {Error}", response.StatusCode, errorMessage);
             return Result<TenantPricingConfigModel>.Failure(errorMessage ?? "Failed to load pricing configuration");
         }
         catch (Exception ex)
         {
+            logger.LogError(ex, "Exception loading pricing configuration");
             return Result<TenantPricingConfigModel>.Failure($"Error loading pricing configuration: {ex.Message}");
         }
     }
@@ -65,7 +69,10 @@ public class PricingService(HttpClient httpClient) : IPricingService
                 })
             };
 
+            logger.LogInformation("Updating tenant pricing config: {DiscountTiers} discount tiers, {MarginTiers} margin tiers, IVA={IvaPercentage}%",
+                model.DiscountTierCount, model.MarginTierCount, model.IvaPercentage);
             var response = await httpClient.PutAsJsonAsync($"{BaseUrl}/tenant-config", request, cancellationToken);
+            logger.LogInformation("PUT tenant-config response: {StatusCode}", response.StatusCode);
 
             if (response.IsSuccessStatusCode)
             {
@@ -75,13 +82,17 @@ public class PricingService(HttpClient httpClient) : IPricingService
                 {
                     return Result<TenantPricingConfigModel>.Success(config);
                 }
+
+                logger.LogWarning("PUT tenant-config returned success but response body was null");
             }
 
             var errorMessage = await response.Content.ReadAsStringAsync(cancellationToken);
+            logger.LogWarning("PUT tenant-config failed: {StatusCode} - {Error}", response.StatusCode, errorMessage);
             return Result<TenantPricingConfigModel>.Failure(errorMessage ?? "Failed to update pricing configuration");
         }
         catch (Exception ex)
         {
+            logger.LogError(ex, "Exception updating pricing configuration");
             return Result<TenantPricingConfigModel>.Failure($"Error updating pricing configuration: {ex.Message}");
         }
     }

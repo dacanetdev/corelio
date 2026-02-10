@@ -4,6 +4,7 @@ using Corelio.Infrastructure.MultiTenancy;
 using Corelio.ServiceDefaults;
 using Corelio.WebAPI.Endpoints;
 using Corelio.WebAPI.Extensions;
+using Corelio.WebAPI.Middleware;
 using Microsoft.EntityFrameworkCore;
 using Scalar.AspNetCore;
 
@@ -59,6 +60,9 @@ if (app.Environment.IsDevelopment())
         options.ShowSidebar = true;
     });
 }
+
+// Global exception handler (must be early in pipeline to catch all exceptions)
+app.UseMiddleware<GlobalExceptionHandlerMiddleware>();
 
 // Add authentication middleware (validates JWT tokens)
 // Skip authentication for health check endpoints
