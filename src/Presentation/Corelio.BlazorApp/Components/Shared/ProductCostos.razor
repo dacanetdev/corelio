@@ -1,0 +1,353 @@
+@using System.Globalization
+@inject IStringLocalizer<SharedResource> L
+
+<!-- Section 1: Precio de Lista y Descuentos -->
+<div class="form-section">
+    <MudText Typo="Typo.h6" Class="form-section-title">
+        <MudIcon Icon="@Icons.Material.Filled.Receipt" Class="mr-2" Size="Size.Small" />
+        @L["ListPriceAndDiscounts"]
+    </MudText>
+    <MudGrid Spacing="3">
+        <MudItem xs="12" md="6">
+            <MudNumericField T="decimal?"
+                             Label="@L["ListPrice"]"
+                             Value="ListPrice"
+                             ValueChanged="OnListPriceChanged"
+                             Variant="Variant.Outlined"
+                             Adornment="Adornment.Start"
+                             AdornmentText="$"
+                             Format="N2"
+                             Culture="@(new CultureInfo("es-MX"))"
+                             Min="0m"
+                             ReadOnly="ReadOnly" />
+        </MudItem>
+        <MudItem xs="12" md="6">
+            <MudNumericField T="decimal"
+                             Label="@L["NetCost"]"
+                             Value="_netCost"
+                             Variant="Variant.Outlined"
+                             Adornment="Adornment.Start"
+                             AdornmentText="$"
+                             Format="N2"
+                             Culture="@(new CultureInfo("es-MX"))"
+                             ReadOnly="true"
+                             HelperText="@L["CalculatedAutomatically"]" />
+        </MudItem>
+
+        @if (Discounts is not null)
+        {
+            @foreach (var discount in Discounts)
+            {
+                <MudItem xs="12" sm="6" md="4">
+                    <MudNumericField T="decimal"
+                                     Label="@($"{discount.TierName} (%)")"
+                                     Value="discount.DiscountPercentage"
+                                     ValueChanged="@((val) => OnDiscountChanged(discount, val))"
+                                     Variant="Variant.Outlined"
+                                     Adornment="Adornment.End"
+                                     AdornmentText="%"
+                                     Format="N2"
+                                     Min="0m"
+                                     Max="100m"
+                                     ReadOnly="ReadOnly" />
+                </MudItem>
+            }
+        }
+    </MudGrid>
+</div>
+
+<!-- Section 2: IVA -->
+<div class="form-section">
+    <MudText Typo="Typo.h6" Class="form-section-title">
+        <MudIcon Icon="@Icons.Material.Filled.AccountBalance" Class="mr-2" Size="Size.Small" />
+        @L["IvaToggle"]
+    </MudText>
+    <MudGrid Spacing="3">
+        <MudItem xs="12" md="6">
+            <MudSwitch T="bool"
+                       Value="IvaEnabled"
+                       ValueChanged="OnIvaEnabledChanged"
+                       Label="@(IvaEnabled ? L["IvaEnabled"] : L["IvaDisabled"])"
+                       Color="Color.Primary"
+                       ReadOnly="ReadOnly" />
+        </MudItem>
+    </MudGrid>
+</div>
+
+<!-- Section 3: Precios de Venta -->
+<div class="form-section">
+    <MudText Typo="Typo.h6" Class="form-section-title">
+        <MudIcon Icon="@Icons.Material.Filled.Sell" Class="mr-2" Size="Size.Small" />
+        @L["SalePrices"]
+    </MudText>
+
+    @if (MarginPrices is not null)
+    {
+        @foreach (var margin in MarginPrices)
+        {
+            <MudPaper Elevation="0" Class="pa-3 mb-3" Style="border: 1px solid var(--mud-palette-lines-default); border-radius: var(--mud-default-borderradius);">
+                <MudText Typo="Typo.subtitle2" Class="mb-2">@margin.TierName</MudText>
+                <MudGrid Spacing="3">
+                    <MudItem xs="12" sm="4">
+                        <MudNumericField T="decimal?"
+                                         Label="@L["MarginPercentage"]"
+                                         Value="margin.MarginPercentage"
+                                         ValueChanged="@((val) => OnMarginPercentageChanged(margin, val))"
+                                         Variant="Variant.Outlined"
+                                         Adornment="Adornment.End"
+                                         AdornmentText="%"
+                                         Format="N2"
+                                         Min="0m"
+                                         Max="99.99m"
+                                         ReadOnly="ReadOnly" />
+                    </MudItem>
+                    <MudItem xs="12" sm="4">
+                        <MudNumericField T="decimal?"
+                                         Label="@L["SalePrice"]"
+                                         Value="margin.SalePrice"
+                                         ValueChanged="@((val) => OnSalePriceChanged(margin, val))"
+                                         Variant="Variant.Outlined"
+                                         Adornment="Adornment.Start"
+                                         AdornmentText="$"
+                                         Format="N2"
+                                         Culture="@(new CultureInfo("es-MX"))"
+                                         Min="0m"
+                                         ReadOnly="ReadOnly" />
+                    </MudItem>
+                    <MudItem xs="12" sm="4">
+                        <MudNumericField T="decimal?"
+                                         Label="@(IvaEnabled ? L["PriceWithIva"] : L["PriceWithoutIva"])"
+                                         Value="margin.PriceWithIva"
+                                         Variant="Variant.Outlined"
+                                         Adornment="Adornment.Start"
+                                         AdornmentText="$"
+                                         Format="N2"
+                                         Culture="@(new CultureInfo("es-MX"))"
+                                         ReadOnly="true"
+                                         HelperText="@L["CalculatedAutomatically"]" />
+                    </MudItem>
+                </MudGrid>
+            </MudPaper>
+        }
+    }
+</div>
+
+@code {
+    [Parameter]
+    public decimal? ListPrice { get; set; }
+
+    [Parameter]
+    public EventCallback<decimal?> ListPriceChanged { get; set; }
+
+    [Parameter]
+    public bool IvaEnabled { get; set; }
+
+    [Parameter]
+    public EventCallback<bool> IvaEnabledChanged { get; set; }
+
+    [Parameter]
+    public List<ProductDiscountEditModel>? Discounts { get; set; }
+
+    [Parameter]
+    public EventCallback<List<ProductDiscountEditModel>> DiscountsChanged { get; set; }
+
+    [Parameter]
+    public List<ProductMarginPriceEditModel>? MarginPrices { get; set; }
+
+    [Parameter]
+    public EventCallback<List<ProductMarginPriceEditModel>> MarginPricesChanged { get; set; }
+
+    [Parameter]
+    public decimal IvaPercentage { get; set; } = 16m;
+
+    [Parameter]
+    public bool ReadOnly { get; set; }
+
+    [Parameter]
+    public EventCallback OnCalculationChanged { get; set; }
+
+    private decimal _netCost;
+    private bool _isCalculating;
+
+    protected override void OnParametersSet()
+    {
+        RecalculateNetCost();
+    }
+
+    private async Task OnListPriceChanged(decimal? value)
+    {
+        if (_isCalculating)
+        {
+            return;
+        }
+
+        _isCalculating = true;
+        try
+        {
+            ListPrice = value;
+            await ListPriceChanged.InvokeAsync(value);
+            RecalculateAll();
+            await NotifyChanges();
+        }
+        finally
+        {
+            _isCalculating = false;
+        }
+    }
+
+    private async Task OnDiscountChanged(ProductDiscountEditModel discount, decimal value)
+    {
+        if (_isCalculating)
+        {
+            return;
+        }
+
+        _isCalculating = true;
+        try
+        {
+            discount.DiscountPercentage = value;
+            await DiscountsChanged.InvokeAsync(Discounts);
+            RecalculateAll();
+            await NotifyChanges();
+        }
+        finally
+        {
+            _isCalculating = false;
+        }
+    }
+
+    private async Task OnIvaEnabledChanged(bool value)
+    {
+        if (_isCalculating)
+        {
+            return;
+        }
+
+        _isCalculating = true;
+        try
+        {
+            IvaEnabled = value;
+            await IvaEnabledChanged.InvokeAsync(value);
+            RecalculatePriceWithIva();
+            await NotifyChanges();
+        }
+        finally
+        {
+            _isCalculating = false;
+        }
+    }
+
+    private async Task OnMarginPercentageChanged(ProductMarginPriceEditModel margin, decimal? value)
+    {
+        if (_isCalculating)
+        {
+            return;
+        }
+
+        _isCalculating = true;
+        try
+        {
+            margin.MarginPercentage = value;
+            if (value.HasValue && _netCost > 0)
+            {
+                margin.SalePrice = PricingCalculator.CalculateSalePriceFromMargin(_netCost, value.Value);
+                margin.PriceWithIva = IvaEnabled
+                    ? PricingCalculator.ApplyIva(margin.SalePrice.Value, IvaPercentage)
+                    : margin.SalePrice;
+            }
+            await MarginPricesChanged.InvokeAsync(MarginPrices);
+            await NotifyChanges();
+        }
+        finally
+        {
+            _isCalculating = false;
+        }
+    }
+
+    private async Task OnSalePriceChanged(ProductMarginPriceEditModel margin, decimal? value)
+    {
+        if (_isCalculating)
+        {
+            return;
+        }
+
+        _isCalculating = true;
+        try
+        {
+            margin.SalePrice = value;
+            if (value.HasValue && _netCost > 0)
+            {
+                margin.MarginPercentage = PricingCalculator.CalculateMarginFromSalePrice(_netCost, value.Value);
+                margin.PriceWithIva = IvaEnabled
+                    ? PricingCalculator.ApplyIva(value.Value, IvaPercentage)
+                    : value;
+            }
+            await MarginPricesChanged.InvokeAsync(MarginPrices);
+            await NotifyChanges();
+        }
+        finally
+        {
+            _isCalculating = false;
+        }
+    }
+
+    private void RecalculateNetCost()
+    {
+        if (ListPrice.HasValue && ListPrice.Value > 0 && Discounts is not null)
+        {
+            var discountValues = Discounts.Select(d => d.DiscountPercentage).ToList();
+            _netCost = PricingCalculator.CalculateNetCost(ListPrice.Value, discountValues);
+        }
+        else
+        {
+            _netCost = ListPrice ?? 0;
+        }
+    }
+
+    private void RecalculateAll()
+    {
+        RecalculateNetCost();
+
+        if (MarginPrices is null)
+        {
+            return;
+        }
+
+        foreach (var margin in MarginPrices)
+        {
+            if (margin.MarginPercentage.HasValue && _netCost > 0)
+            {
+                margin.SalePrice = PricingCalculator.CalculateSalePriceFromMargin(_netCost, margin.MarginPercentage.Value);
+                margin.PriceWithIva = IvaEnabled
+                    ? PricingCalculator.ApplyIva(margin.SalePrice.Value, IvaPercentage)
+                    : margin.SalePrice;
+            }
+        }
+    }
+
+    private void RecalculatePriceWithIva()
+    {
+        if (MarginPrices is null)
+        {
+            return;
+        }
+
+        foreach (var margin in MarginPrices)
+        {
+            if (margin.SalePrice.HasValue)
+            {
+                margin.PriceWithIva = IvaEnabled
+                    ? PricingCalculator.ApplyIva(margin.SalePrice.Value, IvaPercentage)
+                    : margin.SalePrice;
+            }
+        }
+    }
+
+    private async Task NotifyChanges()
+    {
+        if (OnCalculationChanged.HasDelegate)
+        {
+            await OnCalculationChanged.InvokeAsync();
+        }
+    }
+}

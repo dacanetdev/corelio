@@ -1,0 +1,258 @@
+@using System.Globalization
+@inject IStringLocalizer<SharedResource> L
+@inject IPricingService PricingService
+@inject ISnackbar Snackbar
+
+<MudDialog>
+    <TitleContent>
+        <MudText Typo="Typo.h6">
+            <MudIcon Icon="@Icons.Material.Filled.PriceChange" Class="mr-2" />
+            @L["BulkPriceChangeTitle"]
+        </MudText>
+    </TitleContent>
+    <DialogContent>
+        <MudStack Spacing="4">
+            <!-- Summary -->
+            <MudAlert Severity="Severity.Info" Dense="true">
+                @SelectedProducts.Count @L["ProductsSelected"]
+            </MudAlert>
+
+            <!-- Update Type -->
+            <MudSelect T="string"
+                       Label="@L["UpdateType"]"
+                       Value="_updateType"
+                       ValueChanged="OnUpdateTypeChanged"
+                       Variant="Variant.Outlined"
+                       Required="true"
+                       RequiredError="@L["SelectUpdateType"]">
+                <MudSelectItem Value="@("PercentageIncrease")">@L["PercentageIncrease"]</MudSelectItem>
+                <MudSelectItem Value="@("PercentageDecrease")">@L["PercentageDecrease"]</MudSelectItem>
+                <MudSelectItem Value="@("FixedAmountIncrease")">@L["FixedAmountIncrease"]</MudSelectItem>
+                <MudSelectItem Value="@("FixedAmountDecrease")">@L["FixedAmountDecrease"]</MudSelectItem>
+                <MudSelectItem Value="@("SetNewMargin")">@L["SetNewMargin"]</MudSelectItem>
+            </MudSelect>
+
+            <!-- Value Input -->
+            @if (!string.IsNullOrEmpty(_updateType))
+            {
+                <MudNumericField T="decimal"
+                                 Label="@L["UpdateValue"]"
+                                 Value="_updateValue"
+                                 ValueChanged="OnValueChanged"
+                                 Variant="Variant.Outlined"
+                                 Adornment="@(_isPercentageType ? Adornment.End : Adornment.Start)"
+                                 AdornmentText="@(_isPercentageType ? "%" : "$")"
+                                 Format="N2"
+                                 Min="0m"
+                                 Required="true"
+                                 RequiredError="@L["ValueRequired"]" />
+            }
+
+            <!-- Tier Selector (only for SetNewMargin) -->
+            @if (_updateType == "SetNewMargin" && TenantConfig is not null)
+            {
+                <MudSelect T="int?"
+                           Label="@L["SelectTier"]"
+                           Value="_selectedTier"
+                           ValueChanged="@((val) => { _selectedTier = val; UpdatePreview(); })"
+                           Variant="Variant.Outlined"
+                           Required="true"
+                           RequiredError="@L["TierRequired"]">
+                    @foreach (var tier in TenantConfig.MarginTiers.Where(t => t.IsActive))
+                    {
+                        <MudSelectItem Value="@((int?)tier.TierNumber)">@tier.TierName</MudSelectItem>
+                    }
+                </MudSelect>
+            }
+
+            <!-- Preview -->
+            @if (_showPreview && SelectedProducts.Any())
+            {
+                <MudPaper Elevation="0" Class="pa-4" Style="border: 1px solid var(--mud-palette-lines-default); border-radius: var(--mud-default-borderradius);">
+                    <MudText Typo="Typo.subtitle2" Class="mb-2">
+                        @L["PreviewCalculation"] - @_previewProduct?.ProductName
+                    </MudText>
+                    <MudGrid Spacing="2">
+                        <MudItem xs="4">
+                            <MudText Typo="Typo.caption" Color="Color.Secondary">@L["Before"]</MudText>
+                            <MudText Typo="Typo.body1">@_previewBefore.ToString("C", new CultureInfo("es-MX"))</MudText>
+                        </MudItem>
+                        <MudItem xs="4">
+                            <MudText Typo="Typo.caption" Color="Color.Secondary">@L["After"]</MudText>
+                            <MudText Typo="Typo.body1" Color="@(_previewAfter >= _previewBefore ? Color.Success : Color.Error)">
+                                @_previewAfter.ToString("C", new CultureInfo("es-MX"))
+                            </MudText>
+                        </MudItem>
+                        <MudItem xs="4">
+                            <MudText Typo="Typo.caption" Color="Color.Secondary">@L["Difference"]</MudText>
+                            <MudText Typo="Typo.body1" Color="@(_previewDifference >= 0 ? Color.Success : Color.Error)">
+                                @((_previewDifference >= 0 ? "+" : "") + _previewDifference.ToString("C", new CultureInfo("es-MX")))
+                            </MudText>
+                        </MudItem>
+                    </MudGrid>
+                </MudPaper>
+            }
+
+            <!-- Warning -->
+            <MudAlert Severity="Severity.Warning" Dense="true">
+                @L["BulkUpdateWarning"]
+            </MudAlert>
+
+            <!-- Error -->
+            @if (!string.IsNullOrEmpty(_errorMessage))
+            {
+                <MudAlert Severity="Severity.Error" Dense="true">@_errorMessage</MudAlert>
+            }
+        </MudStack>
+    </DialogContent>
+    <DialogActions>
+        <MudButton OnClick="Cancel" Variant="Variant.Text">@L["Cancel"]</MudButton>
+        <MudButton OnClick="Apply"
+                   Variant="Variant.Filled"
+                   Color="Color.Primary"
+                   Disabled="_applying || !IsValid()">
+            @if (_applying)
+            {
+                <MudProgressCircular Class="ms-n1" Size="Size.Small" Indeterminate="true" />
+                <MudText Class="ms-2">@L["Applying"]</MudText>
+            }
+            else
+            {
+                @L["ApplyChanges"]
+            }
+        </MudButton>
+    </DialogActions>
+</MudDialog>
+
+@code {
+    [CascadingParameter]
+    private MudDialogInstance MudDialog { get; set; } = null!;
+
+    [Parameter]
+    public List<ProductPricingModel> SelectedProducts { get; set; } = [];
+
+    [Parameter]
+    public TenantPricingConfigModel? TenantConfig { get; set; }
+
+    private string _updateType = string.Empty;
+    private decimal _updateValue;
+    private int? _selectedTier;
+    private bool _applying;
+    private string? _errorMessage;
+    private bool _showPreview;
+
+    // Preview values
+    private ProductPricingModel? _previewProduct;
+    private decimal _previewBefore;
+    private decimal _previewAfter;
+    private decimal _previewDifference;
+
+    private bool _isPercentageType => _updateType is "PercentageIncrease" or "PercentageDecrease" or "SetNewMargin";
+
+    private void OnUpdateTypeChanged(string value)
+    {
+        _updateType = value;
+        UpdatePreview();
+    }
+
+    private void OnValueChanged(decimal value)
+    {
+        _updateValue = value;
+        UpdatePreview();
+    }
+
+    private void UpdatePreview()
+    {
+        _previewProduct = SelectedProducts.FirstOrDefault();
+        if (_previewProduct is null || string.IsNullOrEmpty(_updateType) || _updateValue == 0)
+        {
+            _showPreview = false;
+            return;
+        }
+
+        // Use the first margin tier's sale price for preview
+        var firstMargin = _previewProduct.MarginPrices.FirstOrDefault();
+        _previewBefore = firstMargin?.SalePrice ?? 0;
+
+        _previewAfter = _updateType switch
+        {
+            "PercentageIncrease" => Math.Round(_previewBefore * (1 + _updateValue / 100m), 2, MidpointRounding.AwayFromZero),
+            "PercentageDecrease" => Math.Round(_previewBefore * (1 - _updateValue / 100m), 2, MidpointRounding.AwayFromZero),
+            "FixedAmountIncrease" => _previewBefore + _updateValue,
+            "FixedAmountDecrease" => Math.Max(0, _previewBefore - _updateValue),
+            "SetNewMargin" => _previewProduct.NetCost.HasValue
+                ? PricingCalculator.CalculateSalePriceFromMargin(_previewProduct.NetCost.Value, _updateValue)
+                : _previewBefore,
+            _ => _previewBefore
+        };
+
+        _previewDifference = _previewAfter - _previewBefore;
+        _showPreview = true;
+    }
+
+    private bool IsValid()
+    {
+        if (string.IsNullOrEmpty(_updateType))
+        {
+            return false;
+        }
+
+        if (_updateValue <= 0)
+        {
+            return false;
+        }
+
+        if (_updateType == "SetNewMargin" && !_selectedTier.HasValue)
+        {
+            return false;
+        }
+
+        return true;
+    }
+
+    private void Cancel()
+    {
+        MudDialog.Cancel();
+    }
+
+    private async Task Apply()
+    {
+        if (!IsValid())
+        {
+            return;
+        }
+
+        _applying = true;
+        _errorMessage = null;
+
+        try
+        {
+            var model = new BulkUpdateRequestModel
+            {
+                ProductIds = SelectedProducts.Select(p => p.ProductId).ToList(),
+                UpdateType = _updateType,
+                Value = _updateValue,
+                TierNumber = _selectedTier
+            };
+
+            var result = await PricingService.BulkUpdatePricingAsync(model);
+            if (result.IsSuccess)
+            {
+                Snackbar.Add($"{result.Value} {L["BulkUpdateSuccess"]}", Severity.Success);
+                MudDialog.Close(DialogResult.Ok(true));
+            }
+            else
+            {
+                _errorMessage = result.Error ?? L["BulkUpdateFailed"];
+            }
+        }
+        catch (Exception ex)
+        {
+            _errorMessage = $"{L["Error"]}: {ex.Message}";
+        }
+        finally
+        {
+            _applying = false;
+        }
+    }
+}

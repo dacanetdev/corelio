@@ -4,6 +4,7 @@
 @using Corelio.BlazorApp.Components.Shared
 @attribute [Authorize]
 @inject IProductService ProductService
+@inject IPricingService PricingService
 @inject NavigationManager NavigationManager
 @inject IStringLocalizer<SharedResource> L
 @inject ISnackbar Snackbar
@@ -36,191 +37,220 @@
         else
         {
             <EditForm Model="_product" OnValidSubmit="HandleSubmit">
-                <MudStack Spacing="4">
-                    <!-- Basic Information Section -->
-                    <div class="form-section">
-                        <MudText Typo="Typo.h6" Class="form-section-title">
-                            <MudIcon Icon="@Icons.Material.Filled.Info" Class="mr-2" Size="Size.Small" />
-                            @L["BasicInformation"]
-                        </MudText>
-                        <MudGrid Spacing="3">
-                            <MudItem xs="12" md="6">
-                                <MudTextField @bind-Value="_product.Sku"
-                                              Label="@L["SKU"]"
-                                              Variant="Variant.Outlined"
-                                              Required="true"
-                                              RequiredError="@L["SKURequired"]" />
-                            </MudItem>
+                <MudTabs Elevation="0" Rounded="true" ApplyEffectsToContainer="true" PanelClass="pa-0 pt-4">
+                    <!-- Tab 1: Datos Generales -->
+                    <MudTabPanel Text="@L["DatosGenerales"]" Icon="@Icons.Material.Filled.Info">
+                        <MudStack Spacing="4">
+                            <!-- Basic Information Section -->
+                            <div class="form-section">
+                                <MudText Typo="Typo.h6" Class="form-section-title">
+                                    <MudIcon Icon="@Icons.Material.Filled.Info" Class="mr-2" Size="Size.Small" />
+                                    @L["BasicInformation"]
+                                </MudText>
+                                <MudGrid Spacing="3">
+                                    <MudItem xs="12" md="6">
+                                        <MudTextField @bind-Value="_product.Sku"
+                                                      Label="@L["SKU"]"
+                                                      Variant="Variant.Outlined"
+                                                      Required="true"
+                                                      RequiredError="@L["SKURequired"]" />
+                                    </MudItem>
 
-                            <MudItem xs="12" md="6">
-                                <MudTextField @bind-Value="_product.Barcode"
-                                              Label="@L["Barcode"]"
-                                              Variant="Variant.Outlined" />
-                            </MudItem>
+                                    <MudItem xs="12" md="6">
+                                        <MudTextField @bind-Value="_product.Barcode"
+                                                      Label="@L["Barcode"]"
+                                                      Variant="Variant.Outlined" />
+                                    </MudItem>
 
-                            <MudItem xs="12">
-                                <MudTextField @bind-Value="_product.Name"
-                                              Label="@L["ProductName"]"
-                                              Variant="Variant.Outlined"
-                                              Required="true"
-                                              RequiredError="@L["ProductNameRequired"]" />
-                            </MudItem>
+                                    <MudItem xs="12">
+                                        <MudTextField @bind-Value="_product.Name"
+                                                      Label="@L["ProductName"]"
+                                                      Variant="Variant.Outlined"
+                                                      Required="true"
+                                                      RequiredError="@L["ProductNameRequired"]" />
+                                    </MudItem>
 
-                            <MudItem xs="12" md="6">
-                                <MudSelect @bind-Value="_product.CategoryId"
-                                           Label="@L["Category"]"
-                                           Variant="Variant.Outlined"
-                                           Clearable="true"
-                                           Placeholder="@L["SelectCategory"]">
-                                    @foreach (var category in _categories)
+                                    <MudItem xs="12" md="6">
+                                        <MudSelect @bind-Value="_product.CategoryId"
+                                                   Label="@L["Category"]"
+                                                   Variant="Variant.Outlined"
+                                                   Clearable="true"
+                                                   Placeholder="@L["SelectCategory"]">
+                                            @foreach (var category in _categories)
+                                            {
+                                                <MudSelectItem Value="@category.Id">@category.Name</MudSelectItem>
+                                            }
+                                        </MudSelect>
+                                    </MudItem>
+
+                                    <MudItem xs="12" md="6">
+                                        <MudTextField @bind-Value="_product.Brand"
+                                                      Label="@L["Brand"]"
+                                                      Variant="Variant.Outlined" />
+                                    </MudItem>
+
+                                    <MudItem xs="12">
+                                        <MudTextField @bind-Value="_product.Description"
+                                                      Label="@L["Description"]"
+                                                      Variant="Variant.Outlined"
+                                                      Lines="3" />
+                                    </MudItem>
+                                </MudGrid>
+                            </div>
+
+                            <!-- Pricing Section -->
+                            <div class="form-section">
+                                <MudText Typo="Typo.h6" Class="form-section-title">
+                                    <MudIcon Icon="@Icons.Material.Filled.AttachMoney" Class="mr-2" Size="Size.Small" />
+                                    @L["PricingSection"]
+                                </MudText>
+                                <MudGrid Spacing="3">
+                                    <MudItem xs="12" md="6">
+                                        <MudNumericField @bind-Value="_product.CostPrice"
+                                                         Label="@L["CostPrice"]"
+                                                         Variant="Variant.Outlined"
+                                                         Format="C"
+                                                         Culture="@(new CultureInfo("es-MX"))"
+                                                         Min="0m"
+                                                         T="decimal" />
+                                    </MudItem>
+
+                                    <MudItem xs="12" md="6">
+                                        <MudNumericField @bind-Value="_product.SalePrice"
+                                                         Label="@L["SalePrice"]"
+                                                         Variant="Variant.Outlined"
+                                                         Format="C"
+                                                         Culture="@(new CultureInfo("es-MX"))"
+                                                         Required="true"
+                                                         RequiredError="@L["PriceRequired"]"
+                                                         Min="0.01m"
+                                                         T="decimal" />
+                                    </MudItem>
+
+                                    <MudItem xs="12" md="6">
+                                        <MudNumericField @bind-Value="_product.TaxRate"
+                                                         Label="@L["TaxRate"]"
+                                                         Variant="Variant.Outlined"
+                                                         Format="P2"
+                                                         Min="0m"
+                                                         Max="1m"
+                                                         Step="0.01m"
+                                                         T="decimal"
+                                                         HelperText="IVA (0.16 = 16%)" />
+                                    </MudItem>
+                                </MudGrid>
+                            </div>
+
+                            <!-- Inventory Section -->
+                            <div class="form-section">
+                                <MudText Typo="Typo.h6" Class="form-section-title">
+                                    <MudIcon Icon="@Icons.Material.Filled.Inventory" Class="mr-2" Size="Size.Small" />
+                                    @L["InventorySection"]
+                                </MudText>
+                                <MudGrid Spacing="3">
+                                    <MudItem xs="12" md="6">
+                                        <MudSelect @bind-Value="_product.UnitOfMeasure"
+                                                   Label="@L["UnitOfMeasure"]"
+                                                   Variant="Variant.Outlined"
+                                                   Required="true">
+                                            <MudSelectItem Value="@("PCS")">@L["UnitPieces"]</MudSelectItem>
+                                            <MudSelectItem Value="@("KG")">@L["UnitKilograms"]</MudSelectItem>
+                                            <MudSelectItem Value="@("M")">@L["UnitMeters"]</MudSelectItem>
+                                            <MudSelectItem Value="@("L")">@L["UnitLiters"]</MudSelectItem>
+                                            <MudSelectItem Value="@("BOX")">@L["UnitBoxes"]</MudSelectItem>
+                                            <MudSelectItem Value="@("PACK")">@L["UnitPacks"]</MudSelectItem>
+                                        </MudSelect>
+                                    </MudItem>
+
+                                    <MudItem xs="12" md="6" Class="d-flex align-center">
+                                        <MudSwitch @bind-Value="_product.TrackInventory"
+                                                   Label="@L["TrackInventory"]"
+                                                   Color="Color.Primary" />
+                                    </MudItem>
+
+                                    @if (_product.TrackInventory)
                                     {
-                                        <MudSelectItem Value="@category.Id">@category.Name</MudSelectItem>
+                                        <MudItem xs="12" md="6">
+                                            <MudNumericField @bind-Value="_product.MinStockLevel"
+                                                             Label="@L["MinStockLevel"]"
+                                                             Variant="Variant.Outlined"
+                                                             Min="0m"
+                                                             T="decimal" />
+                                        </MudItem>
                                     }
-                                </MudSelect>
-                            </MudItem>
+                                </MudGrid>
+                            </div>
 
-                            <MudItem xs="12" md="6">
-                                <MudTextField @bind-Value="_product.Brand"
-                                              Label="@L["Brand"]"
-                                              Variant="Variant.Outlined" />
-                            </MudItem>
+                            <!-- Status Section -->
+                            <div class="form-section">
+                                <MudText Typo="Typo.h6" Class="form-section-title">
+                                    <MudIcon Icon="@Icons.Material.Filled.Tune" Class="mr-2" Size="Size.Small" />
+                                    @L["StatusSection"]
+                                </MudText>
+                                <MudGrid Spacing="3">
+                                    <MudItem xs="12" md="6">
+                                        <MudSwitch @bind-Value="_product.IsActive"
+                                                   Label="@L["Active"]"
+                                                   Color="Color.Success" />
+                                    </MudItem>
 
-                            <MudItem xs="12">
-                                <MudTextField @bind-Value="_product.Description"
-                                              Label="@L["Description"]"
-                                              Variant="Variant.Outlined"
-                                              Lines="3" />
-                            </MudItem>
-                        </MudGrid>
-                    </div>
+                                    <MudItem xs="12" md="6">
+                                        <MudSwitch @bind-Value="_product.IsFeatured"
+                                                   Label="@L["Featured"]"
+                                                   Color="Color.Warning" />
+                                    </MudItem>
+                                </MudGrid>
+                            </div>
+                        </MudStack>
+                    </MudTabPanel>
 
-                    <!-- Pricing Section -->
-                    <div class="form-section">
-                        <MudText Typo="Typo.h6" Class="form-section-title">
-                            <MudIcon Icon="@Icons.Material.Filled.AttachMoney" Class="mr-2" Size="Size.Small" />
-                            @L["PricingSection"]
-                        </MudText>
-                        <MudGrid Spacing="3">
-                            <MudItem xs="12" md="6">
-                                <MudNumericField @bind-Value="_product.CostPrice"
-                                                 Label="@L["CostPrice"]"
-                                                 Variant="Variant.Outlined"
-                                                 Format="C"
-                                                 Culture="@(new CultureInfo("es-MX"))"
-                                                 Min="0m"
-                                                 T="decimal" />
-                            </MudItem>
+                    <!-- Tab 2: Costos y Precios -->
+                    <MudTabPanel Text="@L["CostosYPrecios"]" Icon="@Icons.Material.Filled.AttachMoney">
+                        @if (_pricingLoading)
+                        {
+                            <LoadingState Message="@L["Loading"]" />
+                        }
+                        else if (_tenantConfig is null)
+                        {
+                            <MudAlert Severity="Severity.Info" Class="mb-4">@L["NoPricingConfig"]</MudAlert>
+                        }
+                        else
+                        {
+                            <ProductCostos ListPrice="_pricingListPrice"
+                                           ListPriceChanged="@((val) => _pricingListPrice = val)"
+                                           IvaEnabled="_pricingIvaEnabled"
+                                           IvaEnabledChanged="@((val) => _pricingIvaEnabled = val)"
+                                           Discounts="_pricingDiscounts"
+                                           DiscountsChanged="@((val) => _pricingDiscounts = val)"
+                                           MarginPrices="_pricingMarginPrices"
+                                           MarginPricesChanged="@((val) => _pricingMarginPrices = val)"
+                                           IvaPercentage="_ivaPercentage" />
+                        }
+                    </MudTabPanel>
+                </MudTabs>
 
-                            <MudItem xs="12" md="6">
-                                <MudNumericField @bind-Value="_product.SalePrice"
-                                                 Label="@L["SalePrice"]"
-                                                 Variant="Variant.Outlined"
-                                                 Format="C"
-                                                 Culture="@(new CultureInfo("es-MX"))"
-                                                 Required="true"
-                                                 RequiredError="@L["PriceRequired"]"
-                                                 Min="0.01m"
-                                                 T="decimal" />
-                            </MudItem>
-
-                            <MudItem xs="12" md="6">
-                                <MudNumericField @bind-Value="_product.TaxRate"
-                                                 Label="@L["TaxRate"]"
-                                                 Variant="Variant.Outlined"
-                                                 Format="P2"
-                                                 Min="0m"
-                                                 Max="1m"
-                                                 Step="0.01m"
-                                                 T="decimal"
-                                                 HelperText="IVA (0.16 = 16%)" />
-                            </MudItem>
-                        </MudGrid>
-                    </div>
-
-                    <!-- Inventory Section -->
-                    <div class="form-section">
-                        <MudText Typo="Typo.h6" Class="form-section-title">
-                            <MudIcon Icon="@Icons.Material.Filled.Inventory" Class="mr-2" Size="Size.Small" />
-                            @L["InventorySection"]
-                        </MudText>
-                        <MudGrid Spacing="3">
-                            <MudItem xs="12" md="6">
-                                <MudSelect @bind-Value="_product.UnitOfMeasure"
-                                           Label="@L["UnitOfMeasure"]"
-                                           Variant="Variant.Outlined"
-                                           Required="true">
-                                    <MudSelectItem Value="@("PCS")">@L["UnitPieces"]</MudSelectItem>
-                                    <MudSelectItem Value="@("KG")">@L["UnitKilograms"]</MudSelectItem>
-                                    <MudSelectItem Value="@("M")">@L["UnitMeters"]</MudSelectItem>
-                                    <MudSelectItem Value="@("L")">@L["UnitLiters"]</MudSelectItem>
-                                    <MudSelectItem Value="@("BOX")">@L["UnitBoxes"]</MudSelectItem>
-                                    <MudSelectItem Value="@("PACK")">@L["UnitPacks"]</MudSelectItem>
-                                </MudSelect>
-                            </MudItem>
-
-                            <MudItem xs="12" md="6" Class="d-flex align-center">
-                                <MudSwitch @bind-Value="_product.TrackInventory"
-                                           Label="@L["TrackInventory"]"
-                                           Color="Color.Primary" />
-                            </MudItem>
-
-                            @if (_product.TrackInventory)
-                            {
-                                <MudItem xs="12" md="6">
-                                    <MudNumericField @bind-Value="_product.MinStockLevel"
-                                                     Label="@L["MinStockLevel"]"
-                                                     Variant="Variant.Outlined"
-                                                     Min="0m"
-                                                     T="decimal" />
-                                </MudItem>
-                            }
-                        </MudGrid>
-                    </div>
-
-                    <!-- Status Section -->
-                    <div class="form-section">
-                        <MudText Typo="Typo.h6" Class="form-section-title">
-                            <MudIcon Icon="@Icons.Material.Filled.Tune" Class="mr-2" Size="Size.Small" />
-                            @L["StatusSection"]
-                        </MudText>
-                        <MudGrid Spacing="3">
-                            <MudItem xs="12" md="6">
-                                <MudSwitch @bind-Value="_product.IsActive"
-                                           Label="@L["Active"]"
-                                           Color="Color.Success" />
-                            </MudItem>
-
-                            <MudItem xs="12" md="6">
-                                <MudSwitch @bind-Value="_product.IsFeatured"
-                                           Label="@L["Featured"]"
-                                           Color="Color.Warning" />
-                            </MudItem>
-                        </MudGrid>
-                    </div>
-
-                    <!-- Actions -->
-                    <MudStack Row="true" Spacing="2" Justify="Justify.FlexEnd" Class="mt-4">
-                        <MudButton Variant="Variant.Outlined"
-                                   Color="Color.Secondary"
-                                   OnClick="@(() => NavigationManager.NavigateTo("/products"))">
-                            @L["Cancel"]
-                        </MudButton>
-                        <MudButton ButtonType="ButtonType.Submit"
-                                   Variant="Variant.Filled"
-                                   Color="Color.Primary"
-                                   StartIcon="@Icons.Material.Filled.Save"
-                                   Disabled="_saving">
-                            @if (_saving)
-                            {
-                                <MudProgressCircular Class="ms-n1" Size="Size.Small" Indeterminate="true" />
-                                <MudText Class="ms-2">@L["Saving"]</MudText>
-                            }
-                            else
-                            {
-                                @L["Save"]
-                            }
-                        </MudButton>
-                    </MudStack>
+                <!-- Actions -->
+                <MudStack Row="true" Spacing="2" Justify="Justify.FlexEnd" Class="mt-4">
+                    <MudButton Variant="Variant.Outlined"
+                               Color="Color.Secondary"
+                               OnClick="@(() => NavigationManager.NavigateTo("/products"))">
+                        @L["Cancel"]
+                    </MudButton>
+                    <MudButton ButtonType="ButtonType.Submit"
+                               Variant="Variant.Filled"
+                               Color="Color.Primary"
+                               StartIcon="@Icons.Material.Filled.Save"
+                               Disabled="_saving">
+                        @if (_saving)
+                        {
+                            <MudProgressCircular Class="ms-n1" Size="Size.Small" Indeterminate="true" />
+                            <MudText Class="ms-2">@L["Saving"]</MudText>
+                        }
+                        else
+                        {
+                            @L["Save"]
+                        }
+                    </MudButton>
                 </MudStack>
             </EditForm>
         }
@@ -233,10 +263,19 @@
 
     private bool _isEditMode => Id.HasValue;
     private bool _loading = true;
+    private bool _pricingLoading;
     private bool _saving;
     private string? _errorMessage;
     private CreateProductRequest _product = new();
     private List<ProductCategoryDto> _categories = [];
+
+    // Pricing state
+    private TenantPricingConfigModel? _tenantConfig;
+    private decimal? _pricingListPrice;
+    private bool _pricingIvaEnabled;
+    private List<ProductDiscountEditModel> _pricingDiscounts = [];
+    private List<ProductMarginPriceEditModel> _pricingMarginPrices = [];
+    private decimal _ivaPercentage = 16m;
 
     // Breadcrumbs
     private List<BreadcrumbItem> _breadcrumbs = [];
@@ -244,6 +283,7 @@
     protected override async Task OnInitializedAsync()
     {
         await LoadCategories();
+        await LoadTenantConfig();
 
         if (_isEditMode && Id.HasValue)
         {
@@ -254,6 +294,7 @@
                 new BreadcrumbItem(L["EditProduct"], null, disabled: true)
             ];
             await LoadProduct(Id.Value);
+            await LoadProductPricing(Id.Value);
         }
         else
         {
@@ -263,6 +304,7 @@
                 new BreadcrumbItem(L["Products"], "/products"),
                 new BreadcrumbItem(L["NewProduct"], null, disabled: true)
             ];
+            InitializeDefaultPricing();
             _loading = false;
         }
     }
@@ -274,6 +316,45 @@
         {
             _categories = result.Value;
         }
+    }
+
+    private async Task LoadTenantConfig()
+    {
+        var result = await PricingService.GetTenantConfigAsync();
+        if (result.IsSuccess && result.Value is not null)
+        {
+            _tenantConfig = result.Value;
+            _ivaPercentage = _tenantConfig.IvaPercentage;
+        }
+    }
+
+    private void InitializeDefaultPricing()
+    {
+        if (_tenantConfig is null)
+        {
+            return;
+        }
+
+        _pricingIvaEnabled = _tenantConfig.DefaultIvaEnabled;
+
+        _pricingDiscounts = _tenantConfig.DiscountTiers
+            .Where(t => t.IsActive)
+            .Select(t => new ProductDiscountEditModel
+            {
+                TierNumber = t.TierNumber,
+                TierName = t.TierName,
+                DiscountPercentage = 0
+            })
+            .ToList();
+
+        _pricingMarginPrices = _tenantConfig.MarginTiers
+            .Where(t => t.IsActive)
+            .Select(t => new ProductMarginPriceEditModel
+            {
+                TierNumber = t.TierNumber,
+                TierName = t.TierName
+            })
+            .ToList();
     }
 
     private async Task LoadProduct(Guid id)
@@ -341,6 +422,81 @@
         }
     }
 
+    private async Task LoadProductPricing(Guid productId)
+    {
+        _pricingLoading = true;
+
+        try
+        {
+            var result = await PricingService.GetProductPricingAsync(productId);
+            if (result.IsSuccess && result.Value is not null)
+            {
+                var pricing = result.Value;
+                _pricingListPrice = pricing.ListPrice;
+                _pricingIvaEnabled = pricing.IvaEnabled;
+
+                _pricingDiscounts = pricing.Discounts
+                    .Select(ProductDiscountEditModel.FromRecord)
+                    .ToList();
+
+                _pricingMarginPrices = pricing.MarginPrices
+                    .Select(ProductMarginPriceEditModel.FromRecord)
+                    .ToList();
+
+                // Fill missing tiers from tenant config
+                FillMissingTiers();
+            }
+            else
+            {
+                InitializeDefaultPricing();
+            }
+        }
+        catch
+        {
+            InitializeDefaultPricing();
+        }
+        finally
+        {
+            _pricingLoading = false;
+        }
+    }
+
+    private void FillMissingTiers()
+    {
+        if (_tenantConfig is null)
+        {
+            return;
+        }
+
+        foreach (var tier in _tenantConfig.DiscountTiers.Where(t => t.IsActive))
+        {
+            if (!_pricingDiscounts.Any(d => d.TierNumber == tier.TierNumber))
+            {
+                _pricingDiscounts.Add(new ProductDiscountEditModel
+                {
+                    TierNumber = tier.TierNumber,
+                    TierName = tier.TierName,
+                    DiscountPercentage = 0
+                });
+            }
+        }
+
+        foreach (var tier in _tenantConfig.MarginTiers.Where(t => t.IsActive))
+        {
+            if (!_pricingMarginPrices.Any(m => m.TierNumber == tier.TierNumber))
+            {
+                _pricingMarginPrices.Add(new ProductMarginPriceEditModel
+                {
+                    TierNumber = tier.TierNumber,
+                    TierName = tier.TierName
+                });
+            }
+        }
+
+        _pricingDiscounts = [.. _pricingDiscounts.OrderBy(d => d.TierNumber)];
+        _pricingMarginPrices = [.. _pricingMarginPrices.OrderBy(m => m.TierNumber)];
+    }
+
     private async Task HandleSubmit()
     {
         _saving = true;
@@ -396,6 +552,7 @@
                 var result = await ProductService.UpdateProductAsync(updateRequest);
                 if (result.IsSuccess)
                 {
+                    await SavePricing(Id.Value);
                     Snackbar.Add(L["ProductUpdatedSuccessfully"], Severity.Success);
                     NavigationManager.NavigateTo("/products");
                 }
@@ -409,6 +566,10 @@
                 var result = await ProductService.CreateProductAsync(_product);
                 if (result.IsSuccess)
                 {
+                    if (result.Value != Guid.Empty && _tenantConfig is not null)
+                    {
+                        await SavePricing(result.Value);
+                    }
                     Snackbar.Add(L["ProductCreatedSuccessfully"], Severity.Success);
                     NavigationManager.NavigateTo("/products");
                 }
@@ -425,6 +586,29 @@
         finally
         {
             _saving = false;
+        }
+    }
+
+    private async Task SavePricing(Guid productId)
+    {
+        if (_tenantConfig is null)
+        {
+            return;
+        }
+
+        var discounts = _pricingDiscounts.Select(d => d.ToRecord()).ToList();
+        var marginPrices = _pricingMarginPrices.Select(m => m.ToRecord()).ToList();
+
+        var pricingResult = await PricingService.UpdateProductPricingAsync(
+            productId,
+            _pricingListPrice,
+            _pricingIvaEnabled,
+            discounts,
+            marginPrices);
+
+        if (!pricingResult.IsSuccess)
+        {
+            Snackbar.Add(L["PricingSaveFailed"], Severity.Warning);
         }
     }
 }

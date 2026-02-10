@@ -657,4 +657,181 @@
   <data name="Retry" xml:space="preserve">
     <value>Reintentar</value>
   </data>
+
+  <!-- Product Pricing (Costos y Precios) -->
+  <data name="CostosYPrecios" xml:space="preserve">
+    <value>Costos y Precios</value>
+  </data>
+  <data name="DatosGenerales" xml:space="preserve">
+    <value>Datos Generales</value>
+  </data>
+  <data name="ListPrice" xml:space="preserve">
+    <value>Precio de Lista</value>
+  </data>
+  <data name="ListPriceAndDiscounts" xml:space="preserve">
+    <value>Precio de Lista y Descuentos</value>
+  </data>
+  <data name="NetCost" xml:space="preserve">
+    <value>Costo Neto</value>
+  </data>
+  <data name="DiscountPercentage" xml:space="preserve">
+    <value>Descuento (%)</value>
+  </data>
+  <data name="IvaToggle" xml:space="preserve">
+    <value>IVA</value>
+  </data>
+  <data name="IvaEnabled" xml:space="preserve">
+    <value>IVA Habilitado</value>
+  </data>
+  <data name="IvaDisabled" xml:space="preserve">
+    <value>IVA Deshabilitado</value>
+  </data>
+  <data name="SalePrices" xml:space="preserve">
+    <value>Precios de Venta</value>
+  </data>
+  <data name="MarginPercentage" xml:space="preserve">
+    <value>Margen (%)</value>
+  </data>
+  <data name="PriceWithIva" xml:space="preserve">
+    <value>Precio con IVA</value>
+  </data>
+  <data name="PriceWithoutIva" xml:space="preserve">
+    <value>Precio sin IVA</value>
+  </data>
+  <data name="CalculatedAutomatically" xml:space="preserve">
+    <value>Calculado automaticamente</value>
+  </data>
+  <data name="PricingSavedSuccessfully" xml:space="preserve">
+    <value>Precios guardados exitosamente</value>
+  </data>
+  <data name="PricingSaveFailed" xml:space="preserve">
+    <value>Error al guardar los precios</value>
+  </data>
+  <data name="PricingLoadFailed" xml:space="preserve">
+    <value>Error al cargar los precios del producto</value>
+  </data>
+  <data name="NoPricingConfig" xml:space="preserve">
+    <value>No se ha configurado la estructura de precios. Configure los niveles en Configuracion de Precios.</value>
+  </data>
+
+  <!-- Price Change Page -->
+  <data name="PriceChange" xml:space="preserve">
+    <value>Cambio de Precios</value>
+  </data>
+  <data name="PriceChangeDescription" xml:space="preserve">
+    <value>Gestiona los precios de tus productos</value>
+  </data>
+  <data name="BulkPriceChange" xml:space="preserve">
+    <value>Cambio Masivo</value>
+  </data>
+  <data name="SearchByNameOrSku" xml:space="preserve">
+    <value>Buscar por nombre o SKU</value>
+  </data>
+  <data name="ProductsSelected" xml:space="preserve">
+    <value>productos seleccionados</value>
+  </data>
+  <data name="InlineEdit" xml:space="preserve">
+    <value>Editar</value>
+  </data>
+  <data name="InlineSave" xml:space="preserve">
+    <value>Guardar</value>
+  </data>
+  <data name="InlineCancel" xml:space="preserve">
+    <value>Cancelar</value>
+  </data>
+  <data name="NoProductPricingFound" xml:space="preserve">
+    <value>No se encontraron productos con precios configurados</value>
+  </data>
+  <data name="NoProductPricingDescription" xml:space="preserve">
+    <value>Agrega productos y configura sus precios para verlos aqui</value>
+  </data>
+  <data name="ErrorLoadingPricing" xml:space="preserve">
+    <value>Error al cargar los precios</value>
+  </data>
+  <data name="ProductPricingUpdated" xml:space="preserve">
+    <value>Precios del producto actualizados exitosamente</value>
+  </data>
+  <data name="ProductPricingUpdateFailed" xml:space="preserve">
+    <value>Error al actualizar los precios del producto</value>
+  </data>
+  <data name="ShowingResults" xml:space="preserve">
+    <value>Mostrando</value>
+  </data>
+  <data name="Of" xml:space="preserve">
+    <value>de</value>
+  </data>
+
+  <!-- Bulk Price Change Dialog -->
+  <data name="BulkPriceChangeTitle" xml:space="preserve">
+    <value>Cambio Masivo de Precios</value>
+  </data>
+  <data name="UpdateType" xml:space="preserve">
+    <value>Tipo de Actualizacion</value>
+  </data>
+  <data name="PercentageIncrease" xml:space="preserve">
+    <value>Aumento porcentual</value>
+  </data>
+  <data name="PercentageDecrease" xml:space="preserve">
+    <value>Descuento porcentual</value>
+  </data>
+  <data name="FixedAmountIncrease" xml:space="preserve">
+    <value>Aumento por monto fijo</value>
+  </data>
+  <data name="FixedAmountDecrease" xml:space="preserve">
+    <value>Descuento por monto fijo</value>
+  </data>
+  <data name="SetNewMargin" xml:space="preserve">
+    <value>Establecer nuevo margen</value>
+  </data>
+  <data name="UpdateValue" xml:space="preserve">
+    <value>Valor</value>
+  </data>
+  <data name="SelectTier" xml:space="preserve">
+    <value>Seleccionar Nivel</value>
+  </data>
+  <data name="PreviewCalculation" xml:space="preserve">
+    <value>Vista previa del calculo</value>
+  </data>
+  <data name="Before" xml:space="preserve">
+    <value>Antes</value>
+  </data>
+  <data name="After" xml:space="preserve">
+    <value>Despues</value>
+  </data>
+  <data name="BulkUpdateWarning" xml:space="preserve">
+    <value>Esta accion no se puede deshacer. Se actualizaran los precios de todos los productos seleccionados.</value>
+  </data>
+  <data name="ApplyChanges" xml:space="preserve">
+    <value>Aplicar Cambios</value>
+  </data>
+  <data name="Applying" xml:space="preserve">
+    <value>Aplicando...</value>
+  </data>
+  <data name="BulkUpdateSuccess" xml:space="preserve">
+    <value>productos actualizados exitosamente</value>
+  </data>
+  <data name="BulkUpdateFailed" xml:space="preserve">
+    <value>Error al aplicar el cambio masivo</value>
+  </data>
+  <data name="SelectUpdateType" xml:space="preserve">
+    <value>Seleccione el tipo de actualizacion</value>
+  </data>
+  <data name="ValueRequired" xml:space="preserve">
+    <value>El valor es requerido</value>
+  </data>
+  <data name="TierRequired" xml:space="preserve">
+    <value>Seleccione un nivel de margen</value>
+  </data>
+  <data name="SampleProduct" xml:space="preserve">
+    <value>Producto de ejemplo</value>
+  </data>
+  <data name="CurrentPrice" xml:space="preserve">
+    <value>Precio actual</value>
+  </data>
+  <data name="NewPrice" xml:space="preserve">
+    <value>Nuevo precio</value>
+  </data>
+  <data name="Difference" xml:space="preserve">
+    <value>Diferencia</value>
+  </data>
 </root>
