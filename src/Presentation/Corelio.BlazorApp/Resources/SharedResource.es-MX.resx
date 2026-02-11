@@ -164,7 +164,16 @@
 
   <!-- Error Messages -->
   <data name="LoginFailed" xml:space="preserve">
-    <value>Inicio de sesión fallido. Verifica tus credenciales.</value>
+    <value>No se pudo iniciar sesión. Intenta de nuevo.</value>
+  </data>
+  <data name="LoginInvalidCredentials" xml:space="preserve">
+    <value>Correo electrónico o contraseña incorrectos.</value>
+  </data>
+  <data name="LoginAccountLocked" xml:space="preserve">
+    <value>Tu cuenta ha sido bloqueada temporalmente. Intenta más tarde.</value>
+  </data>
+  <data name="LoginAccountDisabled" xml:space="preserve">
+    <value>Tu cuenta está deshabilitada. Contacta a tu administrador.</value>
   </data>
   <data name="RegistrationFailed" xml:space="preserve">
     <value>Error al crear usuario</value>

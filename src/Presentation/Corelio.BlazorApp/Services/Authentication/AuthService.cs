@@ -1,5 +1,6 @@
 using System.Net.Http.Json;
 using System.Security.Claims;
+using System.Text.Json;
 using Corelio.BlazorApp.Models.Authentication;
 using Corelio.BlazorApp.Models.Common;
 using Microsoft.AspNetCore.Components.Authorization;
@@ -68,9 +69,10 @@ public class AuthService : IAuthService
                 return Result<LoginResponse>.Failure("Failed to parse login response");
             }
 
-            var errorMessage = await response.Content.ReadAsStringAsync();
-            Console.WriteLine($"[AuthService] Login failed: {errorMessage}");
-            return Result<LoginResponse>.Failure(errorMessage ?? "Login failed");
+            var errorContent = await response.Content.ReadAsStringAsync();
+            Console.WriteLine($"[AuthService] Login failed: {errorContent}");
+            var errorMessage = ParseErrorMessage(errorContent);
+            return Result<LoginResponse>.Failure(errorMessage);
         }
         catch (Exception ex)
         {
@@ -220,5 +222,27 @@ public class AuthService : IAuthService
             Roles = user.FindAll(ClaimTypes.Role).Select(c => c.Value).ToList(),
             Permissions = user.FindAll("permission").Select(c => c.Value).ToList()
         };
+    }
+
+    /// <summary>
+    /// Parses a ProblemDetails JSON response to extract the error title code.
+    /// Falls back to a generic error key if parsing fails.
+    /// </summary>
+    private static string ParseErrorMessage(string responseContent)
+    {
+        try
+        {
+            using var doc = JsonDocument.Parse(responseContent);
+            if (doc.RootElement.TryGetProperty("title", out var titleElement))
+            {
+                return titleElement.GetString() ?? "LoginFailed";
+            }
+        }
+        catch (JsonException)
+        {
+            // Not JSON - return as-is if it looks like a simple message
+        }
+
+        return "LoginFailed";
     }
 }
