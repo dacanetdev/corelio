@@ -1,48 +1,43 @@
-﻿<div class="top-row ps-3 navbar navbar-dark">
-    <div class="container-fluid">
-        <a class="navbar-brand" href="">Corelio.BlazorApp</a>
+@using Corelio.BlazorApp.Resources
+@using Microsoft.Extensions.Localization
+@inject IStringLocalizer<SharedResource> L
+
+<div class="sidebar-brand">
+    <div class="sidebar-brand-icon">
+        <MudIcon Icon="@Icons.Material.Rounded.Hardware" Size="Size.Small" />
+    </div>
+    <div class="sidebar-brand-text">
+        <span class="sidebar-brand-name">Corelio</span>
+        <span class="sidebar-brand-tag">ERP</span>
     </div>
 </div>
 
-<input type="checkbox" title="Navigation menu" class="navbar-toggler" />
+<div class="sidebar-divider"></div>
 
-<div class="nav-scrollable" onclick="document.querySelector('.navbar-toggler').click()">
-    <nav class="nav flex-column">
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="" Match="NavLinkMatch.All">
-                <span class="bi bi-house-door-fill-nav-menu" aria-hidden="true"></span> Home
-            </NavLink>
-        </div>
+<MudNavMenu Class="sidebar-nav" Bordered="false" Margin="Margin.Dense">
+    <MudNavLink Href="/" Match="NavLinkMatch.All" Icon="@Icons.Material.Rounded.SpaceDashboard">
+        Dashboard
+    </MudNavLink>
 
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="counter">
-                <span class="bi bi-plus-square-fill-nav-menu" aria-hidden="true"></span> Counter
-            </NavLink>
-        </div>
+    <div class="sidebar-section-label">INVENTARIO</div>
 
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="weather">
-                <span class="bi bi-list-nested-nav-menu" aria-hidden="true"></span> Weather
-            </NavLink>
-        </div>
+    <MudNavLink Href="/products" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Rounded.Inventory2">
+        @L["Products"]
+    </MudNavLink>
 
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="products">
-                <span class="bi bi-box-seam-nav-menu" aria-hidden="true"></span> Productos
-            </NavLink>
-        </div>
+    <div class="sidebar-section-label">PRECIOS</div>
 
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="settings/pricing">
-                <span class="bi bi-currency-dollar-nav-menu" aria-hidden="true"></span> Precios
-            </NavLink>
-        </div>
+    <MudNavLink Href="/settings/pricing" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Rounded.Tune">
+        @L["Settings"]
+    </MudNavLink>
 
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="pricing">
-                <span class="bi bi-tags-nav-menu" aria-hidden="true"></span> Cambio de Precios
-            </NavLink>
-        </div>
-    </nav>
+    <MudNavLink Href="/pricing" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Rounded.PriceChange">
+        @L["PriceChange"]
+    </MudNavLink>
+</MudNavMenu>
+
+<div class="sidebar-footer">
+    <MudText Typo="Typo.caption" Style="color: var(--color-sidebar-section-label);">
+        Corelio v1.0
+    </MudText>
 </div>
-

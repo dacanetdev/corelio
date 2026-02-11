@@ -26,53 +26,9 @@
         </PageHeader>
 
         <!-- Search and Filters -->
-        <MudPaper Elevation="0" Class="pa-4 mb-4 bg-light" Style="border-radius: var(--radius-lg);">
-            <MudGrid Spacing="2">
-                <MudItem xs="12" md="5">
-                    <MudTextField @bind-Value="_searchTerm"
-                                  Label="@L["Search"]"
-                                  Placeholder="@L["SearchProducts"]"
-                                  Variant="Variant.Outlined"
-                                  Adornment="Adornment.End"
-                                  AdornmentIcon="@Icons.Material.Filled.Search"
-                                  OnAdornmentClick="LoadProducts"
-                                  OnKeyUp="@(async (e) => { if (e.Key == "Enter") await LoadProducts(); })"
-                                  Immediate="true" />
-                </MudItem>
-                <MudItem xs="12" sm="6" md="3">
-                    <MudSelect @bind-Value="_selectedCategoryId"
-                               Label="@L["Category"]"
-                               Variant="Variant.Outlined"
-                               Clearable="true"
-                               Placeholder="@L["AllCategories"]">
-                        @foreach (var category in _categories)
-                        {
-                            <MudSelectItem Value="@category.Id">@category.Name</MudSelectItem>
-                        }
-                    </MudSelect>
-                </MudItem>
-                <MudItem xs="12" sm="6" md="2">
-                    <MudSelect @bind-Value="_isActiveFilter"
-                               Label="@L["Active"]"
-                               Variant="Variant.Outlined"
-                               Clearable="true"
-                               Placeholder="@L["AllStatuses"]"
-                               T="bool?">
-                        <MudSelectItem T="bool?" Value="@((bool?)true)">@L["Active"]</MudSelectItem>
-                        <MudSelectItem T="bool?" Value="@((bool?)false)">@L["Inactive"]</MudSelectItem>
-                    </MudSelect>
-                </MudItem>
-                <MudItem xs="12" md="2" Class="d-flex align-end">
-                    <MudButton Variant="Variant.Filled"
-                               Color="Color.Primary"
-                               FullWidth="true"
-                               StartIcon="@Icons.Material.Filled.Search"
-                               OnClick="LoadProducts">
-                        @L["Search"]
-                    </MudButton>
-                </MudItem>
-            </MudGrid>
-        </MudPaper>
+        <ProductFilterBar Categories="_categories"
+                          ShowStatusFilter="true"
+                          OnSearch="OnFilterSearch" />
 
         <!-- Products Table -->
         @if (_loading)
@@ -180,9 +136,7 @@
     private PagedResult<ProductListDto>? _pagedResult;
 
     // Filters
-    private string? _searchTerm;
-    private Guid? _selectedCategoryId;
-    private bool? _isActiveFilter;
+    private ProductFilterCriteria _filterCriteria = new(null, null, null);
     private int _currentPage = 1;
     private int _pageSize = 20;
 
@@ -210,6 +164,13 @@
         }
     }
 
+    private async Task OnFilterSearch(ProductFilterCriteria criteria)
+    {
+        _filterCriteria = criteria;
+        _currentPage = 1;
+        await LoadProducts();
+    }
+
     private async Task LoadProducts()
     {
         _loading = true;
@@ -220,9 +181,9 @@
             var result = await ProductService.GetProductsAsync(
                 _currentPage,
                 _pageSize,
-                _searchTerm,
-                _selectedCategoryId,
-                _isActiveFilter);
+                _filterCriteria.SearchTerm,
+                _filterCriteria.CategoryId,
+                _filterCriteria.IsActive);
 
             if (result.IsSuccess && result.Value is not null)
             {

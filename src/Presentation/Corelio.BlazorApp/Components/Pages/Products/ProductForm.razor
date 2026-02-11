@@ -109,8 +109,10 @@
                                         <MudNumericField @bind-Value="_product.CostPrice"
                                                          Label="@L["CostPrice"]"
                                                          Variant="Variant.Outlined"
-                                                         Format="C"
+                                                         Format="N2"
                                                          Culture="@(new CultureInfo("es-MX"))"
+                                                         Adornment="Adornment.Start"
+                                                         AdornmentText="$"
                                                          Min="0m"
                                                          T="decimal" />
                                     </MudItem>
@@ -119,8 +121,10 @@
                                         <MudNumericField @bind-Value="_product.SalePrice"
                                                          Label="@L["SalePrice"]"
                                                          Variant="Variant.Outlined"
-                                                         Format="C"
+                                                         Format="N2"
                                                          Culture="@(new CultureInfo("es-MX"))"
+                                                         Adornment="Adornment.Start"
+                                                         AdornmentText="$"
                                                          Required="true"
                                                          RequiredError="@L["PriceRequired"]"
                                                          Min="0.01m"
@@ -128,15 +132,18 @@
                                     </MudItem>
 
                                     <MudItem xs="12" md="6">
-                                        <MudNumericField @bind-Value="_product.TaxRate"
+                                        <MudNumericField T="decimal"
                                                          Label="@L["TaxRate"]"
                                                          Variant="Variant.Outlined"
-                                                         Format="P2"
+                                                         Value="@(_product.TaxRate * 100)"
+                                                         ValueChanged="@((decimal val) => _product.TaxRate = val / 100)"
+                                                         Format="N2"
+                                                         Adornment="Adornment.End"
+                                                         AdornmentText="%"
                                                          Min="0m"
-                                                         Max="1m"
-                                                         Step="0.01m"
-                                                         T="decimal"
-                                                         HelperText="IVA (0.16 = 16%)" />
+                                                         Max="100m"
+                                                         Step="1m"
+                                                         HelperText="IVA (ej. 16 = 16%)" />
                                     </MudItem>
                                 </MudGrid>
                             </div>
