@@ -727,12 +727,67 @@ Ask these questions before marking a story complete:
 - [ ] Performance considerations (caching, indexes)
 
 ### Git Workflow
-1. **Branch Creation**: Always create feature branch from `main` before starting work
-2. **Branch Naming**: `feature/US-X.X-TASK-Y-description`
-3. **Commits**: Make incremental commits with clear messages, make sure that Sprint and User Story Status are updated and commit that too
-4. **Pull Requests**: One PR per task, use PR template
-5. **Auto-Merge**: PRs auto-merge when CI passes (build + tests)
+
+All development follows a structured Git workflow to maintain code quality and enable collaboration.
+
+**Branch Naming Convention:**
+```
+feature/US-X.X-TASK-Y-description
+```
+
+Where:
+- `US-X.X` = User Story ID (e.g., US-1.3 for Sprint 1, Story 3)
+- `TASK-Y` = Task number within the user story
+- `description` = Brief kebab-case description
+
+**Examples:**
+```
+feature/US-1.3-TASK-1-install-clerk
+feature/US-2.3-TASK-5-task-actions
+feature/US-3.2-TASK-4-zustand-drag-store
+```
+
+**Workflow Steps:**
+
+1. **Branch Creation**: Always create a feature branch from `main` before starting work
+   ```bash
+   git checkout main
+   git pull origin main
+   git checkout -b feature/US-1.3-TASK-1-install-clerk
+   ```
+
+2. **Development**: Make incremental commits with clear messages and make sure that Sprint and User Story status are updated and commit that too
+   ```bash
+   git add .
+   git commit -m "Install Clerk and add environment variables"
+   git commit -m "Configure ClerkProvider in root layout"
+   ```
+
+3. **Push to Remote**: Push feature branch to GitHub
+   ```bash
+   git push -u origin feature/US-1.3-TASK-1-install-clerk
+   ```
+
+4. **Pull Requests**: Create one PR per task using the PR template
+   ```bash
+   gh pr create --title "US-1.3-TASK-1: Install Package" --body "..."
+   ```
+
+5. **Auto-Merge**: PRs automatically merge when CI passes (build + tests)
+
 6. **Branch Cleanup**: Delete feature branch after merge
+   ```bash
+   git checkout main
+   git pull origin main
+   git branch -d feature/US-1.3-TASK-1-install-clerk
+   ```
+
+**Important Guidelines:**
+- Never commit directly to `main` branch
+- Keep commits atomic and focused on a single concern
+- Write descriptive commit messages (what and why, not how)
+- Ensure all tests pass locally before creating PR
+- Reference task IDs in commit messages when applicable
 
 ### Commit Convention
 Format: `[US-X.X] TASK Y: Short description`
