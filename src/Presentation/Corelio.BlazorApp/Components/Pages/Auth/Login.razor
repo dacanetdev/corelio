@@ -146,16 +146,28 @@
             else
             {
                 Console.WriteLine($"[Login] Login failed: {result.Error}");
-                _errorMessage = result.Error ?? L["LoginFailed"];
+                _errorMessage = MapErrorToLocalizedMessage(result.Error);
             }
         }
         catch (Exception ex)
         {
-            _errorMessage = $"Error: {ex.Message}";
+            Console.WriteLine($"[Login] Exception: {ex.Message}");
+            _errorMessage = L["LoginFailed"];
         }
         finally
         {
             _isLoading = false;
         }
+    }
+
+    private string MapErrorToLocalizedMessage(string? errorCode)
+    {
+        return errorCode switch
+        {
+            "Auth.InvalidCredentials" => L["LoginInvalidCredentials"],
+            "Auth.AccountLocked" => L["LoginAccountLocked"],
+            "Auth.AccountDisabled" => L["LoginAccountDisabled"],
+            _ => L["LoginFailed"]
+        };
     }
 }
