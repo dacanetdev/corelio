@@ -13,21 +13,19 @@
 <MudSnackbarProvider />
 
 <MudLayout>
-    <MudAppBar Elevation="1" Style="background: white; border-bottom: 1px solid var(--color-secondary-200);">
-        <MudIconButton Icon="@Icons.Material.Filled.Menu" Color="Color.Inherit" Edge="Edge.Start" OnClick="@ToggleDrawer" />
-        <MudIcon Icon="@Icons.Material.Filled.Store" Color="Color.Primary" Size="Size.Medium" Class="mr-2" />
-        <MudText Typo="Typo.h6" Style="color: #B03A2E; font-weight: 600;">Corelio ERP</MudText>
+    <MudAppBar Elevation="0" Class="app-bar">
+        <MudIconButton Icon="@Icons.Material.Rounded.Menu" Color="Color.Default" Edge="Edge.Start" OnClick="@ToggleDrawer" />
         <MudSpacer />
         <TenantDisplay />
-        <MudSpacer />
         <UserDisplay />
     </MudAppBar>
 
-    <MudDrawer @bind-Open="_drawerOpen" ClipMode="DrawerClipMode.Always" Elevation="2" Style="background: white;">
+    <MudDrawer @bind-Open="_drawerOpen" ClipMode="DrawerClipMode.Always" Elevation="0"
+               Style="background: var(--color-sidebar-bg);">
         <NavMenu />
     </MudDrawer>
 
-    <MudMainContent Style="background: var(--color-secondary-50); min-height: 100vh;">
+    <MudMainContent Style="background: var(--color-background); min-height: 100vh;">
         <MudContainer MaxWidth="MaxWidth.ExtraExtraLarge" Class="pa-6">
             @Body
         </MudContainer>
@@ -46,10 +44,7 @@
 
     protected override async Task OnInitializedAsync()
     {
-        // Subscribe to authentication state changes
         AuthenticationStateProvider.AuthenticationStateChanged += OnAuthenticationStateChanged;
-
-        // Try to load theme on initial render
         await LoadTenantThemeAsync();
     }
 
@@ -67,7 +62,6 @@
 
             if (authState.User?.Identity?.IsAuthenticated == true)
             {
-                // User is authenticated, try to load tenant theme
                 var themeResponse = await TenantThemeHttpService.GetCurrentThemeAsync();
 
                 if (themeResponse is { UseCustomTheme: true })
@@ -81,13 +75,11 @@
             }
             else
             {
-                // Not authenticated, use default theme
                 _currentTheme = ThemeConfiguration.CorelioDefaultTheme;
             }
         }
         catch
         {
-            // If theme loading fails, continue with default theme
             _currentTheme = ThemeConfiguration.CorelioDefaultTheme;
         }
     }

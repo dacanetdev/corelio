@@ -1,0 +1,88 @@
+@inject IStringLocalizer<SharedResource> L
+
+<MudPaper Elevation="0" Class="filter-bar">
+    <MudGrid Spacing="2">
+        <MudItem xs="12" md="@(ShowStatusFilter ? 5 : 6)">
+            <MudTextField @bind-Value="_searchTerm"
+                          Label="@L["Search"]"
+                          Placeholder="@(SearchPlaceholder ?? L["SearchProducts"])"
+                          Variant="Variant.Outlined"
+                          Adornment="Adornment.End"
+                          AdornmentIcon="@Icons.Material.Filled.Search"
+                          OnAdornmentClick="Search"
+                          OnKeyUp="@(async (e) => { if (e.Key == "Enter") await Search(); })"
+                          Immediate="true" />
+        </MudItem>
+        <MudItem xs="12" sm="6" md="@(ShowStatusFilter ? 3 : 4)">
+            <MudSelect @bind-Value="_selectedCategoryId"
+                       Label="@L["Category"]"
+                       Variant="Variant.Outlined"
+                       Clearable="true"
+                       Placeholder="@L["AllCategories"]">
+                @foreach (var category in Categories)
+                {
+                    <MudSelectItem Value="@category.Id">@category.Name</MudSelectItem>
+                }
+            </MudSelect>
+        </MudItem>
+        @if (ShowStatusFilter)
+        {
+            <MudItem xs="12" sm="6" md="2">
+                <MudSelect @bind-Value="_isActiveFilter"
+                           Label="@L["Active"]"
+                           Variant="Variant.Outlined"
+                           Clearable="true"
+                           Placeholder="@L["AllStatuses"]"
+                           T="bool?">
+                    <MudSelectItem T="bool?" Value="@((bool?)true)">@L["Active"]</MudSelectItem>
+                    <MudSelectItem T="bool?" Value="@((bool?)false)">@L["Inactive"]</MudSelectItem>
+                </MudSelect>
+            </MudItem>
+        }
+        <MudItem xs="12" md="2" Class="d-flex align-end filter-bar-action">
+            <MudButton Variant="Variant.Filled"
+                       Color="Color.Primary"
+                       FullWidth="true"
+                       StartIcon="@Icons.Material.Filled.Search"
+                       OnClick="Search">
+                @L["Search"]
+            </MudButton>
+        </MudItem>
+    </MudGrid>
+</MudPaper>
+
+@code {
+    private string? _searchTerm;
+    private Guid? _selectedCategoryId;
+    private bool? _isActiveFilter;
+
+    /// <summary>
+    /// Categories to display in the category filter dropdown.
+    /// </summary>
+    [Parameter, EditorRequired]
+    public List<ProductCategoryDto> Categories { get; set; } = [];
+
+    /// <summary>
+    /// Callback fired when the user triggers a search. Provides the current filter criteria.
+    /// </summary>
+    [Parameter, EditorRequired]
+    public EventCallback<ProductFilterCriteria> OnSearch { get; set; }
+
+    /// <summary>
+    /// Optional custom placeholder for the search text field.
+    /// </summary>
+    [Parameter]
+    public string? SearchPlaceholder { get; set; }
+
+    /// <summary>
+    /// Whether to show the active/inactive status filter.
+    /// </summary>
+    [Parameter]
+    public bool ShowStatusFilter { get; set; }
+
+    private async Task Search()
+    {
+        var criteria = new ProductFilterCriteria(_searchTerm, _selectedCategoryId, _isActiveFilter);
+        await OnSearch.InvokeAsync(criteria);
+    }
+}

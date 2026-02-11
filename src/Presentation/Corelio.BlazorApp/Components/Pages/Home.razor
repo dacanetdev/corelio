@@ -1,7 +1,127 @@
-﻿@page "/"
+@page "/"
+@attribute [Authorize]
+@inject IStringLocalizer<SharedResource> L
+@inject IAuthService AuthService
 
-<PageTitle>Home</PageTitle>
+<PageTitle>Dashboard - Corelio ERP</PageTitle>
 
-<h1>Hello, world!</h1>
+<div class="dashboard-page slide-up">
+    <div class="mb-6">
+        <MudText Typo="Typo.h4" Style="font-weight: 800; letter-spacing: -0.02em;">
+            @_greeting
+        </MudText>
+        <MudText Typo="Typo.body1" Color="Color.Secondary" Class="mt-1">
+            Aquí tienes un resumen de tu negocio.
+        </MudText>
+    </div>
 
-Welcome to your new app.
+    <MudGrid Spacing="3">
+        <MudItem xs="12" sm="6" md="3">
+            <MudPaper Class="pa-5 stat-card" Elevation="0">
+                <div class="stat-card-icon" style="background: var(--color-primary-50); color: var(--color-primary-500);">
+                    <MudIcon Icon="@Icons.Material.Rounded.Inventory2" />
+                </div>
+                <MudText Typo="Typo.h4" Class="mt-3" Style="font-weight: 800;">--</MudText>
+                <MudText Typo="Typo.body2" Color="Color.Secondary">@L["Products"]</MudText>
+            </MudPaper>
+        </MudItem>
+        <MudItem xs="12" sm="6" md="3">
+            <MudPaper Class="pa-5 stat-card" Elevation="0">
+                <div class="stat-card-icon" style="background: var(--color-info-light); color: var(--color-info);">
+                    <MudIcon Icon="@Icons.Material.Rounded.Category" />
+                </div>
+                <MudText Typo="Typo.h4" Class="mt-3" Style="font-weight: 800;">--</MudText>
+                <MudText Typo="Typo.body2" Color="Color.Secondary">Categorías</MudText>
+            </MudPaper>
+        </MudItem>
+        <MudItem xs="12" sm="6" md="3">
+            <MudPaper Class="pa-5 stat-card" Elevation="0">
+                <div class="stat-card-icon" style="background: var(--color-warning-light); color: var(--color-warning);">
+                    <MudIcon Icon="@Icons.Material.Rounded.TrendingUp" />
+                </div>
+                <MudText Typo="Typo.h4" Class="mt-3" Style="font-weight: 800;">--</MudText>
+                <MudText Typo="Typo.body2" Color="Color.Secondary">Cambios de Precio</MudText>
+            </MudPaper>
+        </MudItem>
+        <MudItem xs="12" sm="6" md="3">
+            <MudPaper Class="pa-5 stat-card" Elevation="0">
+                <div class="stat-card-icon" style="background: var(--color-success-light); color: var(--color-success);">
+                    <MudIcon Icon="@Icons.Material.Rounded.AttachMoney" />
+                </div>
+                <MudText Typo="Typo.h4" Class="mt-3" Style="font-weight: 800;">--</MudText>
+                <MudText Typo="Typo.body2" Color="Color.Secondary">Ventas del Mes</MudText>
+            </MudPaper>
+        </MudItem>
+    </MudGrid>
+
+    <MudGrid Spacing="3" Class="mt-4">
+        <MudItem xs="12" md="6">
+            <MudPaper Class="pa-5" Elevation="0">
+                <MudText Typo="Typo.h6" Class="mb-4" Style="font-weight: 700;">Acciones Rápidas</MudText>
+                <MudStack Spacing="2">
+                    <MudButton Variant="Variant.Outlined" Color="Color.Primary" FullWidth="true"
+                               StartIcon="@Icons.Material.Rounded.Add" Href="/products/new"
+                               Style="justify-content: flex-start; height: 44px;">
+                        Nuevo Producto
+                    </MudButton>
+                    <MudButton Variant="Variant.Outlined" Color="Color.Primary" FullWidth="true"
+                               StartIcon="@Icons.Material.Rounded.PriceChange" Href="/pricing"
+                               Style="justify-content: flex-start; height: 44px;">
+                        Cambio de Precios
+                    </MudButton>
+                    <MudButton Variant="Variant.Outlined" Color="Color.Primary" FullWidth="true"
+                               StartIcon="@Icons.Material.Rounded.Tune" Href="/settings/pricing"
+                               Style="justify-content: flex-start; height: 44px;">
+                        Configurar Precios
+                    </MudButton>
+                </MudStack>
+            </MudPaper>
+        </MudItem>
+        <MudItem xs="12" md="6">
+            <MudPaper Class="pa-5" Elevation="0">
+                <MudText Typo="Typo.h6" Class="mb-4" Style="font-weight: 700;">Actividad Reciente</MudText>
+                <div class="empty-state-compact">
+                    <MudIcon Icon="@Icons.Material.Rounded.EventNote" Size="Size.Large" Color="Color.Secondary" />
+                    <MudText Typo="Typo.body2" Color="Color.Secondary" Class="mt-2">
+                        No hay actividad reciente.
+                    </MudText>
+                </div>
+            </MudPaper>
+        </MudItem>
+    </MudGrid>
+</div>
+
+@code {
+    private string _greeting = string.Empty;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var hour = DateTime.Now.Hour;
+        string timeGreeting;
+        if (hour < 12)
+        {
+            timeGreeting = "Buenos días";
+        }
+        else if (hour < 18)
+        {
+            timeGreeting = "Buenas tardes";
+        }
+        else
+        {
+            timeGreeting = "Buenas noches";
+        }
+
+        try
+        {
+            var userInfo = await AuthService.GetCurrentUserAsync();
+            var firstName = userInfo?.FullName?.Split(' ')[0] ?? "";
+            _greeting = string.IsNullOrEmpty(firstName)
+                ? timeGreeting
+                : $"{timeGreeting}, {firstName}";
+        }
+        catch
+        {
+            _greeting = timeGreeting;
+        }
+    }
+}
