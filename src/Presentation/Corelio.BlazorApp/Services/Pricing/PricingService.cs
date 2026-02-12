@@ -1,13 +1,14 @@
 using System.Net.Http.Json;
 using Corelio.BlazorApp.Models.Common;
 using Corelio.BlazorApp.Models.Pricing;
+using Corelio.BlazorApp.Services.Http;
 
 namespace Corelio.BlazorApp.Services.Pricing;
 
 /// <summary>
-/// Implementation of pricing service using HttpClient to call backend API.
+/// Implementation of pricing service using AuthenticatedHttpClient to call backend API.
 /// </summary>
-public partial class PricingService(HttpClient httpClient, ILogger<PricingService> logger) : IPricingService
+public partial class PricingService(AuthenticatedHttpClient httpClient, ILogger<PricingService> logger) : IPricingService
 {
     private const string BaseUrl = "/api/v1/pricing";
 
@@ -31,9 +32,9 @@ public partial class PricingService(HttpClient httpClient, ILogger<PricingServic
                 }
             }
 
-            var errorMessage = await response.Content.ReadAsStringAsync(cancellationToken);
+            var errorMessage = await response.GetErrorMessageAsync(cancellationToken);
             LogGetTenantConfigFailed(logger, response.StatusCode, errorMessage);
-            return Result<TenantPricingConfigModel>.Failure(errorMessage ?? "Failed to load pricing configuration");
+            return Result<TenantPricingConfigModel>.Failure(errorMessage);
         }
         catch (Exception ex)
         {
@@ -85,9 +86,9 @@ public partial class PricingService(HttpClient httpClient, ILogger<PricingServic
                 LogPutTenantConfigNullBody(logger);
             }
 
-            var errorMessage = await response.Content.ReadAsStringAsync(cancellationToken);
+            var errorMessage = await response.GetErrorMessageAsync(cancellationToken);
             LogPutTenantConfigFailed(logger, response.StatusCode, errorMessage);
-            return Result<TenantPricingConfigModel>.Failure(errorMessage ?? "Failed to update pricing configuration");
+            return Result<TenantPricingConfigModel>.Failure(errorMessage);
         }
         catch (Exception ex)
         {
@@ -135,8 +136,8 @@ public partial class PricingService(HttpClient httpClient, ILogger<PricingServic
                 }
             }
 
-            var errorMessage = await response.Content.ReadAsStringAsync(cancellationToken);
-            return Result<PagedResult<ProductPricingModel>>.Failure(errorMessage ?? "Failed to load products pricing");
+            var errorMessage = await response.GetErrorMessageAsync(cancellationToken);
+            return Result<PagedResult<ProductPricingModel>>.Failure(errorMessage);
         }
         catch (Exception ex)
         {
@@ -163,8 +164,8 @@ public partial class PricingService(HttpClient httpClient, ILogger<PricingServic
                 }
             }
 
-            var errorMessage = await response.Content.ReadAsStringAsync(cancellationToken);
-            return Result<ProductPricingModel>.Failure(errorMessage ?? "Product pricing not found");
+            var errorMessage = await response.GetErrorMessageAsync(cancellationToken);
+            return Result<ProductPricingModel>.Failure(errorMessage);
         }
         catch (Exception ex)
         {
@@ -213,8 +214,8 @@ public partial class PricingService(HttpClient httpClient, ILogger<PricingServic
                 }
             }
 
-            var errorMessage = await response.Content.ReadAsStringAsync(cancellationToken);
-            return Result<ProductPricingModel>.Failure(errorMessage ?? "Failed to update product pricing");
+            var errorMessage = await response.GetErrorMessageAsync(cancellationToken);
+            return Result<ProductPricingModel>.Failure(errorMessage);
         }
         catch (Exception ex)
         {
@@ -252,8 +253,8 @@ public partial class PricingService(HttpClient httpClient, ILogger<PricingServic
                 }
             }
 
-            var errorMessage = await response.Content.ReadAsStringAsync(cancellationToken);
-            return Result<PricingCalculationResultModel>.Failure(errorMessage ?? "Failed to calculate prices");
+            var errorMessage = await response.GetErrorMessageAsync(cancellationToken);
+            return Result<PricingCalculationResultModel>.Failure(errorMessage);
         }
         catch (Exception ex)
         {
@@ -285,8 +286,8 @@ public partial class PricingService(HttpClient httpClient, ILogger<PricingServic
                 return Result<int>.Success(updatedCount);
             }
 
-            var errorMessage = await response.Content.ReadAsStringAsync(cancellationToken);
-            return Result<int>.Failure(errorMessage ?? "Failed to apply bulk pricing update");
+            var errorMessage = await response.GetErrorMessageAsync(cancellationToken);
+            return Result<int>.Failure(errorMessage);
         }
         catch (Exception ex)
         {
