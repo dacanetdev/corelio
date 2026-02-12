@@ -1,13 +1,14 @@
 using System.Net.Http.Json;
 using Corelio.BlazorApp.Models.Common;
 using Corelio.BlazorApp.Models.Products;
+using Corelio.BlazorApp.Services.Http;
 
 namespace Corelio.BlazorApp.Services.Products;
 
 /// <summary>
-/// Implementation of product service using HttpClient to call backend API.
+/// Implementation of product service using AuthenticatedHttpClient to call backend API.
 /// </summary>
-public class ProductService(HttpClient httpClient) : IProductService
+public class ProductService(AuthenticatedHttpClient httpClient) : IProductService
 {
     private const string BaseUrl = "/api/v1/products";
     private const string CategoriesUrl = "/api/v1/product-categories";
@@ -56,8 +57,8 @@ public class ProductService(HttpClient httpClient) : IProductService
                 }
             }
 
-            var errorMessage = await response.Content.ReadAsStringAsync(cancellationToken);
-            return Result<PagedResult<ProductListDto>>.Failure(errorMessage ?? "Failed to load products");
+            var errorMessage = await response.GetErrorMessageAsync(cancellationToken);
+            return Result<PagedResult<ProductListDto>>.Failure(errorMessage);
         }
         catch (Exception ex)
         {
@@ -132,8 +133,8 @@ public class ProductService(HttpClient httpClient) : IProductService
                 return Result<Guid>.Success(productId);
             }
 
-            var errorMessage = await response.Content.ReadAsStringAsync(cancellationToken);
-            return Result<Guid>.Failure(errorMessage ?? "Failed to create product");
+            var errorMessage = await response.GetErrorMessageAsync(cancellationToken);
+            return Result<Guid>.Failure(errorMessage);
         }
         catch (Exception ex)
         {
@@ -155,8 +156,8 @@ public class ProductService(HttpClient httpClient) : IProductService
                 return Result<bool>.Success(true);
             }
 
-            var errorMessage = await response.Content.ReadAsStringAsync(cancellationToken);
-            return Result<bool>.Failure(errorMessage ?? "Failed to update product");
+            var errorMessage = await response.GetErrorMessageAsync(cancellationToken);
+            return Result<bool>.Failure(errorMessage);
         }
         catch (Exception ex)
         {
@@ -176,8 +177,8 @@ public class ProductService(HttpClient httpClient) : IProductService
                 return Result<bool>.Success(true);
             }
 
-            var errorMessage = await response.Content.ReadAsStringAsync(cancellationToken);
-            return Result<bool>.Failure(errorMessage ?? "Failed to delete product");
+            var errorMessage = await response.GetErrorMessageAsync(cancellationToken);
+            return Result<bool>.Failure(errorMessage);
         }
         catch (Exception ex)
         {

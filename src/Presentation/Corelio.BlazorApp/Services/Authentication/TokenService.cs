@@ -1,67 +1,73 @@
-using Blazored.LocalStorage;
-
 namespace Corelio.BlazorApp.Services.Authentication;
 
 /// <summary>
-/// Implementation of token storage service using Blazored.LocalStorage.
+/// Implementation of token storage service using in-memory storage scoped to the Blazor circuit.
+/// Tokens are stored only in memory and will be lost on page refresh (by design for security).
 /// </summary>
-public class TokenService(ILocalStorageService localStorage) : ITokenService
+public partial class TokenService(ILogger<TokenService> logger) : ITokenService
 {
-    private const string AccessTokenKey = "corelio_access_token";
-    private const string RefreshTokenKey = "corelio_refresh_token";
+    // In-memory cache for the current circuit — tokens persist only for the circuit lifetime
+    private string? _accessToken;
+    private string? _refreshToken;
 
     /// <inheritdoc />
-    public async Task SetAccessTokenAsync(string token)
+    public Task SetAccessTokenAsync(string token)
     {
-        await localStorage.SetItemAsStringAsync(AccessTokenKey, token);
+        ArgumentNullException.ThrowIfNull(token);
+
+        LogSettingAccessToken(logger, token.Length);
+        _accessToken = token;
+        LogTokenCached(logger);
+
+        return Task.CompletedTask;
     }
 
     /// <inheritdoc />
-    public async Task<string?> GetAccessTokenAsync()
+    public Task<string?> GetAccessTokenAsync()
     {
-        try
+        var hasToken = !string.IsNullOrWhiteSpace(_accessToken);
+        LogGetAccessTokenCalled(logger, hasToken, _accessToken?.Length ?? 0);
+
+        if (hasToken)
         {
-            return await localStorage.GetItemAsStringAsync(AccessTokenKey);
+            LogReturningCachedToken(logger, _accessToken!.Length);
         }
-        catch
+        else
         {
-            // Token doesn't exist or is corrupted
-            return null;
+            LogNoTokenAvailable(logger);
         }
+
+        return Task.FromResult(_accessToken);
     }
 
     /// <inheritdoc />
-    public async Task SetRefreshTokenAsync(string token)
+    public Task SetRefreshTokenAsync(string token)
     {
-        await localStorage.SetItemAsStringAsync(RefreshTokenKey, token);
+        ArgumentNullException.ThrowIfNull(token);
+        _refreshToken = token;
+        return Task.CompletedTask;
     }
 
     /// <inheritdoc />
-    public async Task<string?> GetRefreshTokenAsync()
+    public Task<string?> GetRefreshTokenAsync()
     {
-        try
-        {
-            return await localStorage.GetItemAsStringAsync(RefreshTokenKey);
-        }
-        catch
-        {
-            // Token doesn't exist or is corrupted
-            return null;
-        }
+        return Task.FromResult(_refreshToken);
     }
 
     /// <inheritdoc />
-    public async Task ClearTokensAsync()
+    public Task ClearTokensAsync()
     {
-        await localStorage.RemoveItemAsync(AccessTokenKey);
-        await localStorage.RemoveItemAsync(RefreshTokenKey);
+        LogClearingTokens(logger);
+        _accessToken = null;
+        _refreshToken = null;
+        return Task.CompletedTask;
     }
 
     /// <inheritdoc />
-    public async Task<bool> IsAuthenticatedAsync()
+    public Task<bool> IsAuthenticatedAsync()
     {
-        var token = await GetAccessTokenAsync();
-        return !string.IsNullOrWhiteSpace(token);
+        var isAuthenticated = !string.IsNullOrWhiteSpace(_accessToken);
+        return Task.FromResult(isAuthenticated);
     }
 
     /// <inheritdoc />
@@ -70,4 +76,24 @@ public class TokenService(ILocalStorageService localStorage) : ITokenService
         await SetAccessTokenAsync(accessToken);
         await SetRefreshTokenAsync(refreshToken);
     }
+
+    // High-performance logging via LoggerMessage source generator
+
+    [LoggerMessage(Level = LogLevel.Information, Message = "[TokenService] Setting access token, Length: {Length}")]
+    private static partial void LogSettingAccessToken(ILogger logger, int length);
+
+    [LoggerMessage(Level = LogLevel.Information, Message = "[TokenService] Token cached in memory")]
+    private static partial void LogTokenCached(ILogger logger);
+
+    [LoggerMessage(Level = LogLevel.Information, Message = "[TokenService] GetAccessToken called, HasToken: {HasToken}, Length: {Length}")]
+    private static partial void LogGetAccessTokenCalled(ILogger logger, bool hasToken, int length);
+
+    [LoggerMessage(Level = LogLevel.Information, Message = "[TokenService] Returning cached token, Length: {Length}")]
+    private static partial void LogReturningCachedToken(ILogger logger, int length);
+
+    [LoggerMessage(Level = LogLevel.Warning, Message = "[TokenService] No token available in memory")]
+    private static partial void LogNoTokenAvailable(ILogger logger);
+
+    [LoggerMessage(Level = LogLevel.Information, Message = "[TokenService] Clearing all tokens from memory")]
+    private static partial void LogClearingTokens(ILogger logger);
 }

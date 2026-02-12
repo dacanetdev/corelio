@@ -1,4 +1,5 @@
 using System.Net.Http.Json;
+using Corelio.BlazorApp.Services.Http;
 
 namespace Corelio.BlazorApp.Services.Theming;
 
@@ -41,7 +42,7 @@ public record UpdateTenantThemeRequest(
 /// HTTP service implementation for tenant theme management.
 /// </summary>
 public partial class TenantThemeHttpService(
-    IHttpClientFactory httpClientFactory,
+    AuthenticatedHttpClient httpClient,
     ILogger<TenantThemeHttpService> logger) : ITenantThemeHttpService
 {
     private const string BaseUrl = "/api/v1/tenants/theme";
@@ -51,8 +52,7 @@ public partial class TenantThemeHttpService(
     {
         try
         {
-            var client = httpClientFactory.CreateClient("api");
-            var response = await client.GetAsync($"{BaseUrl}/current");
+            var response = await httpClient.GetAsync($"{BaseUrl}/current");
 
             if (!response.IsSuccessStatusCode)
             {
@@ -74,8 +74,7 @@ public partial class TenantThemeHttpService(
     {
         try
         {
-            var client = httpClientFactory.CreateClient("api");
-            var response = await client.PutAsJsonAsync(BaseUrl, request);
+            var response = await httpClient.PutAsJsonAsync(BaseUrl, request);
 
             if (!response.IsSuccessStatusCode)
             {

@@ -5,65 +5,76 @@ using Microsoft.AspNetCore.Components.Authorization;
 namespace Corelio.BlazorApp.Services.Authentication;
 
 /// <summary>
-/// Custom authentication state provider that parses JWT tokens from localStorage.
-/// Provides authentication state to Blazor components.
+/// Custom authentication state provider that parses JWT tokens.
+/// Handles Blazor Server prerendering gracefully by returning anonymous
+/// when JS interop is unavailable, then re-evaluating once the circuit is live.
 /// </summary>
 public class CustomAuthenticationStateProvider(ITokenService tokenService) : AuthenticationStateProvider
 {
-    private readonly JwtSecurityTokenHandler _jwtHandler = new();
+    private static readonly JwtSecurityTokenHandler JwtHandler = new();
+    private static readonly AuthenticationState Anonymous = new(new ClaimsPrincipal(new ClaimsIdentity()));
 
     /// <summary>
-    /// Gets the current authentication state by parsing the JWT token from localStorage.
+    /// Gets the current authentication state by reading the JWT token from session storage.
     /// </summary>
     public override async Task<AuthenticationState> GetAuthenticationStateAsync()
     {
-        Console.WriteLine("[AuthStateProvider] GetAuthenticationStateAsync called");
-        var token = await tokenService.GetAccessTokenAsync();
-        Console.WriteLine($"[AuthStateProvider] Token length: {token?.Length ?? 0}");
-
-        if (string.IsNullOrWhiteSpace(token))
-        {
-            Console.WriteLine("[AuthStateProvider] No token, returning anonymous");
-            return new AuthenticationState(new ClaimsPrincipal(new ClaimsIdentity()));
-        }
-
         try
         {
+            var token = await tokenService.GetAccessTokenAsync();
+
+            if (string.IsNullOrWhiteSpace(token))
+            {
+                return Anonymous;
+            }
+
             // Remove "Bearer " prefix if present
             token = token.Replace("Bearer ", string.Empty).Trim();
 
-            // Parse JWT token to extract claims
-            var jwtToken = _jwtHandler.ReadJwtToken(token);
+            // Parse and validate the JWT
+            var jwtToken = JwtHandler.ReadJwtToken(token);
 
-            // Check if token is expired
+            // Check expiration
             if (jwtToken.ValidTo < DateTime.UtcNow)
             {
-                // Token expired, clear it
                 await tokenService.ClearTokensAsync();
-                return new AuthenticationState(new ClaimsPrincipal(new ClaimsIdentity()));
+                return Anonymous;
             }
 
-            // Create claims identity from JWT claims
+            // Build claims identity
             var claims = jwtToken.Claims.ToList();
             var identity = new ClaimsIdentity(claims, "jwt");
             var user = new ClaimsPrincipal(identity);
 
-            Console.WriteLine($"[AuthStateProvider] Authenticated as: {user.Identity?.Name ?? "unknown"}");
             return new AuthenticationState(user);
+        }
+        catch (InvalidOperationException)
+        {
+            // JS interop not available during prerendering — return anonymous.
+            // Blazor will re-evaluate once the circuit is established.
+            return Anonymous;
         }
         catch
         {
             // Token is invalid or corrupted
-            await tokenService.ClearTokensAsync();
-            return new AuthenticationState(new ClaimsPrincipal(new ClaimsIdentity()));
+            try { await tokenService.ClearTokensAsync(); } catch { /* prerender */ }
+            return Anonymous;
         }
     }
 
     /// <summary>
-    /// Notifies Blazor that the authentication state has changed (after login/logout).
+    /// Call after login to immediately update all AuthorizeView components.
     /// </summary>
-    public void NotifyAuthenticationStateChanged()
+    public void NotifyUserAuthenticated()
     {
         NotifyAuthenticationStateChanged(GetAuthenticationStateAsync());
+    }
+
+    /// <summary>
+    /// Call after logout to immediately update all AuthorizeView components.
+    /// </summary>
+    public void NotifyUserLoggedOut()
+    {
+        NotifyAuthenticationStateChanged(Task.FromResult(Anonymous));
     }
 }

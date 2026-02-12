@@ -1,8 +1,8 @@
 using System.Globalization;
-using Blazored.LocalStorage;
 using Corelio.BlazorApp.Components;
 using Corelio.BlazorApp.Services;
 using Corelio.BlazorApp.Services.Authentication;
+using Corelio.BlazorApp.Services.Http;
 using Corelio.BlazorApp.Services.Pricing;
 using Corelio.BlazorApp.Services.Products;
 using Corelio.BlazorApp.Services.Theming;
@@ -15,9 +15,6 @@ var builder = WebApplication.CreateBuilder(args);
 // Add MudBlazor services
 builder.Services.AddMudServices();
 
-// Add Blazored LocalStorage
-builder.Services.AddBlazoredLocalStorage();
-
 // Add Localization with Spanish (Mexico) as default culture
 builder.Services.AddLocalization();
 builder.Services.Configure<RequestLocalizationOptions>(options =>
@@ -28,19 +25,16 @@ builder.Services.Configure<RequestLocalizationOptions>(options =>
     options.SupportedUICultures = supportedCultures;
 });
 
-// Add Authentication services
-// Even though Blazor uses AuthenticationStateProvider, we need to register
-// an authentication scheme for the authorization middleware to work with [Authorize]
-builder.Services.AddAuthentication("Cookies")
-    .AddCookie("Cookies", options =>
-    {
-        options.LoginPath = "/auth/login";
-        options.LogoutPath = "/auth/logout";
-        options.AccessDeniedPath = "/auth/access-denied";
-    });
-
+// Add Authentication & Authorization services
+// Blazor Server authentication is handled entirely through AuthenticationStateProvider.
+// No ASP.NET Core authentication middleware needed - we use <AuthorizeView> in components.
 builder.Services.AddAuthorizationCore();
+builder.Services.AddCascadingAuthenticationState();
+
+// Token storage - circuit-scoped (one instance per user connection)
 builder.Services.AddScoped<ITokenService, TokenService>();
+
+// Authentication state provider
 builder.Services.AddScoped<CustomAuthenticationStateProvider>();
 builder.Services.AddScoped<AuthenticationStateProvider>(sp =>
     sp.GetRequiredService<CustomAuthenticationStateProvider>());
@@ -68,18 +62,23 @@ void ConfigureApiClient(IServiceProvider sp, HttpClient client)
     }
 }
 
-// HttpClient for authentication endpoints (no auth handler to avoid circular dependency)
+// HttpClient for authentication endpoints (no auth needed - used for login/register)
 builder.Services.AddHttpClient("api-auth", ConfigureApiClient)
     .AddServiceDiscovery();
 
-// HttpClient for protected endpoints (with authorization handler)
-builder.Services.AddTransient<AuthorizationMessageHandler>();
+// HttpClient for protected endpoints (used by AuthenticatedHttpClient wrapper)
 builder.Services.AddHttpClient("api", ConfigureApiClient)
-    .AddHttpMessageHandler<AuthorizationMessageHandler>()
     .AddServiceDiscovery();
 
-// Register default HttpClient for general use (with auth handler)
-builder.Services.AddScoped(sp => sp.GetRequiredService<IHttpClientFactory>().CreateClient("api"));
+// AuthenticatedHttpClient wrapper - handles authorization headers automatically
+// This approach works perfectly with Blazor Server's circuit scoping because
+// TokenService is injected via constructor (circuit-scoped), not resolved from a handler scope
+builder.Services.AddScoped<AuthenticatedHttpClient>(sp =>
+{
+    var httpClient = sp.GetRequiredService<IHttpClientFactory>().CreateClient("api");
+    var tokenService = sp.GetRequiredService<ITokenService>();
+    return new AuthenticatedHttpClient(httpClient, tokenService);
+});
 
 // Add AuthService (depends on HttpClient)
 builder.Services.AddScoped<IAuthService, AuthService>();
@@ -120,10 +119,6 @@ if (!app.Environment.IsDevelopment())
 }
 
 app.UseAntiforgery();
-
-// Authentication middleware is required for authorization to work with [Authorize] attributes
-app.UseAuthentication();
-app.UseAuthorization();
 
 app.MapStaticAssets();
 app.MapRazorComponents<App>()

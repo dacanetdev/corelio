@@ -3,6 +3,7 @@ using System.Security.Claims;
 using System.Text.Json;
 using Corelio.BlazorApp.Models.Authentication;
 using Corelio.BlazorApp.Models.Common;
+using Corelio.BlazorApp.Services.Http;
 using Microsoft.AspNetCore.Components.Authorization;
 
 namespace Corelio.BlazorApp.Services.Authentication;
@@ -34,49 +35,34 @@ public class AuthService : IAuthService
         try
         {
             Console.WriteLine($"[AuthService] Attempting login for: {request.Email}");
-            Console.WriteLine($"[AuthService] API Base URL: {_httpClient.BaseAddress}");
 
             var response = await _httpClient.PostAsJsonAsync($"{BaseUrl}/login", request);
-            Console.WriteLine($"[AuthService] Response status: {response.StatusCode}");
 
             if (response.IsSuccessStatusCode)
             {
-                var content = await response.Content.ReadAsStringAsync();
-                Console.WriteLine($"[AuthService] Response content: {content[..Math.Min(200, content.Length)]}...");
-
                 var loginResponse = await response.Content.ReadFromJsonAsync<LoginResponse>();
                 if (loginResponse is not null)
                 {
-                    Console.WriteLine($"[AuthService] Parsed response - UserId: {loginResponse.UserId}, AccessToken length: {loginResponse.AccessToken?.Length ?? 0}");
-
-                    // Store tokens in localStorage
-                    Console.WriteLine("[AuthService] Storing tokens...");
-                    await _tokenService.SetTokensAsync(loginResponse.AccessToken ?? "", loginResponse.RefreshToken ?? "");
-                    Console.WriteLine("[AuthService] Tokens stored successfully");
+                    // Store tokens in session storage
+                    await _tokenService.SetTokensAsync(loginResponse.AccessToken, loginResponse.RefreshToken);
 
                     // Notify authentication state changed
-                    Console.WriteLine("[AuthService] Notifying auth state change...");
                     if (_authenticationStateProvider is CustomAuthenticationStateProvider customProvider)
                     {
-                        customProvider.NotifyAuthenticationStateChanged();
+                        customProvider.NotifyUserAuthenticated();
                     }
-                    Console.WriteLine("[AuthService] Auth state notified, returning success");
 
                     return Result<LoginResponse>.Success(loginResponse);
                 }
 
-                Console.WriteLine("[AuthService] Failed to parse login response");
                 return Result<LoginResponse>.Failure("Failed to parse login response");
             }
 
-            var errorContent = await response.Content.ReadAsStringAsync();
-            Console.WriteLine($"[AuthService] Login failed: {errorContent}");
-            var errorMessage = ParseErrorMessage(errorContent);
+            var errorMessage = await response.GetErrorMessageAsync();
             return Result<LoginResponse>.Failure(errorMessage);
         }
         catch (Exception ex)
         {
-            Console.WriteLine($"[AuthService] Exception: {ex}");
             return Result<LoginResponse>.Failure($"Login error: {ex.Message}");
         }
     }
@@ -94,8 +80,8 @@ public class AuthService : IAuthService
                 return Result<Guid>.Success(userId);
             }
 
-            var errorMessage = await response.Content.ReadAsStringAsync();
-            return Result<Guid>.Failure(errorMessage ?? "Registration failed");
+            var errorMessage = await response.GetErrorMessageAsync();
+            return Result<Guid>.Failure(errorMessage);
         }
         catch (Exception ex)
         {
@@ -121,7 +107,7 @@ public class AuthService : IAuthService
             // Notify authentication state changed
             if (_authenticationStateProvider is CustomAuthenticationStateProvider customProvider)
             {
-                customProvider.NotifyAuthenticationStateChanged();
+                customProvider.NotifyUserLoggedOut();
             }
 
             return Result.Success();
@@ -191,8 +177,8 @@ public class AuthService : IAuthService
                 return Result.Success();
             }
 
-            var errorMessage = await response.Content.ReadAsStringAsync();
-            return Result.Failure(errorMessage ?? "Password reset failed");
+            var errorMessage = await response.GetErrorMessageAsync();
+            return Result.Failure(errorMessage);
         }
         catch (Exception ex)
         {
@@ -228,21 +214,4 @@ public class AuthService : IAuthService
     /// Parses a ProblemDetails JSON response to extract the error title code.
     /// Falls back to a generic error key if parsing fails.
     /// </summary>
-    private static string ParseErrorMessage(string responseContent)
-    {
-        try
-        {
-            using var doc = JsonDocument.Parse(responseContent);
-            if (doc.RootElement.TryGetProperty("title", out var titleElement))
-            {
-                return titleElement.GetString() ?? "LoginFailed";
-            }
-        }
-        catch (JsonException)
-        {
-            // Not JSON - return as-is if it looks like a simple message
-        }
-
-        return "LoginFailed";
-    }
 }

@@ -6,9 +6,9 @@ namespace Corelio.BlazorApp.Services.Authentication;
 /// HTTP message handler that automatically attaches JWT access tokens to outgoing API requests.
 /// Also handles automatic token refresh when access token expires.
 /// </summary>
-public class AuthorizationMessageHandler(
-    ITokenService tokenService,
-    IServiceProvider serviceProvider) : DelegatingHandler
+public partial class AuthorizationMessageHandler(
+    IServiceProvider serviceProvider,
+    ILogger<AuthorizationMessageHandler> logger) : DelegatingHandler
 {
     /// <summary>
     /// Intercepts HTTP requests to add Authorization header with JWT token.
@@ -17,16 +17,37 @@ public class AuthorizationMessageHandler(
         HttpRequestMessage request,
         CancellationToken cancellationToken)
     {
-        // Get access token from localStorage
-        var accessToken = await tokenService.GetAccessTokenAsync();
+        LogInterceptingRequest(logger, request.RequestUri?.ToString() ?? "unknown");
 
-        if (!string.IsNullOrWhiteSpace(accessToken))
+        // CRITICAL: Resolve TokenService from current scope (not constructor) to ensure we get the right circuit instance
+        var tokenService = serviceProvider.GetRequiredService<ITokenService>();
+
+        try
         {
-            // Remove "Bearer " prefix if present
-            accessToken = accessToken.Replace("Bearer ", string.Empty).Trim();
+            // Get access token from session storage
+            var accessToken = await tokenService.GetAccessTokenAsync();
 
-            // Attach token to Authorization header
-            request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
+            LogRetrievedToken(logger, !string.IsNullOrWhiteSpace(accessToken), accessToken?.Length ?? 0);
+
+            if (!string.IsNullOrWhiteSpace(accessToken))
+            {
+                accessToken = accessToken.Replace("Bearer ", string.Empty).Trim();
+                request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
+                LogAuthorizationHeaderSet(logger);
+            }
+            else
+            {
+                LogNoAccessToken(logger);
+            }
+        }
+        catch (InvalidOperationException ex)
+        {
+            // JS interop not available during prerendering — send without token
+            LogJsInteropNotAvailable(logger, ex);
+        }
+        catch (Exception ex)
+        {
+            LogUnexpectedError(logger, ex);
         }
 
         // Send the request
@@ -35,34 +56,55 @@ public class AuthorizationMessageHandler(
         // If 401 Unauthorized, attempt token refresh
         if (response.StatusCode == System.Net.HttpStatusCode.Unauthorized)
         {
-            var refreshToken = await tokenService.GetRefreshTokenAsync();
-
-            if (!string.IsNullOrWhiteSpace(refreshToken))
+            try
             {
-                // Try to get AuthService - might not be available in all contexts
-                var authService = serviceProvider.GetService<IAuthService>();
-                if (authService is not null)
-                {
-                    // Attempt to refresh the access token
-                    var refreshResult = await authService.RefreshTokenAsync(refreshToken);
+                var refreshToken = await tokenService.GetRefreshTokenAsync();
 
-                    if (refreshResult.IsSuccess && refreshResult.Value is not null)
+                if (!string.IsNullOrWhiteSpace(refreshToken))
+                {
+                    var authService = serviceProvider.GetService<IAuthService>();
+                    if (authService is not null)
                     {
-                        // Retry the original request with new token
-                        request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", refreshResult.Value.AccessToken);
-                        response = await base.SendAsync(request, cancellationToken);
-                    }
-                    else
-                    {
-                        // Refresh failed, clear tokens (navigation handled by caller)
-                        await tokenService.ClearTokensAsync();
+                        var refreshResult = await authService.RefreshTokenAsync(refreshToken);
+
+                        if (refreshResult.IsSuccess && refreshResult.Value is not null)
+                        {
+                            request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", refreshResult.Value.AccessToken);
+                            response = await base.SendAsync(request, cancellationToken);
+                        }
+                        else
+                        {
+                            await tokenService.ClearTokensAsync();
+                        }
                     }
                 }
             }
-            // Note: Don't redirect here - let the caller handle 401 responses
-            // Redirecting from a message handler causes issues during prerendering
+            catch (InvalidOperationException)
+            {
+                // JS interop not available — can't refresh during prerender
+            }
         }
 
         return response;
     }
+
+    // High-performance logging via LoggerMessage source generator
+
+    [LoggerMessage(Level = LogLevel.Information, Message = "[AuthMessageHandler] Intercepting request to {Url}")]
+    private static partial void LogInterceptingRequest(ILogger logger, string url);
+
+    [LoggerMessage(Level = LogLevel.Information, Message = "[AuthMessageHandler] Retrieved token: HasToken={HasToken}, Length={Length}")]
+    private static partial void LogRetrievedToken(ILogger logger, bool hasToken, int length);
+
+    [LoggerMessage(Level = LogLevel.Information, Message = "[AuthMessageHandler] Authorization header set")]
+    private static partial void LogAuthorizationHeaderSet(ILogger logger);
+
+    [LoggerMessage(Level = LogLevel.Warning, Message = "[AuthMessageHandler] No access token available")]
+    private static partial void LogNoAccessToken(ILogger logger);
+
+    [LoggerMessage(Level = LogLevel.Warning, Message = "[AuthMessageHandler] JS interop not available (prerendering?)")]
+    private static partial void LogJsInteropNotAvailable(ILogger logger, Exception ex);
+
+    [LoggerMessage(Level = LogLevel.Error, Message = "[AuthMessageHandler] Unexpected error getting token")]
+    private static partial void LogUnexpectedError(ILogger logger, Exception ex);
 }
