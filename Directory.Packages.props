@@ -75,7 +75,6 @@
   <ItemGroup>
     <PackageVersion Include="MudBlazor" Version="7.0.0" />
     <PackageVersion Include="Microsoft.AspNetCore.Components.Web" Version="10.0.0" />
-    <PackageVersion Include="Blazored.LocalStorage" Version="4.5.0" />
   </ItemGroup>
   <!-- Security & Cryptography -->
   <ItemGroup>
