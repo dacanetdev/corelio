@@ -57,7 +57,7 @@ public static class HttpResponseExtensions
     /// <summary>
     /// Simplified ProblemDetails response model for parsing error responses.
     /// </summary>
-    private record ProblemDetailsResponse(
+    private sealed record ProblemDetailsResponse(
         string? Title,
         string? Detail,
         int? Status,

@@ -3,6 +3,8 @@
 @code {
     protected override void OnInitialized()
     {
-        NavigationManager.NavigateTo("/auth/login", forceLoad: true);
+        // Do NOT use forceLoad: true — it destroys the SignalR circuit
+        // and resets all scoped services including the token cache.
+        NavigationManager.NavigateTo("/auth/login");
     }
 }

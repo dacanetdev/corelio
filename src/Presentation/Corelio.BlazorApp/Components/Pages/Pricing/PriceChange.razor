@@ -1,7 +1,6 @@
 @page "/pricing"
 @using System.Globalization
 @using Corelio.BlazorApp.Components.Shared
-@attribute [Authorize]
 @inject IPricingService PricingService
 @inject IProductService ProductService
 @inject IStringLocalizer<SharedResource> L
@@ -10,7 +9,9 @@
 
 <PageTitle>@L["PriceChange"] - Corelio</PageTitle>
 
-<MudContainer MaxWidth="MaxWidth.ExtraLarge" Class="mt-4">
+<AuthorizeView Context="authContext">
+    <Authorized>
+        <MudContainer MaxWidth="MaxWidth.ExtraLarge" Class="mt-4">
     <MudPaper Elevation="2" Class="pa-6">
         <!-- Page Header -->
         <PageHeader Title="@L["PriceChange"]"
@@ -208,7 +209,12 @@
                         Description="@L["NoProductPricingDescription"]" />
         }
     </MudPaper>
-</MudContainer>
+        </MudContainer>
+    </Authorized>
+    <NotAuthorized>
+        <RedirectToLogin />
+    </NotAuthorized>
+</AuthorizeView>
 
 @code {
     private bool _loading = true;

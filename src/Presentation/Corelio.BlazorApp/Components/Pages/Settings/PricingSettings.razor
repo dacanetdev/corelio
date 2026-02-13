@@ -2,7 +2,6 @@
 @using Corelio.BlazorApp.Components.Shared
 @using Corelio.BlazorApp.Models.Pricing
 @using Corelio.BlazorApp.Services.Pricing
-@attribute [Authorize]
 @inject IPricingService PricingService
 @inject NavigationManager NavigationManager
 @inject IStringLocalizer<SharedResource> L
@@ -11,7 +10,9 @@
 
 <PageTitle>@L["PricingConfiguration"] - Corelio</PageTitle>
 
-<MudContainer MaxWidth="MaxWidth.Large" Class="mt-4">
+<AuthorizeView>
+    <Authorized>
+        <MudContainer MaxWidth="MaxWidth.Large" Class="mt-4">
     <MudPaper Elevation="2" Class="pa-6">
         <PageHeader Title="@L["PricingConfiguration"]"
                     Description="@L["PricingConfigDescription"]"
@@ -175,7 +176,12 @@
             </MudStack>
         }
     </MudPaper>
-</MudContainer>
+        </MudContainer>
+    </Authorized>
+    <NotAuthorized>
+        <RedirectToLogin />
+    </NotAuthorized>
+</AuthorizeView>
 
 @code {
     private bool _loading = true;
