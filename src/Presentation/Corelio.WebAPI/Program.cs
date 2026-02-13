@@ -1,9 +1,12 @@
+using System.Text.Json;
+using System.Text.Json.Serialization;
 using Corelio.Application;
 using Corelio.Infrastructure;
 using Corelio.Infrastructure.MultiTenancy;
 using Corelio.ServiceDefaults;
 using Corelio.WebAPI.Endpoints;
 using Corelio.WebAPI.Extensions;
+using Corelio.WebAPI.Filters;
 using Corelio.WebAPI.Middleware;
 using Microsoft.EntityFrameworkCore;
 using Scalar.AspNetCore;
@@ -21,6 +24,22 @@ builder.AddInfrastructureServices();
 
 // Add JWT authentication and authorization policies
 builder.Services.AddCorelioAuthorization(builder.Configuration);
+
+// Configure JSON serialization options for better error messages
+builder.Services.ConfigureHttpJsonOptions(options =>
+{
+    // Allow string-to-enum conversion (e.g., "EAN13" -> BarcodeType.EAN13)
+    options.SerializerOptions.Converters.Add(new JsonStringEnumConverter(JsonNamingPolicy.CamelCase));
+
+    // Make JSON property names case-insensitive for more forgiving API
+    options.SerializerOptions.PropertyNameCaseInsensitive = true;
+
+    // Write indented JSON in development for readability
+    if (builder.Environment.IsDevelopment())
+    {
+        options.SerializerOptions.WriteIndented = true;
+    }
+});
 
 // Add OpenAPI and Scalar for API documentation
 builder.Services.AddOpenApi();

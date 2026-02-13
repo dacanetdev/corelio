@@ -7,6 +7,7 @@ using Corelio.Application.Products.Queries.SearchProducts;
 using Corelio.SharedKernel.Messaging;
 using Corelio.WebAPI.Contracts.Products;
 using Corelio.WebAPI.Extensions;
+using Corelio.WebAPI.Filters;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Corelio.WebAPI.Endpoints;
@@ -23,7 +24,8 @@ public static class ProductEndpoints
     {
         var group = app.MapGroup("/api/v1/products")
             .WithTags("Products")
-            .RequireAuthorization();
+            .RequireAuthorization()
+            .AddEndpointFilter<ModelBindingErrorFilter>();
 
         group.MapGet("/", GetProducts)
             .WithName("GetProducts")
