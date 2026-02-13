@@ -843,4 +843,25 @@
   <data name="Difference" xml:space="preserve">
     <value>Diferencia</value>
   </data>
+  <data name="ErrorCreatingProduct" xml:space="preserve">
+    <value>Hubo un error al intentar guardar el producto. Por favor, verifique los datos e intente nuevamente.</value>
+  </data>
+  <data name="ErrorUpdatingProduct" xml:space="preserve">
+    <value>Hubo un error al intentar actualizar el producto. Por favor, verifique los datos e intente nuevamente.</value>
+  </data>
+  <data name="ErrorLoadingProduct" xml:space="preserve">
+    <value>Hubo un error al intentar cargar el producto.</value>
+  </data>
+  <data name="ErrorDeletingProduct" xml:space="preserve">
+    <value>Hubo un error al intentar eliminar el producto.</value>
+  </data>
+  <data name="ErrorLoadingCategories" xml:space="preserve">
+    <value>Hubo un error al intentar cargar las categorías.</value>
+  </data>
+  <data name="ShowTechnicalDetails" xml:space="preserve">
+    <value>Ver detalles técnicos</value>
+  </data>
+  <data name="HideTechnicalDetails" xml:space="preserve">
+    <value>Ocultar detalles técnicos</value>
+  </data>
 </root>

@@ -1,17 +1,54 @@
 using System.Net.Http.Json;
 using Corelio.BlazorApp.Models.Common;
 using Corelio.BlazorApp.Models.Products;
+using Corelio.BlazorApp.Resources;
 using Corelio.BlazorApp.Services.Http;
+using Microsoft.Extensions.Localization;
+using Microsoft.Extensions.Logging;
 
 namespace Corelio.BlazorApp.Services.Products;
 
 /// <summary>
 /// Implementation of product service using AuthenticatedHttpClient to call backend API.
 /// </summary>
-public class ProductService(AuthenticatedHttpClient httpClient) : IProductService
+public partial class ProductService(
+    AuthenticatedHttpClient httpClient,
+    IStringLocalizer<SharedResource> localizer,
+    ILogger<ProductService> logger) : IProductService
 {
     private const string BaseUrl = "/api/v1/products";
     private const string CategoriesUrl = "/api/v1/product-categories";
+
+    // Source-generated logging methods
+    [LoggerMessage(Level = LogLevel.Error, Message = "Error loading products")]
+    private partial void LogErrorLoadingProducts(Exception ex);
+
+    [LoggerMessage(Level = LogLevel.Error, Message = "Error loading product with ID: {productId}")]
+    private partial void LogErrorLoadingProduct(Exception ex, Guid productId);
+
+    [LoggerMessage(Level = LogLevel.Error, Message = "Error searching products with query: {query}")]
+    private partial void LogErrorSearchingProducts(Exception ex, string query);
+
+    [LoggerMessage(Level = LogLevel.Warning, Message = "Failed to create product. Status: {statusCode}, Error: {error}")]
+    private partial void LogWarningCreatingProduct(int statusCode, string error);
+
+    [LoggerMessage(Level = LogLevel.Error, Message = "Exception while creating product")]
+    private partial void LogErrorCreatingProduct(Exception ex);
+
+    [LoggerMessage(Level = LogLevel.Warning, Message = "Failed to update product {productId}. Status: {statusCode}, Error: {error}")]
+    private partial void LogWarningUpdatingProduct(Guid productId, int statusCode, string error);
+
+    [LoggerMessage(Level = LogLevel.Error, Message = "Exception while updating product {productId}")]
+    private partial void LogErrorUpdatingProduct(Exception ex, Guid productId);
+
+    [LoggerMessage(Level = LogLevel.Warning, Message = "Failed to delete product {productId}. Status: {statusCode}, Error: {error}")]
+    private partial void LogWarningDeletingProduct(Guid productId, int statusCode, string error);
+
+    [LoggerMessage(Level = LogLevel.Error, Message = "Exception while deleting product {productId}")]
+    private partial void LogErrorDeletingProduct(Exception ex, Guid productId);
+
+    [LoggerMessage(Level = LogLevel.Error, Message = "Error loading product categories")]
+    private partial void LogErrorLoadingCategories(Exception ex);
 
     /// <inheritdoc />
     public async Task<Result<PagedResult<ProductListDto>>> GetProductsAsync(
@@ -62,7 +99,8 @@ public class ProductService(AuthenticatedHttpClient httpClient) : IProductServic
         }
         catch (Exception ex)
         {
-            return Result<PagedResult<ProductListDto>>.Failure($"Error loading products: {ex.Message}");
+            LogErrorLoadingProducts(ex);
+            return Result<PagedResult<ProductListDto>>.Failure(localizer["ErrorLoadingProducts"]);
         }
     }
 
@@ -82,11 +120,12 @@ public class ProductService(AuthenticatedHttpClient httpClient) : IProductServic
                 }
             }
 
-            return Result<ProductDto>.Failure("Product not found");
+            return Result<ProductDto>.Failure(localizer["ProductNotFound"]);
         }
         catch (Exception ex)
         {
-            return Result<ProductDto>.Failure($"Error loading product: {ex.Message}");
+            LogErrorLoadingProduct(ex, id);
+            return Result<ProductDto>.Failure(localizer["ErrorLoadingProduct"]);
         }
     }
 
@@ -110,11 +149,12 @@ public class ProductService(AuthenticatedHttpClient httpClient) : IProductServic
                 }
             }
 
-            return Result<List<ProductListDto>>.Failure("Search failed");
+            return Result<List<ProductListDto>>.Failure(localizer["ErrorLoadingProducts"]);
         }
         catch (Exception ex)
         {
-            return Result<List<ProductListDto>>.Failure($"Error searching products: {ex.Message}");
+            LogErrorSearchingProducts(ex, query);
+            return Result<List<ProductListDto>>.Failure(localizer["ErrorLoadingProducts"]);
         }
     }
 
@@ -134,11 +174,13 @@ public class ProductService(AuthenticatedHttpClient httpClient) : IProductServic
             }
 
             var errorMessage = await response.GetErrorMessageAsync(cancellationToken);
-            return Result<Guid>.Failure(errorMessage);
+            LogWarningCreatingProduct((int)response.StatusCode, errorMessage);
+            return Result<Guid>.Failure(localizer["ErrorCreatingProduct"]);
         }
         catch (Exception ex)
         {
-            return Result<Guid>.Failure($"Error creating product: {ex.Message}");
+            LogErrorCreatingProduct(ex);
+            return Result<Guid>.Failure(localizer["ErrorCreatingProduct"]);
         }
     }
 
@@ -157,11 +199,13 @@ public class ProductService(AuthenticatedHttpClient httpClient) : IProductServic
             }
 
             var errorMessage = await response.GetErrorMessageAsync(cancellationToken);
-            return Result<bool>.Failure(errorMessage);
+            LogWarningUpdatingProduct(request.Id, (int)response.StatusCode, errorMessage);
+            return Result<bool>.Failure(localizer["ErrorUpdatingProduct"]);
         }
         catch (Exception ex)
         {
-            return Result<bool>.Failure($"Error updating product: {ex.Message}");
+            LogErrorUpdatingProduct(ex, request.Id);
+            return Result<bool>.Failure(localizer["ErrorUpdatingProduct"]);
         }
     }
 
@@ -178,11 +222,13 @@ public class ProductService(AuthenticatedHttpClient httpClient) : IProductServic
             }
 
             var errorMessage = await response.GetErrorMessageAsync(cancellationToken);
-            return Result<bool>.Failure(errorMessage);
+            LogWarningDeletingProduct(id, (int)response.StatusCode, errorMessage);
+            return Result<bool>.Failure(localizer["ErrorDeletingProduct"]);
         }
         catch (Exception ex)
         {
-            return Result<bool>.Failure($"Error deleting product: {ex.Message}");
+            LogErrorDeletingProduct(ex, id);
+            return Result<bool>.Failure(localizer["ErrorDeletingProduct"]);
         }
     }
 
@@ -202,11 +248,12 @@ public class ProductService(AuthenticatedHttpClient httpClient) : IProductServic
                 }
             }
 
-            return Result<List<ProductCategoryDto>>.Failure("Failed to load categories");
+            return Result<List<ProductCategoryDto>>.Failure(localizer["ErrorLoadingCategories"]);
         }
         catch (Exception ex)
         {
-            return Result<List<ProductCategoryDto>>.Failure($"Error loading categories: {ex.Message}");
+            LogErrorLoadingCategories(ex);
+            return Result<List<ProductCategoryDto>>.Failure(localizer["ErrorLoadingCategories"]);
         }
     }
 }
