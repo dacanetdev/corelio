@@ -9,6 +9,11 @@ using Microsoft.Extensions.Logging;
 namespace Corelio.BlazorApp.Services.Products;
 
 /// <summary>
+/// Response DTO for product creation endpoint.
+/// </summary>
+internal sealed record CreateProductResponse(Guid ProductId);
+
+/// <summary>
 /// Implementation of product service using AuthenticatedHttpClient to call backend API.
 /// </summary>
 public partial class ProductService(
@@ -169,8 +174,8 @@ public partial class ProductService(
 
             if (response.IsSuccessStatusCode)
             {
-                var productId = await response.Content.ReadFromJsonAsync<Guid>(cancellationToken: cancellationToken);
-                return Result<Guid>.Success(productId);
+                var result = await response.Content.ReadFromJsonAsync<CreateProductResponse>(cancellationToken: cancellationToken);
+                return Result<Guid>.Success(result?.ProductId ?? Guid.Empty);
             }
 
             var errorMessage = await response.GetErrorMessageAsync(cancellationToken);
