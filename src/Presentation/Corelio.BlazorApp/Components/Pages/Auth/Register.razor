@@ -2,7 +2,6 @@
 @layout AuthLayout
 @rendermode InteractiveServer
 @using Microsoft.AspNetCore.Authorization
-@attribute [Authorize(Policy = "users.create")]
 @using Corelio.BlazorApp.Models.Authentication
 @using Corelio.BlazorApp.Models.ViewModels
 @using Corelio.BlazorApp.Resources
@@ -13,7 +12,9 @@
 
 <PageTitle>@L["RegisterPageTitle"]</PageTitle>
 
-<div class="auth-hero">
+<AuthorizeView Policy="users.create" Context="authContext">
+    <Authorized>
+        <div class="auth-hero">
     <div class="auth-icon-circle">
         <MudIcon Icon="@Icons.Material.Filled.Store" />
     </div>
@@ -147,6 +148,18 @@
         </MudStack>
     </EditForm>
 </MudPaper>
+    </Authorized>
+    <NotAuthorized>
+        <MudPaper Class="auth-card" Elevation="8">
+            <MudAlert Severity="Severity.Warning" Icon="@Icons.Material.Filled.Lock">
+                @L["UnauthorizedAccess"]
+            </MudAlert>
+            <MudButton Variant="Variant.Filled" Color="Color.Primary" Href="/" Class="mt-4">
+                @L["BackToHome"]
+            </MudButton>
+        </MudPaper>
+    </NotAuthorized>
+</AuthorizeView>
 
 @code {
     [SupplyParameterFromForm]

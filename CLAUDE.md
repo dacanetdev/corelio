@@ -456,7 +456,8 @@ public async Task GetProducts_OnlyReturnsTenantProducts()
 
 ### 9. API Development (Minimal APIs)
 
-**Endpoint Guidelines:**
+**Endpoint Guideline
+:**
 - Use Minimal APIs with extension methods (no Controllers)
 - One endpoint class per resource
 - Delegate to MediatR for business logic

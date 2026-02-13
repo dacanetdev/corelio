@@ -139,19 +139,15 @@
 
             if (result.IsSuccess)
             {
-                Console.WriteLine("[Login] Login successful, navigating to /");
                 NavigationManager.NavigateTo("/");
-                Console.WriteLine("[Login] Navigation called");
             }
             else
             {
-                Console.WriteLine($"[Login] Login failed: {result.Error}");
                 _errorMessage = MapErrorToLocalizedMessage(result.Error);
             }
         }
-        catch (Exception ex)
+        catch (Exception)
         {
-            Console.WriteLine($"[Login] Exception: {ex.Message}");
             _errorMessage = L["LoginFailed"];
         }
         finally

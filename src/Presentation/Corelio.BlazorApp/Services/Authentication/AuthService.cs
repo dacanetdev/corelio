@@ -209,9 +209,4 @@ public class AuthService : IAuthService
             Permissions = user.FindAll("permission").Select(c => c.Value).ToList()
         };
     }
-
-    /// <summary>
-    /// Parses a ProblemDetails JSON response to extract the error title code.
-    /// Falls back to a generic error key if parsing fails.
-    /// </summary>
 }
