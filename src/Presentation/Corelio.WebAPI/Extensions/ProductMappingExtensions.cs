@@ -1,6 +1,6 @@
+using Corelio.Application.Contracts.Products;
 using Corelio.Application.Products.Commands.CreateProduct;
 using Corelio.Application.Products.Commands.UpdateProduct;
-using Corelio.WebAPI.Contracts.Products;
 
 namespace Corelio.WebAPI.Extensions;
 

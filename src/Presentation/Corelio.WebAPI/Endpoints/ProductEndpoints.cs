@@ -1,3 +1,4 @@
+using Corelio.Application.Contracts.Products;
 using Corelio.Application.Products.Commands.CreateProduct;
 using Corelio.Application.Products.Commands.DeleteProduct;
 using Corelio.Application.Products.Commands.UpdateProduct;
@@ -5,7 +6,6 @@ using Corelio.Application.Products.Queries.GetProductById;
 using Corelio.Application.Products.Queries.GetProducts;
 using Corelio.Application.Products.Queries.SearchProducts;
 using Corelio.SharedKernel.Messaging;
-using Corelio.WebAPI.Contracts.Products;
 using Corelio.WebAPI.Extensions;
 using Corelio.WebAPI.Filters;
 using Microsoft.AspNetCore.Mvc;

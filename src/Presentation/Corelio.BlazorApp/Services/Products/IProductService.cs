@@ -1,5 +1,5 @@
+using Corelio.Application.Contracts.Products;
 using Corelio.BlazorApp.Models.Common;
-using Corelio.BlazorApp.Models.Products;
 
 namespace Corelio.BlazorApp.Services.Products;
 

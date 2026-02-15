@@ -1,4 +1,6 @@
-namespace Corelio.BlazorApp.Models.Products;
+using Corelio.Domain.Enums;
+
+namespace Corelio.Application.Contracts.Products;
 
 /// <summary>
 /// Lightweight product DTO for list views and tables.
@@ -10,7 +12,7 @@ public class ProductListDto
     public string Name { get; set; } = string.Empty;
     public decimal SalePrice { get; set; }
     public decimal CostPrice { get; set; }
-    public string UnitOfMeasure { get; set; } = string.Empty;
+    public UnitOfMeasure UnitOfMeasure { get; set; }
     public string? CategoryName { get; set; }
     public string? Barcode { get; set; }
     public string? Brand { get; set; }

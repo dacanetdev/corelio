@@ -1,15 +1,21 @@
-namespace Corelio.BlazorApp.Models.Products;
+using Corelio.Domain.Enums;
+
+namespace Corelio.Application.Contracts.Products;
 
 /// <summary>
-/// Request model for creating a new product.
+/// Request DTO for creating a new product.
 /// </summary>
 public class CreateProductRequest
 {
-    // Product Identification
+    // Product Identification (Required)
     public string Sku { get; set; } = string.Empty;
-    public string? Barcode { get; set; }
-    public string BarcodeType { get; set; } = "EAN13";
     public string Name { get; set; } = string.Empty;
+    public decimal SalePrice { get; set; }
+    public UnitOfMeasure UnitOfMeasure { get; set; } = UnitOfMeasure.PCS;
+
+    // Product Identification (Optional)
+    public string? Barcode { get; set; }
+    public BarcodeType BarcodeType { get; set; } = BarcodeType.EAN13;
     public string? Description { get; set; }
     public string? ShortDescription { get; set; }
 
@@ -21,7 +27,6 @@ public class CreateProductRequest
 
     // Pricing
     public decimal CostPrice { get; set; } = 0.00m;
-    public decimal SalePrice { get; set; }
     public decimal? WholesalePrice { get; set; }
     public decimal? Msrp { get; set; }
 
@@ -31,7 +36,6 @@ public class CreateProductRequest
 
     // Inventory Management
     public bool TrackInventory { get; set; } = true;
-    public string UnitOfMeasure { get; set; } = "PCS";
     public decimal MinStockLevel { get; set; } = 0m;
     public decimal? MaxStockLevel { get; set; }
     public decimal? ReorderPoint { get; set; }
@@ -59,7 +63,7 @@ public class CreateProductRequest
     public bool IsActive { get; set; } = true;
     public bool IsFeatured { get; set; }
 
-    // SEO
+    // SEO (future feature - not yet supported in commands)
     public string? Slug { get; set; }
     public string? MetaTitle { get; set; }
     public string? MetaDescription { get; set; }

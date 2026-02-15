@@ -12,6 +12,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\Aspire\Corelio.ServiceDefaults\Corelio.ServiceDefaults.csproj" />
+    <ProjectReference Include="..\..\Core\Corelio.Application\Corelio.Application.csproj" />
   </ItemGroup>
 
 </Project>
