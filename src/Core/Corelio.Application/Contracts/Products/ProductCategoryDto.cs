@@ -1,4 +1,4 @@
-namespace Corelio.BlazorApp.Models.Products;
+namespace Corelio.Application.Contracts.Products;
 
 /// <summary>
 /// Product category DTO with hierarchical support.

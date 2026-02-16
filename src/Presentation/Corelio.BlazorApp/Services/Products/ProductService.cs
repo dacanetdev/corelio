@@ -1,6 +1,6 @@
 using System.Net.Http.Json;
+using Corelio.Application.Contracts.Products;
 using Corelio.BlazorApp.Models.Common;
-using Corelio.BlazorApp.Models.Products;
 using Corelio.BlazorApp.Resources;
 using Corelio.BlazorApp.Services.Http;
 using Microsoft.Extensions.Localization;
