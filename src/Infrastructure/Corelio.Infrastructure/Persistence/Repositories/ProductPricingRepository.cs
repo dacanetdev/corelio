@@ -35,11 +35,11 @@ public class ProductPricingRepository(ApplicationDbContext context) : IProductPr
         // Apply filters
         if (!string.IsNullOrWhiteSpace(searchTerm))
         {
-            var lowerSearchTerm = searchTerm.ToLowerInvariant();
+            // Use PostgreSQL ILIKE for case-insensitive search
             query = query.Where(p =>
-                p.Name.ToLower(CultureInfo.InvariantCulture).Contains(lowerSearchTerm) ||
-                p.Sku.ToLower(CultureInfo.InvariantCulture).Contains(lowerSearchTerm) ||
-                (p.Barcode != null && p.Barcode.ToLower(CultureInfo.InvariantCulture).Contains(lowerSearchTerm)));
+                EF.Functions.ILike(p.Name, $"%{searchTerm}%") ||
+                EF.Functions.ILike(p.Sku, $"%{searchTerm}%") ||
+                (p.Barcode != null && EF.Functions.ILike(p.Barcode, $"%{searchTerm}%")));
         }
 
         if (categoryId.HasValue)

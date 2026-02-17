@@ -184,6 +184,9 @@ public class ProductPricingIsolationTests(PostgreSqlTestContainerFixture fixture
         await dbContextA.Products
             .ExecuteUpdateAsync(p => p.SetProperty(x => x.ListPrice, 200m));
 
+        // Clear change tracker to avoid stale data after ExecuteUpdateAsync
+        dbContextA.ChangeTracker.Clear();
+
         // Assert - Tenant A products updated
         var updatedProductsA = await dbContextA.Products.ToListAsync();
         updatedProductsA.Should().HaveCount(10);

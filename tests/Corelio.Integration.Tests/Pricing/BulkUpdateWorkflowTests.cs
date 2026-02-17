@@ -56,8 +56,12 @@ public class BulkUpdateWorkflowTests(PostgreSqlTestContainerFixture fixture) : I
         dbContext.ProductMarginPrices.AddRange(products.Select(p => p.MarginPrice));
         await dbContext.SaveChangesAsync();
 
-        // Act - Apply 10% increase to all margin prices for tier 1
-        var originalPrices = products.Select(p => p.MarginPrice.SalePrice).ToList();
+        // Act - Query original prices in consistent order (by ProductId)
+        var originalPrices = await dbContext.ProductMarginPrices
+            .Where(m => m.TierNumber == 1)
+            .OrderBy(m => m.ProductId)
+            .Select(m => new { m.ProductId, m.SalePrice })
+            .ToListAsync();
 
         await dbContext.ProductMarginPrices
             .Where(m => m.TierNumber == 1)
@@ -65,19 +69,23 @@ public class BulkUpdateWorkflowTests(PostgreSqlTestContainerFixture fixture) : I
                 .SetProperty(x => x.SalePrice, x => x.SalePrice * 1.1m)
                 .SetProperty(x => x.PriceWithIva, x => x.PriceWithIva!.Value * 1.1m));
 
+        // Clear change tracker to avoid stale data after ExecuteUpdateAsync
+        dbContext.ChangeTracker.Clear();
+
         // Assert - Reload and verify all 10 products updated
         var updatedPrices = await dbContext.ProductMarginPrices
             .Where(m => m.TierNumber == 1)
             .OrderBy(m => m.ProductId)
-            .Select(m => m.SalePrice)
+            .Select(m => new { m.ProductId, m.SalePrice })
             .ToListAsync();
 
         updatedPrices.Should().HaveCount(10);
 
         for (int i = 0; i < 10; i++)
         {
-            var expected = Math.Round(originalPrices[i]!.Value * 1.1m, 2);
-            updatedPrices[i].Should().Be(expected);
+            var expected = Math.Round(originalPrices[i].SalePrice!.Value * 1.1m, 2);
+            updatedPrices[i].SalePrice.Should().Be(expected);
+            updatedPrices[i].ProductId.Should().Be(originalPrices[i].ProductId);
         }
     }
 
@@ -151,6 +159,9 @@ public class BulkUpdateWorkflowTests(PostgreSqlTestContainerFixture fixture) : I
                 .SetProperty(x => x.MarginPercentage, newMargin)
                 .SetProperty(x => x.SalePrice, newSalePrice)
                 .SetProperty(x => x.PriceWithIva, newPriceWithIva));
+
+        // Clear change tracker to avoid stale data after ExecuteUpdateAsync
+        dbContext.ChangeTracker.Clear();
 
         // Assert - Verify only tier 2 updated, tiers 1 and 3 unchanged
         var tier1Prices = await dbContext.ProductMarginPrices
@@ -309,6 +320,9 @@ public class BulkUpdateWorkflowTests(PostgreSqlTestContainerFixture fixture) : I
             .ExecuteUpdateAsync(m => m.SetProperty(x => x.SalePrice, x => x.SalePrice * 1.05m));
 
         stopwatch.Stop();
+
+        // Clear change tracker to avoid stale data after ExecuteUpdateAsync
+        dbContext.ChangeTracker.Clear();
 
         // Assert - All 100 products updated
         var updatedCount = await dbContext.ProductMarginPrices
