@@ -1,4 +1,4 @@
-using Corelio.Application.Contracts.Products;
+using Corelio.Application.Products.Common;
 using Corelio.Application.Products.Commands.CreateProduct;
 using Corelio.Application.Products.Commands.DeleteProduct;
 using Corelio.Application.Products.Commands.UpdateProduct;

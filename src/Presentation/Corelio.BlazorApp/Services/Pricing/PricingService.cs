@@ -25,7 +25,7 @@ public partial class PricingService(AuthenticatedHttpClient httpClient, ILogger<
             if (response.IsSuccessStatusCode)
             {
                 var config = await response.Content.ReadFromJsonAsync<TenantPricingConfigModel>(
-                    cancellationToken: cancellationToken);
+                    JsonOptions.Default, cancellationToken);
                 if (config is not null)
                 {
                     return Result<TenantPricingConfigModel>.Success(config);
@@ -77,7 +77,7 @@ public partial class PricingService(AuthenticatedHttpClient httpClient, ILogger<
             if (response.IsSuccessStatusCode)
             {
                 var config = await response.Content.ReadFromJsonAsync<TenantPricingConfigModel>(
-                    cancellationToken: cancellationToken);
+                    JsonOptions.Default, cancellationToken);
                 if (config is not null)
                 {
                     return Result<TenantPricingConfigModel>.Success(config);
@@ -129,7 +129,7 @@ public partial class PricingService(AuthenticatedHttpClient httpClient, ILogger<
             if (response.IsSuccessStatusCode)
             {
                 var result = await response.Content.ReadFromJsonAsync<PagedResult<ProductPricingModel>>(
-                    cancellationToken: cancellationToken);
+                    JsonOptions.Default, cancellationToken);
                 if (result is not null)
                 {
                     return Result<PagedResult<ProductPricingModel>>.Success(result);
@@ -157,7 +157,7 @@ public partial class PricingService(AuthenticatedHttpClient httpClient, ILogger<
             if (response.IsSuccessStatusCode)
             {
                 var product = await response.Content.ReadFromJsonAsync<ProductPricingModel>(
-                    cancellationToken: cancellationToken);
+                    JsonOptions.Default, cancellationToken);
                 if (product is not null)
                 {
                     return Result<ProductPricingModel>.Success(product);
@@ -207,7 +207,7 @@ public partial class PricingService(AuthenticatedHttpClient httpClient, ILogger<
             if (response.IsSuccessStatusCode)
             {
                 var product = await response.Content.ReadFromJsonAsync<ProductPricingModel>(
-                    cancellationToken: cancellationToken);
+                    JsonOptions.Default, cancellationToken);
                 if (product is not null)
                 {
                     return Result<ProductPricingModel>.Success(product);
@@ -246,7 +246,7 @@ public partial class PricingService(AuthenticatedHttpClient httpClient, ILogger<
             if (response.IsSuccessStatusCode)
             {
                 var result = await response.Content.ReadFromJsonAsync<PricingCalculationResultModel>(
-                    cancellationToken: cancellationToken);
+                    JsonOptions.Default, cancellationToken);
                 if (result is not null)
                 {
                     return Result<PricingCalculationResultModel>.Success(result);
@@ -282,7 +282,7 @@ public partial class PricingService(AuthenticatedHttpClient httpClient, ILogger<
             if (response.IsSuccessStatusCode)
             {
                 var updatedCount = await response.Content.ReadFromJsonAsync<int>(
-                    cancellationToken: cancellationToken);
+                    JsonOptions.Default, cancellationToken);
                 return Result<int>.Success(updatedCount);
             }
 

@@ -1,5 +1,6 @@
 using System.Net.Http.Json;
-using Corelio.Application.Contracts.Products;
+using Corelio.Application.Products.Common;
+using Corelio.Application.ProductCategories.Common;
 using Corelio.BlazorApp.Models.Common;
 using Corelio.BlazorApp.Resources;
 using Corelio.BlazorApp.Services.Http;
@@ -92,7 +93,7 @@ public partial class ProductService(
 
             if (response.IsSuccessStatusCode)
             {
-                var result = await response.Content.ReadFromJsonAsync<PagedResult<ProductListDto>>(cancellationToken: cancellationToken);
+                var result = await response.Content.ReadFromJsonAsync<PagedResult<ProductListDto>>(JsonOptions.Default, cancellationToken);
                 if (result is not null)
                 {
                     return Result<PagedResult<ProductListDto>>.Success(result);
@@ -118,7 +119,7 @@ public partial class ProductService(
 
             if (response.IsSuccessStatusCode)
             {
-                var product = await response.Content.ReadFromJsonAsync<ProductDto>(cancellationToken: cancellationToken);
+                var product = await response.Content.ReadFromJsonAsync<ProductDto>(JsonOptions.Default, cancellationToken);
                 if (product is not null)
                 {
                     return Result<ProductDto>.Success(product);
@@ -147,7 +148,7 @@ public partial class ProductService(
 
             if (response.IsSuccessStatusCode)
             {
-                var products = await response.Content.ReadFromJsonAsync<List<ProductListDto>>(cancellationToken: cancellationToken);
+                var products = await response.Content.ReadFromJsonAsync<List<ProductListDto>>(JsonOptions.Default, cancellationToken);
                 if (products is not null)
                 {
                     return Result<List<ProductListDto>>.Success(products);
@@ -174,7 +175,7 @@ public partial class ProductService(
 
             if (response.IsSuccessStatusCode)
             {
-                var result = await response.Content.ReadFromJsonAsync<CreateProductResponse>(cancellationToken: cancellationToken);
+                var result = await response.Content.ReadFromJsonAsync<CreateProductResponse>(JsonOptions.Default, cancellationToken);
                 return Result<Guid>.Success(result?.ProductId ?? Guid.Empty);
             }
 
@@ -246,7 +247,7 @@ public partial class ProductService(
 
             if (response.IsSuccessStatusCode)
             {
-                var categories = await response.Content.ReadFromJsonAsync<List<ProductCategoryDto>>(cancellationToken: cancellationToken);
+                var categories = await response.Content.ReadFromJsonAsync<List<ProductCategoryDto>>(JsonOptions.Default, cancellationToken);
                 if (categories is not null)
                 {
                     return Result<List<ProductCategoryDto>>.Success(categories);
