@@ -6,6 +6,7 @@ using Corelio.Infrastructure.MultiTenancy;
 using Corelio.Infrastructure.Persistence;
 using FluentAssertions;
 using Microsoft.AspNetCore.Http;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Logging;
 using Moq;
@@ -13,11 +14,11 @@ using Moq;
 namespace Corelio.Infrastructure.Tests.MultiTenancy;
 
 [Trait("Category", "Unit")]
-public class TenantServiceTests
+public class TenantServiceTests : IDisposable
 {
-    private readonly Mock<TenantProvider> _tenantProviderMock;
+    private readonly TenantProvider _tenantProvider;
     private readonly Mock<IHttpContextAccessor> _httpContextAccessorMock;
-    private readonly Mock<ApplicationDbContext> _dbContextMock;
+    private readonly ApplicationDbContext _dbContext;
     private readonly Mock<IDistributedCache> _cacheMock;
     private readonly Mock<ILogger<TenantService>> _loggerMock;
     private readonly TenantService _sut;
@@ -25,21 +26,36 @@ public class TenantServiceTests
 
     public TenantServiceTests()
     {
-        _tenantProviderMock = new Mock<TenantProvider>();
-        _httpContextAccessorMock = new Mock<IHttpContextAccessor>();
-        _dbContextMock = new Mock<ApplicationDbContext>();
-        _cacheMock = new Mock<IDistributedCache>();
-        _loggerMock = new Mock<ILogger<TenantService>>();
+        // Use real TenantProvider (simple state holder, no need to mock)
+        _tenantProvider = new TenantProvider();
 
+        // Mock HTTP context accessor
+        _httpContextAccessorMock = new Mock<IHttpContextAccessor>();
         _httpContext = new DefaultHttpContext();
         _httpContextAccessorMock.Setup(x => x.HttpContext).Returns(_httpContext);
 
+        // Use InMemoryDatabase for ApplicationDbContext (can't mock primary constructors)
+        var options = new DbContextOptionsBuilder<ApplicationDbContext>()
+            .UseInMemoryDatabase(databaseName: Guid.NewGuid().ToString()) // Unique DB per test
+            .Options;
+        _dbContext = new ApplicationDbContext(options);
+
+        // Mock cache and logger
+        _cacheMock = new Mock<IDistributedCache>();
+        _loggerMock = new Mock<ILogger<TenantService>>();
+
         _sut = new TenantService(
-            _tenantProviderMock.Object,
+            _tenantProvider,
             _httpContextAccessorMock.Object,
-            _dbContextMock.Object,
+            _dbContext,
             _cacheMock.Object,
             _loggerMock.Object);
+    }
+
+    public void Dispose()
+    {
+        _dbContext?.Dispose();
+        GC.SuppressFinalize(this);
     }
 
     [Fact]
@@ -47,8 +63,7 @@ public class TenantServiceTests
     {
         // Arrange
         var expectedTenantId = Guid.NewGuid();
-        _tenantProviderMock.Setup(x => x.HasTenantContext).Returns(true);
-        _tenantProviderMock.Setup(x => x.TenantId).Returns(expectedTenantId);
+        _tenantProvider.SetTenant(expectedTenantId);
 
         // Act
         var result = _sut.GetCurrentTenantId();
@@ -62,7 +77,6 @@ public class TenantServiceTests
     {
         // Arrange
         _httpContextAccessorMock.Setup(x => x.HttpContext).Returns((HttpContext)null!);
-        _tenantProviderMock.Setup(x => x.HasTenantContext).Returns(false);
 
         // Act
         var result = _sut.GetCurrentTenantId();
@@ -76,7 +90,6 @@ public class TenantServiceTests
     {
         // Arrange
         var expectedTenantId = Guid.NewGuid();
-        _tenantProviderMock.Setup(x => x.HasTenantContext).Returns(false);
 
         var claims = new[]
         {
@@ -91,7 +104,8 @@ public class TenantServiceTests
 
         // Assert
         result.Should().Be(expectedTenantId);
-        _tenantProviderMock.Verify(x => x.SetTenant(expectedTenantId), Times.Once);
+        _tenantProvider.TenantId.Should().Be(expectedTenantId);
+        _tenantProvider.HasTenantContext.Should().BeTrue();
     }
 
     [Fact]
@@ -99,7 +113,6 @@ public class TenantServiceTests
     {
         // Arrange
         var expectedTenantId = Guid.NewGuid();
-        _tenantProviderMock.Setup(x => x.HasTenantContext).Returns(false);
         _httpContext.Request.Headers["X-Tenant-ID"] = expectedTenantId.ToString();
 
         // Act
@@ -107,14 +120,14 @@ public class TenantServiceTests
 
         // Assert
         result.Should().Be(expectedTenantId);
-        _tenantProviderMock.Verify(x => x.SetTenant(expectedTenantId), Times.Once);
+        _tenantProvider.TenantId.Should().Be(expectedTenantId);
+        _tenantProvider.HasTenantContext.Should().BeTrue();
     }
 
     [Fact]
     public void GetCurrentTenantId_WhenNoTenantSource_ReturnsNull()
     {
-        // Arrange
-        _tenantProviderMock.Setup(x => x.HasTenantContext).Returns(false);
+        // Arrange - No tenant context set, no claims, no headers
 
         // Act
         var result = _sut.GetCurrentTenantId();
@@ -133,17 +146,21 @@ public class TenantServiceTests
         _sut.SetCurrentTenantId(tenantId);
 
         // Assert
-        _tenantProviderMock.Verify(x => x.SetTenant(tenantId), Times.Once);
+        _tenantProvider.TenantId.Should().Be(tenantId);
+        _tenantProvider.HasTenantContext.Should().BeTrue();
     }
 
     [Fact]
     public void SetCurrentTenantId_WithNull_ClearsTenantContext()
     {
+        // Arrange
+        _tenantProvider.SetTenant(Guid.NewGuid()); // Set a tenant first
+
         // Act
         _sut.SetCurrentTenantId(null);
 
         // Assert
-        _tenantProviderMock.Verify(x => x.ClearTenant(), Times.Once);
+        _tenantProvider.HasTenantContext.Should().BeFalse();
     }
 
     [Fact]
@@ -188,6 +205,7 @@ public class TenantServiceTests
         var cachedData = JsonSerializer.Serialize(tenant);
         var cachedBytes = Encoding.UTF8.GetBytes(cachedData);
 
+        // GetStringAsync is an extension method, so we need to mock the underlying GetAsync
         _cacheMock.Setup(x => x.GetAsync($"tenant:subdomain:{subdomain}", It.IsAny<CancellationToken>()))
             .ReturnsAsync(cachedBytes);
 
@@ -205,14 +223,15 @@ public class TenantServiceTests
     {
         // Arrange
         var originalTenantId = Guid.NewGuid();
-        _tenantProviderMock.Setup(x => x.HasTenantContext).Returns(true);
-        _tenantProviderMock.Setup(x => x.TenantId).Returns(originalTenantId);
+        _tenantProvider.SetTenant(originalTenantId);
 
         var operationExecuted = false;
         Func<Task<bool>> operation = async () =>
         {
             await Task.Delay(1);
             operationExecuted = true;
+            // Verify tenant context is cleared during operation
+            _tenantProvider.HasTenantContext.Should().BeFalse();
             return true;
         };
 
@@ -222,8 +241,9 @@ public class TenantServiceTests
         // Assert
         result.Should().BeTrue();
         operationExecuted.Should().BeTrue();
-        _tenantProviderMock.Verify(x => x.ClearTenant(), Times.Once);
-        _tenantProviderMock.Verify(x => x.SetTenant(originalTenantId), Times.Once);
+        // Verify tenant context is restored after operation
+        _tenantProvider.TenantId.Should().Be(originalTenantId);
+        _tenantProvider.HasTenantContext.Should().BeTrue();
     }
 
     [Fact]
@@ -231,8 +251,7 @@ public class TenantServiceTests
     {
         // Arrange
         var originalTenantId = Guid.NewGuid();
-        _tenantProviderMock.Setup(x => x.HasTenantContext).Returns(true);
-        _tenantProviderMock.Setup(x => x.TenantId).Returns(originalTenantId);
+        _tenantProvider.SetTenant(originalTenantId);
 
         Func<Task<bool>> operation = () => throw new InvalidOperationException("Test exception");
 
@@ -240,7 +259,9 @@ public class TenantServiceTests
         await Assert.ThrowsAsync<InvalidOperationException>(
             async () => await _sut.BypassTenantFilterAsync(operation));
 
-        _tenantProviderMock.Verify(x => x.SetTenant(originalTenantId), Times.Once);
+        // Verify tenant context is restored even after exception
+        _tenantProvider.TenantId.Should().Be(originalTenantId);
+        _tenantProvider.HasTenantContext.Should().BeTrue();
     }
 
     [Fact]
