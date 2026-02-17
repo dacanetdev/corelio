@@ -270,6 +270,10 @@ dotnet_naming_style.camel_case_with_underscore.capitalization = camel_case
 # Allow underscores in test method names (BDD/AAA naming convention)
 dotnet_diagnostic.CA1707.severity = none
 
+[tests/**/*.cs]
+# Allow underscores in test method names (BDD/AAA naming convention)
+dotnet_diagnostic.CA1707.severity = none
+
 # EF Core Migrations
 [**/Migrations/*.cs]
 # Migrations are auto-generated code, suppress style warnings
