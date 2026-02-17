@@ -1,4 +1,6 @@
 using System.Globalization;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 using Corelio.BlazorApp.Components;
 using Corelio.BlazorApp.Services;
 using Corelio.BlazorApp.Services.Authentication;
@@ -11,6 +13,16 @@ using Microsoft.AspNetCore.Localization;
 using MudBlazor.Services;
 
 var builder = WebApplication.CreateBuilder(args);
+
+// Configure JSON serialization options for HttpClient
+builder.Services.ConfigureHttpJsonOptions(options =>
+{
+    // Convert enums to/from strings (e.g., "PCS" instead of 0)
+    options.SerializerOptions.Converters.Add(new JsonStringEnumConverter(JsonNamingPolicy.CamelCase));
+
+    // Case-insensitive property matching
+    options.SerializerOptions.PropertyNameCaseInsensitive = true;
+});
 
 // Add MudBlazor services
 builder.Services.AddMudServices();

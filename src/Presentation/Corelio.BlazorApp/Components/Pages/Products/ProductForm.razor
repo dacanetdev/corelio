@@ -1,6 +1,7 @@
 @page "/products/new"
 @page "/products/{Id:guid}"
 @using System.Globalization
+@using Corelio.Domain.Enums
 @using Corelio.BlazorApp.Components.Shared
 @inject IProductService ProductService
 @inject IPricingService PricingService
@@ -156,13 +157,14 @@
                                         <MudSelect @bind-Value="_product.UnitOfMeasure"
                                                    Label="@L["UnitOfMeasure"]"
                                                    Variant="Variant.Outlined"
-                                                   Required="true">
-                                            <MudSelectItem Value="@("PCS")">@L["UnitPieces"]</MudSelectItem>
-                                            <MudSelectItem Value="@("KG")">@L["UnitKilograms"]</MudSelectItem>
-                                            <MudSelectItem Value="@("M")">@L["UnitMeters"]</MudSelectItem>
-                                            <MudSelectItem Value="@("L")">@L["UnitLiters"]</MudSelectItem>
-                                            <MudSelectItem Value="@("BOX")">@L["UnitBoxes"]</MudSelectItem>
-                                            <MudSelectItem Value="@("PACK")">@L["UnitPacks"]</MudSelectItem>
+                                                   Required="true"
+                                                   T="UnitOfMeasure">
+                                            <MudSelectItem T="UnitOfMeasure" Value="@UnitOfMeasure.PCS">@L["UnitPieces"]</MudSelectItem>
+                                            <MudSelectItem T="UnitOfMeasure" Value="@UnitOfMeasure.KG">@L["UnitKilograms"]</MudSelectItem>
+                                            <MudSelectItem T="UnitOfMeasure" Value="@UnitOfMeasure.M">@L["UnitMeters"]</MudSelectItem>
+                                            <MudSelectItem T="UnitOfMeasure" Value="@UnitOfMeasure.L">@L["UnitLiters"]</MudSelectItem>
+                                            <MudSelectItem T="UnitOfMeasure" Value="@UnitOfMeasure.BOX">@L["UnitBoxes"]</MudSelectItem>
+                                            <MudSelectItem T="UnitOfMeasure" Value="@UnitOfMeasure.PACK">@L["UnitPacks"]</MudSelectItem>
                                         </MudSelect>
                                     </MudItem>
 

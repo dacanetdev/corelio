@@ -1,4 +1,5 @@
-using Corelio.Application.Contracts.Products;
+using Corelio.Application.Products.Common;
+using Corelio.Application.ProductCategories.Common;
 using Corelio.BlazorApp.Models.Common;
 
 namespace Corelio.BlazorApp.Services.Products;

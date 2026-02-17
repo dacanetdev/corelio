@@ -1,33 +1,33 @@
 using Corelio.Domain.Enums;
 
-namespace Corelio.Application.Contracts.Products;
+namespace Corelio.Application.Products.Common;
 
 /// <summary>
-/// Full product DTO for detail views.
+/// Request model for updating an existing product.
 /// </summary>
-public class ProductDto
+public class UpdateProductRequest
 {
+    // Identifier
     public Guid Id { get; set; }
-    public Guid TenantId { get; set; }
 
-    // Product Identification
+    // Required Fields
     public string Sku { get; set; } = string.Empty;
-    public string? Barcode { get; set; }
-    public BarcodeType BarcodeType { get; set; }
     public string Name { get; set; } = string.Empty;
+    public decimal SalePrice { get; set; }
+    public UnitOfMeasure UnitOfMeasure { get; set; } = UnitOfMeasure.PCS;
+    public Guid? CategoryId { get; set; }
+    public string? Barcode { get; set; }
+    public BarcodeType BarcodeType { get; set; } = BarcodeType.EAN13;
+
+    // Product Identification (Optional)
     public string? Description { get; set; }
     public string? ShortDescription { get; set; }
-
-    // Categorization
-    public Guid? CategoryId { get; set; }
-    public string? CategoryName { get; set; }
     public string? Brand { get; set; }
     public string? Manufacturer { get; set; }
     public string? ModelNumber { get; set; }
 
     // Pricing
     public decimal CostPrice { get; set; }
-    public decimal SalePrice { get; set; }
     public decimal? WholesalePrice { get; set; }
     public decimal? Msrp { get; set; }
 
@@ -37,7 +37,6 @@ public class ProductDto
 
     // Inventory Management
     public bool TrackInventory { get; set; }
-    public UnitOfMeasure UnitOfMeasure { get; set; }
     public decimal MinStockLevel { get; set; }
     public decimal? MaxStockLevel { get; set; }
     public decimal? ReorderPoint { get; set; }
@@ -48,12 +47,14 @@ public class ProductDto
     public decimal? LengthCm { get; set; }
     public decimal? WidthCm { get; set; }
     public decimal? HeightCm { get; set; }
-    public decimal? VolumeCm3 { get; set; }
 
     // CFDI / SAT Compliance
     public string? SatProductCode { get; set; }
     public string? SatUnitCode { get; set; }
     public string? SatHazardousMaterial { get; set; }
+
+    // Physical Properties (continued)
+    public decimal? VolumeCm3 { get; set; }
 
     // Images and Media
     public string? PrimaryImageUrl { get; set; }
@@ -68,19 +69,9 @@ public class ProductDto
     public bool IsActive { get; set; }
     public bool IsFeatured { get; set; }
 
-    // SEO (future feature - not yet supported in commands)
+    // SEO (Optional)
     public string? Slug { get; set; }
     public string? MetaTitle { get; set; }
     public string? MetaDescription { get; set; }
     public string? MetaKeywords { get; set; }
-
-    // Calculated Properties
-    public decimal ProfitMargin { get; set; }
-    public decimal MarkupPercentage { get; set; }
-
-    // Audit Properties
-    public DateTime CreatedAt { get; set; }
-    public DateTime? UpdatedAt { get; set; }
-    public Guid? CreatedBy { get; set; }
-    public Guid? UpdatedBy { get; set; }
 }
