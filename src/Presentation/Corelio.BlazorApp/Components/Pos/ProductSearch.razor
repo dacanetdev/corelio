@@ -1,0 +1,144 @@
+@using Corelio.BlazorApp.Models.Pos
+@using Corelio.BlazorApp.Resources
+@using Corelio.BlazorApp.Services.Pos
+@using Microsoft.Extensions.Localization
+@inject IPosService PosService
+@inject IStringLocalizer<SharedResource> L
+
+<div class="product-search-container">
+    <MudTextField @bind-Value="_searchTerm"
+                  Placeholder="@L["SearchPlaceholder"]"
+                  Adornment="Adornment.Start"
+                  AdornmentIcon="@Icons.Material.Rounded.Search"
+                  Immediate="true"
+                  DebounceInterval="300"
+                  OnDebounceIntervalElapsed="SearchProducts"
+                  Variant="Variant.Outlined"
+                  Clearable="true"
+                  OnClearButtonClick="ClearSearch"
+                  Class="mb-3" />
+
+    @if (_searching)
+    {
+        <MudProgressLinear Indeterminate="true" Color="Color.Primary" Class="mb-2" />
+    }
+
+    <div class="product-results">
+        @if (_products.Count == 0 && !string.IsNullOrWhiteSpace(_searchTerm) && !_searching)
+        {
+            <div class="text-center pa-4">
+                <MudIcon Icon="@Icons.Material.Rounded.SearchOff" Color="Color.Secondary" />
+                <MudText Color="Color.Secondary" Typo="Typo.body2">@L["NoProductsFoundPos"]</MudText>
+            </div>
+        }
+        else
+        {
+            @foreach (var product in _products)
+            {
+                <MudPaper Elevation="0"
+                          Class="product-result-item"
+                          @onclick="@(() => SelectProduct(product))">
+                    <div class="product-result-main">
+                        <MudText Typo="Typo.body1" Class="fw-medium">@product.Name</MudText>
+                        <MudText Typo="Typo.caption" Color="Color.Secondary">SKU: @product.Sku</MudText>
+                    </div>
+                    <div class="product-result-meta">
+                        <MudText Typo="Typo.body1" Color="Color.Primary" Class="fw-bold">
+                            @product.SalePrice.ToString("C", System.Globalization.CultureInfo.GetCultureInfo("es-MX"))
+                        </MudText>
+                        <MudChip T="string" Size="Size.Small"
+                                 Color="@(product.Stock > 5 ? Color.Success : product.Stock > 0 ? Color.Warning : Color.Error)">
+                            @L["StockLevel"]: @product.Stock
+                        </MudChip>
+                    </div>
+                </MudPaper>
+            }
+        }
+    </div>
+</div>
+
+<style>
+    .product-search-container {
+        display: flex;
+        flex-direction: column;
+        height: 100%;
+        overflow: hidden;
+    }
+
+    .product-results {
+        flex: 1;
+        overflow-y: auto;
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+    }
+
+    .product-result-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 10px 12px;
+        border: 1px solid var(--mud-palette-lines-default);
+        border-radius: 6px;
+        cursor: pointer;
+        transition: background-color 0.15s ease;
+    }
+
+    .product-result-item:hover {
+        background-color: var(--mud-palette-action-hover);
+    }
+
+    .product-result-main {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .product-result-meta {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-end;
+        gap: 4px;
+    }
+</style>
+
+@code {
+    [Parameter] public EventCallback<PosProductModel> OnProductSelected { get; set; }
+
+    private string _searchTerm = string.Empty;
+    private List<PosProductModel> _products = [];
+    private bool _searching;
+
+    private async Task SearchProducts()
+    {
+        if (string.IsNullOrWhiteSpace(_searchTerm))
+        {
+            _products.Clear();
+            return;
+        }
+
+        _searching = true;
+        var result = await PosService.SearchProductsAsync(_searchTerm);
+
+        if (result.IsSuccess && result.Value is not null)
+        {
+            _products = result.Value.ToList();
+        }
+        else
+        {
+            _products.Clear();
+        }
+
+        _searching = false;
+    }
+
+    private async Task SelectProduct(PosProductModel product)
+    {
+        await OnProductSelected.InvokeAsync(product);
+    }
+
+    private void ClearSearch()
+    {
+        _searchTerm = string.Empty;
+        _products.Clear();
+    }
+}

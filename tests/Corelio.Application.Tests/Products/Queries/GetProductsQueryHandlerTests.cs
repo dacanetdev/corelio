@@ -75,7 +75,7 @@ public class GetProductsQueryHandlerTests
 
         // Assert
         result.IsSuccess.Should().BeTrue();
-        result.Value.PageNumber.Should().Be(2);
+        result.Value!.PageNumber.Should().Be(2);
         result.Value.PageSize.Should().Be(10);
         result.Value.TotalCount.Should().Be(25);
         result.Value.TotalPages.Should().Be(3);
@@ -103,7 +103,7 @@ public class GetProductsQueryHandlerTests
 
         // Assert
         result.IsSuccess.Should().BeTrue();
-        result.Value.Items.Should().HaveCount(2);
+        result.Value!.Items.Should().HaveCount(2);
         _productRepositoryMock.Verify(x => x.GetPagedAsync(
             1, 20, "hammer", null, null, It.IsAny<CancellationToken>()), Times.Once);
     }
@@ -207,7 +207,7 @@ public class GetProductsQueryHandlerTests
 
         // Assert
         result.IsSuccess.Should().BeTrue();
-        result.Value.Items.Should().BeEmpty();
+        result.Value!.Items.Should().BeEmpty();
         result.Value.TotalCount.Should().Be(0);
         result.Value.TotalPages.Should().Be(0);
         result.Value.HasPreviousPage.Should().BeFalse();
@@ -234,7 +234,7 @@ public class GetProductsQueryHandlerTests
 
         // Assert
         result.IsSuccess.Should().BeTrue();
-        result.Value.PageNumber.Should().Be(2);
+        result.Value!.PageNumber.Should().Be(2);
         result.Value.PageSize.Should().Be(10);
         result.Value.TotalCount.Should().Be(35);
         result.Value.TotalPages.Should().Be(4); // 35 / 10 = 3.5, ceiling = 4
@@ -259,7 +259,7 @@ public class GetProductsQueryHandlerTests
             .ToList();
     }
 
-    private List<ProductListDto> CreateProductListDtos(int count)
+    private static List<ProductListDto> CreateProductListDtos(int count)
     {
         return Enumerable.Range(1, count)
             .Select(i => new ProductListDto(

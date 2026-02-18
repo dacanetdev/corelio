@@ -186,7 +186,9 @@ public class UpdateProductPricingCommandHandlerTests
             {
                 // Capture state after handler mutates it (before second call)
                 if (capturedProduct is null)
+                {
                     capturedProduct = product;
+                }
             });
 
         _configRepositoryMock
