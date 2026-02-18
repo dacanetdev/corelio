@@ -3,6 +3,8 @@
   <PropertyGroup>
     <RootNamespace>Corelio.BlazorApp</RootNamespace>
     <AssemblyName>Corelio.BlazorApp</AssemblyName>
+    <!-- CA1848: LoggerMessage delegates - acceptable for MVP Blazor services -->
+    <NoWarn>$(NoWarn);CA1848</NoWarn>
   </PropertyGroup>
 
   <ItemGroup>

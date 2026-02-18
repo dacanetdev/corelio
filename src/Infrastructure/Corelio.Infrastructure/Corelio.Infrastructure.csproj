@@ -4,7 +4,8 @@
     <RootNamespace>Corelio.Infrastructure</RootNamespace>
     <AssemblyName>Corelio.Infrastructure</AssemblyName>
     <!-- Suppress code analysis warnings temporarily for MVP -->
-    <NoWarn>$(NoWarn);CA1848;CA1822;CA1862;IDE0011</NoWarn>
+    <!-- CA1304/CA1311: ToLower() in EF Core LINQ expressions is translated to SQL lower(), locale doesn't apply -->
+    <NoWarn>$(NoWarn);CA1848;CA1822;CA1862;IDE0011;CA1304;CA1311</NoWarn>
   </PropertyGroup>
 
   <ItemGroup>

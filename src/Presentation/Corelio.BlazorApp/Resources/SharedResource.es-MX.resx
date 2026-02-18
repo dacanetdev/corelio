@@ -864,4 +864,226 @@
   <data name="HideTechnicalDetails" xml:space="preserve">
     <value>Ocultar detalles técnicos</value>
   </data>
+
+  <!-- Customer Management -->
+  <data name="Customers" xml:space="preserve">
+    <value>Clientes</value>
+  </data>
+  <data name="CustomerList" xml:space="preserve">
+    <value>Lista de Clientes</value>
+  </data>
+  <data name="CustomerListDescription" xml:space="preserve">
+    <value>Gestiona tu cartera de clientes</value>
+  </data>
+  <data name="AddCustomer" xml:space="preserve">
+    <value>Agregar Cliente</value>
+  </data>
+  <data name="EditCustomer" xml:space="preserve">
+    <value>Editar Cliente</value>
+  </data>
+  <data name="DeleteCustomer" xml:space="preserve">
+    <value>Eliminar Cliente</value>
+  </data>
+  <data name="NewCustomer" xml:space="preserve">
+    <value>Nuevo Cliente</value>
+  </data>
+  <data name="CustomerType" xml:space="preserve">
+    <value>Tipo de Cliente</value>
+  </data>
+  <data name="Individual" xml:space="preserve">
+    <value>Persona Física</value>
+  </data>
+  <data name="Business" xml:space="preserve">
+    <value>Persona Moral</value>
+  </data>
+  <data name="CustomerName" xml:space="preserve">
+    <value>Nombre del Cliente</value>
+  </data>
+  <data name="BusinessName" xml:space="preserve">
+    <value>Razón Social</value>
+  </data>
+  <data name="RFC" xml:space="preserve">
+    <value>RFC</value>
+  </data>
+  <data name="CURP" xml:space="preserve">
+    <value>CURP</value>
+  </data>
+  <data name="TaxRegime" xml:space="preserve">
+    <value>Régimen Fiscal</value>
+  </data>
+  <data name="CfdiUse" xml:space="preserve">
+    <value>Uso CFDI</value>
+  </data>
+  <data name="Phone" xml:space="preserve">
+    <value>Teléfono</value>
+  </data>
+  <data name="PreferredPaymentMethod" xml:space="preserve">
+    <value>Método de Pago Preferido</value>
+  </data>
+  <data name="NoCustomersFound" xml:space="preserve">
+    <value>No se encontraron clientes</value>
+  </data>
+  <data name="NoCustomersDescription" xml:space="preserve">
+    <value>Comienza agregando tu primer cliente</value>
+  </data>
+  <data name="CustomerCreatedSuccessfully" xml:space="preserve">
+    <value>Cliente creado exitosamente</value>
+  </data>
+  <data name="CustomerUpdatedSuccessfully" xml:space="preserve">
+    <value>Cliente actualizado exitosamente</value>
+  </data>
+  <data name="CustomerDeletedSuccessfully" xml:space="preserve">
+    <value>Cliente eliminado exitosamente</value>
+  </data>
+  <data name="DeleteCustomerConfirmation" xml:space="preserve">
+    <value>¿Estás seguro de que deseas eliminar este cliente?</value>
+  </data>
+  <data name="ErrorLoadingCustomers" xml:space="preserve">
+    <value>Error al cargar los clientes</value>
+  </data>
+  <data name="ErrorCreatingCustomer" xml:space="preserve">
+    <value>Error al crear el cliente</value>
+  </data>
+  <data name="ErrorUpdatingCustomer" xml:space="preserve">
+    <value>Error al actualizar el cliente</value>
+  </data>
+  <data name="ErrorDeletingCustomer" xml:space="preserve">
+    <value>Error al eliminar el cliente</value>
+  </data>
+  <data name="SearchCustomers" xml:space="preserve">
+    <value>Buscar Clientes</value>
+  </data>
+  <data name="SelectCustomer" xml:space="preserve">
+    <value>Seleccionar Cliente</value>
+  </data>
+  <data name="CustomerOptional" xml:space="preserve">
+    <value>Cliente (opcional)</value>
+  </data>
+  <data name="WalkInCustomer" xml:space="preserve">
+    <value>Cliente de mostrador</value>
+  </data>
+
+  <!-- Point of Sale -->
+  <data name="Pos" xml:space="preserve">
+    <value>Punto de Venta</value>
+  </data>
+  <data name="PosDescription" xml:space="preserve">
+    <value>Registra ventas rápidamente</value>
+  </data>
+  <data name="ProductSearch" xml:space="preserve">
+    <value>Buscar Producto</value>
+  </data>
+  <data name="SearchPlaceholder" xml:space="preserve">
+    <value>Buscar por nombre, SKU o código de barras...</value>
+  </data>
+  <data name="AddToCart" xml:space="preserve">
+    <value>Agregar al Carrito</value>
+  </data>
+  <data name="Cart" xml:space="preserve">
+    <value>Carrito</value>
+  </data>
+  <data name="EmptyCart" xml:space="preserve">
+    <value>El carrito está vacío</value>
+  </data>
+  <data name="EmptyCartDescription" xml:space="preserve">
+    <value>Busca un producto para comenzar</value>
+  </data>
+  <data name="ClearCart" xml:space="preserve">
+    <value>Limpiar Carrito</value>
+  </data>
+  <data name="Quantity" xml:space="preserve">
+    <value>Cantidad</value>
+  </data>
+  <data name="UnitPrice" xml:space="preserve">
+    <value>Precio Unitario</value>
+  </data>
+  <data name="Discount" xml:space="preserve">
+    <value>Descuento</value>
+  </data>
+  <data name="LineTotal" xml:space="preserve">
+    <value>Total Línea</value>
+  </data>
+  <data name="SubTotal" xml:space="preserve">
+    <value>Subtotal</value>
+  </data>
+  <data name="Tax" xml:space="preserve">
+    <value>IVA</value>
+  </data>
+  <data name="Total" xml:space="preserve">
+    <value>Total</value>
+  </data>
+  <data name="Payment" xml:space="preserve">
+    <value>Pago</value>
+  </data>
+  <data name="PaymentMethod" xml:space="preserve">
+    <value>Método de Pago</value>
+  </data>
+  <data name="Cash" xml:space="preserve">
+    <value>Efectivo</value>
+  </data>
+  <data name="Card" xml:space="preserve">
+    <value>Tarjeta</value>
+  </data>
+  <data name="Transfer" xml:space="preserve">
+    <value>Transferencia</value>
+  </data>
+  <data name="Check" xml:space="preserve">
+    <value>Cheque</value>
+  </data>
+  <data name="AmountReceived" xml:space="preserve">
+    <value>Monto Recibido</value>
+  </data>
+  <data name="Change" xml:space="preserve">
+    <value>Cambio</value>
+  </data>
+  <data name="CompleteSale" xml:space="preserve">
+    <value>Completar Venta</value>
+  </data>
+  <data name="CancelSale" xml:space="preserve">
+    <value>Cancelar Venta</value>
+  </data>
+  <data name="SaleCompleted" xml:space="preserve">
+    <value>¡Venta completada exitosamente!</value>
+  </data>
+  <data name="SaleCompletedFolio" xml:space="preserve">
+    <value>Folio</value>
+  </data>
+  <data name="SaleError" xml:space="preserve">
+    <value>Error al procesar la venta</value>
+  </data>
+  <data name="StockLevel" xml:space="preserve">
+    <value>Stock</value>
+  </data>
+  <data name="NoProductsFoundPos" xml:space="preserve">
+    <value>No se encontraron productos</value>
+  </data>
+  <data name="AddPayment" xml:space="preserve">
+    <value>Agregar Pago</value>
+  </data>
+  <data name="RemovePayment" xml:space="preserve">
+    <value>Quitar</value>
+  </data>
+  <data name="PaymentReference" xml:space="preserve">
+    <value>Referencia (opcional)</value>
+  </data>
+  <data name="TotalPaid" xml:space="preserve">
+    <value>Total Pagado</value>
+  </data>
+  <data name="Pending" xml:space="preserve">
+    <value>Pendiente</value>
+  </data>
+  <data name="NewSale" xml:space="preserve">
+    <value>Nueva Venta</value>
+  </data>
+  <data name="Folio" xml:space="preserve">
+    <value>Folio</value>
+  </data>
+  <data name="SaleDate" xml:space="preserve">
+    <value>Fecha de Venta</value>
+  </data>
+
+  <!-- Sales Section NavMenu -->
+  <data name="Sales" xml:space="preserve">
+    <value>Ventas</value>
+  </data>
 </root>

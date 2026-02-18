@@ -18,6 +18,9 @@ public static class EndpointExtensions
         app.MapProductEndpoints();
         app.MapProductCategoryEndpoints();
         app.MapPricingEndpoints();
+        app.MapCustomerEndpoints();
+        app.MapPosEndpoints();
+        app.MapSaleEndpoints();
 
         return app;
     }

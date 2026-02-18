@@ -1,0 +1,259 @@
+@using Corelio.BlazorApp.Models.Pos
+@using Corelio.BlazorApp.Resources
+@using Corelio.BlazorApp.Services.Pos
+@using Corelio.Domain.Enums
+@using Microsoft.Extensions.Localization
+@inject IPosService PosService
+@inject IStringLocalizer<SharedResource> L
+@inject ISnackbar Snackbar
+
+<div class="payment-container">
+    @if (Cart.IsEmpty)
+    {
+        <div class="payment-empty">
+            <MudText Color="Color.Secondary" Typo="Typo.body2" Class="text-center">
+                @L["EmptyCartDescription"]
+            </MudText>
+        </div>
+    }
+    else
+    {
+        <!-- Sale Total Summary -->
+        <MudPaper Elevation="0" Class="payment-summary mb-4">
+            <MudStack Row="true" Justify="Justify.SpaceBetween" AlignItems="AlignItems.Center">
+                <MudText Typo="Typo.body1">@L["Total"] a pagar:</MudText>
+                <MudText Typo="Typo.h5" Color="Color.Primary" Class="fw-bold">
+                    @Cart.Total.ToString("C", System.Globalization.CultureInfo.GetCultureInfo("es-MX"))
+                </MudText>
+            </MudStack>
+        </MudPaper>
+
+        <!-- Payment Entries -->
+        <div class="payment-entries">
+            @for (int i = 0; i < _payments.Count; i++)
+            {
+                var idx = i;
+                <MudPaper Elevation="0" Class="payment-entry mb-2">
+                    <MudGrid Spacing="1">
+                        <MudItem xs="5">
+                            <MudSelect T="PaymentMethod"
+                                       Value="_payments[idx].Method"
+                                       ValueChanged="@(v => _payments[idx].Method = v)"
+                                       Dense="true" Margin="Margin.Dense">
+                                <MudSelectItem Value="PaymentMethod.Cash">@L["Cash"]</MudSelectItem>
+                                <MudSelectItem Value="PaymentMethod.Card">@L["Card"]</MudSelectItem>
+                                <MudSelectItem Value="PaymentMethod.Transfer">@L["Transfer"]</MudSelectItem>
+                                <MudSelectItem Value="PaymentMethod.Check">@L["Check"]</MudSelectItem>
+                            </MudSelect>
+                        </MudItem>
+                        <MudItem xs="5">
+                            <MudNumericField T="decimal"
+                                             Value="_payments[idx].Amount"
+                                             ValueChanged="@(v => OnPaymentAmountChanged(idx, v))"
+                                             Label="@L["AmountReceived"]"
+                                             Min="0"
+                                             Format="F2"
+                                             Margin="Margin.Dense" />
+                        </MudItem>
+                        <MudItem xs="2">
+                            @if (_payments.Count > 1)
+                            {
+                                <MudIconButton Icon="@Icons.Material.Rounded.Remove"
+                                               Size="Size.Small"
+                                               Color="Color.Error"
+                                               OnClick="@(() => RemovePayment(idx))" />
+                            }
+                        </MudItem>
+                    </MudGrid>
+
+                    @if (_payments[idx].Method == PaymentMethod.Card ||
+                         _payments[idx].Method == PaymentMethod.Transfer)
+                    {
+                        <MudTextField @bind-Value="_payments[idx].Reference"
+                                      Label="@L["PaymentReference"]"
+                                      Margin="Margin.Dense"
+                                      Class="mt-1" />
+                    }
+
+                    @if (_payments[idx].Method == PaymentMethod.Cash && _payments[idx].Amount > Cart.Total)
+                    {
+                        <MudStack Row="true" Justify="Justify.SpaceBetween" Class="mt-1">
+                            <MudText Typo="Typo.caption" Color="Color.Secondary">@L["Change"]:</MudText>
+                            <MudText Typo="Typo.caption" Color="Color.Success" Class="fw-bold">
+                                @((_payments[idx].Amount - Cart.Total).ToString("C", System.Globalization.CultureInfo.GetCultureInfo("es-MX")))
+                            </MudText>
+                        </MudStack>
+                    }
+                </MudPaper>
+            }
+        </div>
+
+        <MudButton Variant="Variant.Text"
+                   StartIcon="@Icons.Material.Rounded.Add"
+                   Size="Size.Small"
+                   OnClick="AddPayment"
+                   Class="mb-3">
+            @L["AddPayment"]
+        </MudButton>
+
+        <!-- Payment Summary -->
+        <MudPaper Elevation="0" Class="payment-totals mb-4">
+            <MudStack Row="true" Justify="Justify.SpaceBetween">
+                <MudText Typo="Typo.body2">@L["TotalPaid"]:</MudText>
+                <MudText Typo="Typo.body2" Color="@(TotalPaid >= Cart.Total ? Color.Success : Color.Warning)" Class="fw-bold">
+                    @TotalPaid.ToString("C", System.Globalization.CultureInfo.GetCultureInfo("es-MX"))
+                </MudText>
+            </MudStack>
+            @if (TotalPaid < Cart.Total)
+            {
+                <MudStack Row="true" Justify="Justify.SpaceBetween">
+                    <MudText Typo="Typo.body2">@L["Pending"]:</MudText>
+                    <MudText Typo="Typo.body2" Color="Color.Error" Class="fw-bold">
+                        @((Cart.Total - TotalPaid).ToString("C", System.Globalization.CultureInfo.GetCultureInfo("es-MX")))
+                    </MudText>
+                </MudStack>
+            }
+        </MudPaper>
+
+        <!-- Action Buttons -->
+        <MudButton Variant="Variant.Filled"
+                   Color="Color.Primary"
+                   FullWidth="true"
+                   Size="Size.Large"
+                   StartIcon="@Icons.Material.Rounded.CheckCircle"
+                   OnClick="CompleteSale"
+                   Disabled="@(_processing || Cart.IsEmpty || TotalPaid < Cart.Total)"
+                   Class="mb-2">
+            @if (_processing)
+            {
+                <MudProgressCircular Size="Size.Small" Indeterminate="true" Class="mr-2" />
+                <span>@L["Saving"]</span>
+            }
+            else
+            {
+                @L["CompleteSale"]
+            }
+        </MudButton>
+
+        <MudButton Variant="Variant.Text"
+                   Color="Color.Default"
+                   FullWidth="true"
+                   StartIcon="@Icons.Material.Rounded.Cancel"
+                   OnClick="CancelSale"
+                   Disabled="_processing">
+            @L["CancelSale"]
+        </MudButton>
+    }
+</div>
+
+<style>
+    .payment-container {
+        display: flex;
+        flex-direction: column;
+        height: 100%;
+        overflow-y: auto;
+    }
+
+    .payment-empty {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        height: 100%;
+    }
+
+    .payment-summary {
+        background: var(--mud-palette-background-grey);
+        border-radius: 6px;
+        padding: 12px;
+    }
+
+    .payment-entries {
+        flex: 1;
+    }
+
+    .payment-entry {
+        border: 1px solid var(--mud-palette-lines-default);
+        border-radius: 6px;
+        padding: 10px;
+    }
+
+    .payment-totals {
+        background: var(--mud-palette-background-grey);
+        border-radius: 6px;
+        padding: 10px 12px;
+    }
+</style>
+
+@code {
+    [Parameter] public CartState Cart { get; set; } = new();
+    [Parameter] public EventCallback<SaleModel> OnSaleCompleted { get; set; }
+    [Parameter] public EventCallback OnSaleCancelled { get; set; }
+
+    private List<PaymentRequestModel> _payments = [new() { Method = PaymentMethod.Cash, Amount = 0 }];
+    private bool _processing;
+
+    private decimal TotalPaid => _payments.Sum(p => p.Amount);
+
+    private void AddPayment()
+    {
+        _payments.Add(new PaymentRequestModel { Method = PaymentMethod.Cash, Amount = 0 });
+    }
+
+    private void RemovePayment(int index)
+    {
+        _payments.RemoveAt(index);
+    }
+
+    private void OnPaymentAmountChanged(int index, decimal value)
+    {
+        _payments[index].Amount = value;
+    }
+
+    private async Task CompleteSale()
+    {
+        if (Cart.IsEmpty || _processing) { return; }
+
+        _processing = true;
+
+        // Create the sale first
+        var createRequest = new CreateSaleRequestModel
+        {
+            Items = Cart.Items.Select(i => new CartItemRequestModel
+            {
+                ProductId = i.ProductId,
+                Quantity = i.Quantity,
+                UnitPrice = i.UnitPrice,
+                DiscountPercentage = i.DiscountPercentage
+            }).ToList()
+        };
+
+        var createResult = await PosService.CreateSaleAsync(createRequest);
+        if (!createResult.IsSuccess)
+        {
+            Snackbar.Add(createResult.Error ?? L["SaleError"], Severity.Error);
+            _processing = false;
+            return;
+        }
+
+        // Complete the sale with payments
+        var completeResult = await PosService.CompleteSaleAsync(createResult.Value, _payments);
+        if (completeResult.IsSuccess && completeResult.Value is not null)
+        {
+            Cart.Clear();
+            _payments = [new() { Method = PaymentMethod.Cash, Amount = 0 }];
+            await OnSaleCompleted.InvokeAsync(completeResult.Value);
+        }
+        else
+        {
+            Snackbar.Add(completeResult.Error ?? L["SaleError"], Severity.Error);
+        }
+
+        _processing = false;
+    }
+
+    private async Task CancelSale()
+    {
+        await OnSaleCancelled.InvokeAsync();
+        _payments = [new() { Method = PaymentMethod.Cash, Amount = 0 }];
+    }
+}

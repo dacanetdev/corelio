@@ -1,0 +1,188 @@
+@using Corelio.BlazorApp.Models.Pos
+@using Corelio.BlazorApp.Resources
+@using Microsoft.Extensions.Localization
+@inject IStringLocalizer<SharedResource> L
+
+<div class="cart-container">
+    @if (Cart.IsEmpty)
+    {
+        <div class="cart-empty">
+            <MudIcon Icon="@Icons.Material.Rounded.ShoppingCartCheckout"
+                     Color="Color.Secondary" Style="font-size: 3rem;" />
+            <MudText Color="Color.Secondary" Typo="Typo.body1" Class="mt-2">@L["EmptyCart"]</MudText>
+            <MudText Color="Color.Secondary" Typo="Typo.body2">@L["EmptyCartDescription"]</MudText>
+        </div>
+    }
+    else
+    {
+        <!-- Cart Items -->
+        <div class="cart-items">
+            @foreach (var item in Cart.Items)
+            {
+                <MudPaper Elevation="0" Class="cart-item">
+                    <div class="cart-item-info">
+                        <MudText Typo="Typo.body2" Class="fw-medium">@item.ProductName</MudText>
+                        <MudText Typo="Typo.caption" Color="Color.Secondary">@item.ProductSku</MudText>
+                    </div>
+                    <div class="cart-item-controls">
+                        <MudIconButton Icon="@Icons.Material.Rounded.Remove"
+                                       Size="Size.Small"
+                                       OnClick="@(() => DecrementQty(item))" />
+                        <MudText Class="cart-qty">@item.Quantity</MudText>
+                        <MudIconButton Icon="@Icons.Material.Rounded.Add"
+                                       Size="Size.Small"
+                                       OnClick="@(() => IncrementQty(item))" />
+                    </div>
+                    <div class="cart-item-price">
+                        <MudText Typo="Typo.body2" Class="fw-bold">
+                            @item.LineTotal.ToString("C", System.Globalization.CultureInfo.GetCultureInfo("es-MX"))
+                        </MudText>
+                        <MudText Typo="Typo.caption" Color="Color.Secondary">
+                            @item.UnitPrice.ToString("C", System.Globalization.CultureInfo.GetCultureInfo("es-MX")) c/u
+                        </MudText>
+                    </div>
+                    <MudIconButton Icon="@Icons.Material.Rounded.DeleteOutline"
+                                   Size="Size.Small"
+                                   Color="Color.Error"
+                                   OnClick="@(() => RemoveItem(item))" />
+                </MudPaper>
+            }
+        </div>
+
+        <!-- Cart Footer Totals -->
+        <div class="cart-footer">
+            <MudDivider Class="mb-2" />
+            <MudStack Spacing="1">
+                <MudStack Row="true" Justify="Justify.SpaceBetween">
+                    <MudText Typo="Typo.body2" Color="Color.Secondary">@L["SubTotal"]</MudText>
+                    <MudText Typo="Typo.body2">
+                        @Cart.SubTotal.ToString("C", System.Globalization.CultureInfo.GetCultureInfo("es-MX"))
+                    </MudText>
+                </MudStack>
+                @if (Cart.TaxAmount > 0)
+                {
+                    <MudStack Row="true" Justify="Justify.SpaceBetween">
+                        <MudText Typo="Typo.body2" Color="Color.Secondary">@L["Tax"] (16%)</MudText>
+                        <MudText Typo="Typo.body2">
+                            @Cart.TaxAmount.ToString("C", System.Globalization.CultureInfo.GetCultureInfo("es-MX"))
+                        </MudText>
+                    </MudStack>
+                }
+                <MudStack Row="true" Justify="Justify.SpaceBetween">
+                    <MudText Typo="Typo.h6">@L["Total"]</MudText>
+                    <MudText Typo="Typo.h6" Color="Color.Primary" Class="fw-bold">
+                        @Cart.Total.ToString("C", System.Globalization.CultureInfo.GetCultureInfo("es-MX"))
+                    </MudText>
+                </MudStack>
+            </MudStack>
+            <MudButton Variant="Variant.Text" Color="Color.Default"
+                       StartIcon="@Icons.Material.Rounded.DeleteSweep"
+                       OnClick="ClearCart"
+                       Size="Size.Small"
+                       Class="mt-2">
+                @L["ClearCart"]
+            </MudButton>
+        </div>
+    }
+</div>
+
+<style>
+    .cart-container {
+        display: flex;
+        flex-direction: column;
+        height: 100%;
+        overflow: hidden;
+    }
+
+    .cart-empty {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        height: 100%;
+        text-align: center;
+    }
+
+    .cart-items {
+        flex: 1;
+        overflow-y: auto;
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+        padding-right: 4px;
+    }
+
+    .cart-item {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 8px 10px;
+        border: 1px solid var(--mud-palette-lines-default);
+        border-radius: 6px;
+    }
+
+    .cart-item-info {
+        flex: 1;
+        min-width: 0;
+    }
+
+    .cart-item-controls {
+        display: flex;
+        align-items: center;
+        gap: 4px;
+    }
+
+    .cart-qty {
+        min-width: 28px;
+        text-align: center;
+        font-weight: 600;
+    }
+
+    .cart-item-price {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-end;
+        min-width: 80px;
+    }
+
+    .cart-footer {
+        margin-top: 8px;
+    }
+</style>
+
+@code {
+    [Parameter] public CartState Cart { get; set; } = new();
+    [Parameter] public EventCallback OnCartChanged { get; set; }
+
+    private async Task IncrementQty(CartItem item)
+    {
+        item.Quantity++;
+        await OnCartChanged.InvokeAsync();
+    }
+
+    private async Task DecrementQty(CartItem item)
+    {
+        if (item.Quantity > 1)
+        {
+            item.Quantity--;
+        }
+        else
+        {
+            Cart.RemoveItem(item.ProductId);
+        }
+
+        await OnCartChanged.InvokeAsync();
+    }
+
+    private async Task RemoveItem(CartItem item)
+    {
+        Cart.RemoveItem(item.ProductId);
+        await OnCartChanged.InvokeAsync();
+    }
+
+    private async Task ClearCart()
+    {
+        Cart.Clear();
+        await OnCartChanged.InvokeAsync();
+    }
+}

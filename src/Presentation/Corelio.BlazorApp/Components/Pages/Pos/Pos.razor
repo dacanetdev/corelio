@@ -1,0 +1,162 @@
+@page "/pos"
+@using Corelio.BlazorApp.Components.Pos
+@using Corelio.BlazorApp.Models.Pos
+@using Corelio.BlazorApp.Resources
+@using Corelio.BlazorApp.Services.Pos
+@using Microsoft.Extensions.Localization
+@inject IPosService PosService
+@inject IStringLocalizer<SharedResource> L
+@inject ISnackbar Snackbar
+
+<PageTitle>@L["Pos"] - Corelio</PageTitle>
+
+<div class="pos-layout">
+    <!-- LEFT PANEL: Product Search -->
+    <div class="pos-panel pos-panel-search">
+        <MudText Typo="Typo.h6" Class="pos-panel-title">
+            <MudIcon Icon="@Icons.Material.Rounded.Search" Class="mr-2" />
+            @L["ProductSearch"]
+        </MudText>
+        <ProductSearch OnProductSelected="AddToCart" />
+    </div>
+
+    <!-- CENTER PANEL: Cart -->
+    <div class="pos-panel pos-panel-cart">
+        <MudText Typo="Typo.h6" Class="pos-panel-title">
+            <MudIcon Icon="@Icons.Material.Rounded.ShoppingCart" Class="mr-2" />
+            @L["Cart"]
+            @if (!_cart.IsEmpty)
+            {
+                <MudChip T="string" Size="Size.Small" Color="Color.Primary" Class="ml-2">@_cart.ItemCount</MudChip>
+            }
+        </MudText>
+        <ShoppingCart Cart="_cart" OnCartChanged="StateHasChanged" />
+    </div>
+
+    <!-- RIGHT PANEL: Payment -->
+    <div class="pos-panel pos-panel-payment">
+        <MudText Typo="Typo.h6" Class="pos-panel-title">
+            <MudIcon Icon="@Icons.Material.Rounded.Payment" Class="mr-2" />
+            @L["Payment"]
+        </MudText>
+        <PaymentPanel Cart="_cart"
+                      OnSaleCompleted="HandleSaleCompleted"
+                      OnSaleCancelled="HandleSaleCancelled" />
+    </div>
+</div>
+
+@* Sale completed receipt dialog *@
+<MudDialog @bind-Visible="_showReceipt" Options="_receiptOptions">
+    <TitleContent>
+        <MudStack Row="true" AlignItems="AlignItems.Center">
+            <MudIcon Icon="@Icons.Material.Rounded.CheckCircle" Color="Color.Success" />
+            <MudText Typo="Typo.h6" Class="ml-2">@L["SaleCompleted"]</MudText>
+        </MudStack>
+    </TitleContent>
+    <DialogContent>
+        @if (_completedSale is not null)
+        {
+            <MudStack Spacing="2">
+                <MudStack Row="true" Justify="Justify.SpaceBetween">
+                    <MudText>@L["SaleCompletedFolio"]:</MudText>
+                    <MudText Class="fw-bold">@_completedSale.Folio</MudText>
+                </MudStack>
+                <MudStack Row="true" Justify="Justify.SpaceBetween">
+                    <MudText>@L["Total"]:</MudText>
+                    <MudText Class="fw-bold" Color="Color.Primary">
+                        @_completedSale.Total.ToString("C", System.Globalization.CultureInfo.GetCultureInfo("es-MX"))
+                    </MudText>
+                </MudStack>
+                <MudDivider />
+                @foreach (var item in _completedSale.Items)
+                {
+                    <MudStack Row="true" Justify="Justify.SpaceBetween">
+                        <MudText Typo="Typo.body2">@item.ProductName × @item.Quantity</MudText>
+                        <MudText Typo="Typo.body2">
+                            @item.LineTotal.ToString("C", System.Globalization.CultureInfo.GetCultureInfo("es-MX"))
+                        </MudText>
+                    </MudStack>
+                }
+            </MudStack>
+        }
+    </DialogContent>
+    <DialogActions>
+        <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="StartNewSale">
+            @L["NewSale"]
+        </MudButton>
+    </DialogActions>
+</MudDialog>
+
+<style>
+    .pos-layout {
+        display: grid;
+        grid-template-columns: 1fr 1.5fr 1fr;
+        gap: 16px;
+        height: calc(100vh - 80px);
+        padding: 16px;
+        overflow: hidden;
+    }
+
+    .pos-panel {
+        background: var(--mud-palette-surface);
+        border-radius: 8px;
+        border: 1px solid var(--mud-palette-lines-default);
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+        padding: 16px;
+    }
+
+    .pos-panel-title {
+        margin-bottom: 12px;
+        display: flex;
+        align-items: center;
+        border-bottom: 1px solid var(--mud-palette-lines-default);
+        padding-bottom: 12px;
+    }
+
+    @@media (max-width: 960px) {
+        .pos-layout {
+            grid-template-columns: 1fr;
+            height: auto;
+            overflow-y: auto;
+        }
+
+        .pos-panel {
+            min-height: 300px;
+        }
+    }
+</style>
+
+@code {
+    private CartState _cart = new();
+    private bool _showReceipt;
+    private SaleModel? _completedSale;
+    private readonly DialogOptions _receiptOptions = new() { MaxWidth = MaxWidth.Small, FullWidth = true };
+
+    private void AddToCart(PosProductModel product)
+    {
+        _cart.AddProduct(product);
+        StateHasChanged();
+    }
+
+    private void HandleSaleCompleted(SaleModel sale)
+    {
+        _completedSale = sale;
+        _showReceipt = true;
+    }
+
+    private void HandleSaleCancelled()
+    {
+        _cart.Clear();
+        StateHasChanged();
+    }
+
+    private void StartNewSale()
+    {
+        _cart.Clear();
+        _completedSale = null;
+        _showReceipt = false;
+        StateHasChanged();
+    }
+}

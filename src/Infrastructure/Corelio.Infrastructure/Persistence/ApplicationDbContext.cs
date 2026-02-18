@@ -47,6 +47,17 @@ public class ApplicationDbContext(
     public DbSet<ProductDiscount> ProductDiscounts => Set<ProductDiscount>();
     public DbSet<ProductMarginPrice> ProductMarginPrices => Set<ProductMarginPrice>();
 
+    // Customer entities
+    public DbSet<Customer> Customers => Set<Customer>();
+
+    // Sales & Inventory entities
+    public DbSet<Warehouse> Warehouses => Set<Warehouse>();
+    public DbSet<InventoryItem> InventoryItems => Set<InventoryItem>();
+    public DbSet<InventoryTransaction> InventoryTransactions => Set<InventoryTransaction>();
+    public DbSet<Sale> Sales => Set<Sale>();
+    public DbSet<SaleItem> SaleItems => Set<SaleItem>();
+    public DbSet<Payment> Payments => Set<Payment>();
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
@@ -120,5 +131,33 @@ public class ApplicationDbContext(
         // ProductMarginPrice - strict tenant isolation
         modelBuilder.Entity<ProductMarginPrice>()
             .HasQueryFilter(pm => !tenantProvider.HasTenantContext || pm.TenantId == tenantProvider.TenantId);
+
+        // Customer - strict tenant isolation
+        modelBuilder.Entity<Customer>()
+            .HasQueryFilter(c => !tenantProvider.HasTenantContext || c.TenantId == tenantProvider.TenantId);
+
+        // Warehouse - strict tenant isolation
+        modelBuilder.Entity<Warehouse>()
+            .HasQueryFilter(w => !tenantProvider.HasTenantContext || w.TenantId == tenantProvider.TenantId);
+
+        // InventoryItem - strict tenant isolation
+        modelBuilder.Entity<InventoryItem>()
+            .HasQueryFilter(i => !tenantProvider.HasTenantContext || i.TenantId == tenantProvider.TenantId);
+
+        // InventoryTransaction - strict tenant isolation
+        modelBuilder.Entity<InventoryTransaction>()
+            .HasQueryFilter(t => !tenantProvider.HasTenantContext || t.TenantId == tenantProvider.TenantId);
+
+        // Sale - strict tenant isolation
+        modelBuilder.Entity<Sale>()
+            .HasQueryFilter(s => !tenantProvider.HasTenantContext || s.TenantId == tenantProvider.TenantId);
+
+        // SaleItem - strict tenant isolation
+        modelBuilder.Entity<SaleItem>()
+            .HasQueryFilter(si => !tenantProvider.HasTenantContext || si.TenantId == tenantProvider.TenantId);
+
+        // Payment - strict tenant isolation
+        modelBuilder.Entity<Payment>()
+            .HasQueryFilter(p => !tenantProvider.HasTenantContext || p.TenantId == tenantProvider.TenantId);
     }
 }

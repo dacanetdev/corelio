@@ -1,0 +1,200 @@
+@page "/customers"
+@using Corelio.BlazorApp.Models.Customers
+@using Corelio.BlazorApp.Resources
+@using Corelio.BlazorApp.Services.Customers
+@using Microsoft.Extensions.Localization
+@using MudBlazor
+@inject ICustomerService CustomerService
+@inject IStringLocalizer<SharedResource> L
+@inject ISnackbar Snackbar
+@inject NavigationManager Nav
+
+<PageTitle>@L["CustomerList"] - Corelio</PageTitle>
+
+<MudContainer MaxWidth="MaxWidth.ExtraLarge" Class="mt-4">
+    <MudStack Row="true" AlignItems="AlignItems.Center" Justify="Justify.SpaceBetween" Class="mb-4">
+        <div>
+            <MudText Typo="Typo.h5" GutterBottom="false">@L["Customers"]</MudText>
+            <MudText Typo="Typo.body2" Color="Color.Secondary">@L["CustomerListDescription"]</MudText>
+        </div>
+        <MudButton Variant="Variant.Filled" Color="Color.Primary"
+                   StartIcon="@Icons.Material.Rounded.PersonAdd"
+                   Href="/customers/new">
+            @L["AddCustomer"]
+        </MudButton>
+    </MudStack>
+
+    <MudPaper Elevation="1" Class="pa-4 mb-4">
+        <MudTextField @bind-Value="_searchTerm"
+                      Placeholder="@L["SearchCustomers"]"
+                      Adornment="Adornment.Start"
+                      AdornmentIcon="@Icons.Material.Rounded.Search"
+                      Immediate="true"
+                      DebounceInterval="300"
+                      OnDebounceIntervalElapsed="LoadCustomers"
+                      Class="mb-0" />
+    </MudPaper>
+
+    @if (_loading)
+    {
+        <MudProgressLinear Indeterminate="true" Color="Color.Primary" Class="mb-4" />
+    }
+    else if (_error is not null)
+    {
+        <MudAlert Severity="Severity.Error" Class="mb-4">@_error</MudAlert>
+    }
+    else if (_customers.Count == 0)
+    {
+        <MudPaper Elevation="0" Class="pa-8 text-center">
+            <MudIcon Icon="@Icons.Material.Rounded.PeopleOutline" Color="Color.Secondary" Size="Size.Large" />
+            <MudText Typo="Typo.h6" Class="mt-2">@L["NoCustomersFound"]</MudText>
+            <MudText Color="Color.Secondary">@L["NoCustomersDescription"]</MudText>
+            <MudButton Variant="Variant.Filled" Color="Color.Primary" Class="mt-4" Href="/customers/new">
+                @L["AddCustomer"]
+            </MudButton>
+        </MudPaper>
+    }
+    else
+    {
+        <MudTable Items="_customers" Hover="true" Breakpoint="Breakpoint.Sm"
+                  Dense="true" Striped="true">
+            <HeaderContent>
+                <MudTh>@L["CustomerName"]</MudTh>
+                <MudTh>@L["CustomerType"]</MudTh>
+                <MudTh>@L["RFC"]</MudTh>
+                <MudTh>@L["Email"]</MudTh>
+                <MudTh>@L["Phone"]</MudTh>
+                <MudTh>@L["Actions"]</MudTh>
+            </HeaderContent>
+            <RowTemplate>
+                <MudTd DataLabel="@L["CustomerName"]">
+                    <MudText Typo="Typo.body2" Class="fw-medium">@context.FullName</MudText>
+                </MudTd>
+                <MudTd DataLabel="@L["CustomerType"]">
+                    <MudChip T="string" Size="Size.Small" Color="@(context.CustomerType == Domain.Enums.CustomerType.Business ? Color.Primary : Color.Default)">
+                        @(context.CustomerType == Domain.Enums.CustomerType.Business ? L["Business"] : L["Individual"])
+                    </MudChip>
+                </MudTd>
+                <MudTd DataLabel="@L["RFC"]">@(context.Rfc ?? "—")</MudTd>
+                <MudTd DataLabel="@L["Email"]">@(context.Email ?? "—")</MudTd>
+                <MudTd DataLabel="@L["Phone"]">@(context.Phone ?? "—")</MudTd>
+                <MudTd DataLabel="@L["Actions"]">
+                    <MudIconButton Icon="@Icons.Material.Rounded.Edit" Size="Size.Small"
+                                   Href="@($"/customers/{context.Id}/edit")" />
+                    <MudIconButton Icon="@Icons.Material.Rounded.Delete" Size="Size.Small"
+                                   Color="Color.Error"
+                                   OnClick="@(() => ConfirmDelete(context))" />
+                </MudTd>
+            </RowTemplate>
+        </MudTable>
+
+        <MudStack Row="true" AlignItems="AlignItems.Center" Justify="Justify.SpaceBetween" Class="mt-4">
+            <MudText Typo="Typo.body2" Color="Color.Secondary">
+                @L["ShowingResults"] @((_currentPage - 1) * _pageSize + 1)–@Math.Min(_currentPage * _pageSize, _totalCount) @L["Of"] @_totalCount
+            </MudText>
+            <MudPagination Count="_totalPages" Selected="_currentPage"
+                           SelectedChanged="OnPageChanged" />
+        </MudStack>
+    }
+</MudContainer>
+
+@* Delete Confirmation Dialog *@
+<MudDialog @bind-Visible="_showDeleteDialog">
+    <TitleContent>@L["DeleteCustomer"]</TitleContent>
+    <DialogContent>
+        <MudText>@L["DeleteCustomerConfirmation"]</MudText>
+        @if (_customerToDelete is not null)
+        {
+            <MudText Class="mt-2"><strong>@_customerToDelete.FullName</strong></MudText>
+        }
+    </DialogContent>
+    <DialogActions>
+        <MudButton OnClick="@(() => _showDeleteDialog = false)">@L["Cancel"]</MudButton>
+        <MudButton Color="Color.Error" Variant="Variant.Filled"
+                   OnClick="DeleteCustomer" Disabled="_deleting">
+            @if (_deleting)
+            {
+                <MudProgressCircular Size="Size.Small" Indeterminate="true" />
+            }
+            else
+            {
+                @L["Delete"]
+            }
+        </MudButton>
+    </DialogActions>
+</MudDialog>
+
+@code {
+    private List<CustomerListModel> _customers = [];
+    private bool _loading = true;
+    private string? _error;
+    private string _searchTerm = string.Empty;
+    private int _currentPage = 1;
+    private int _pageSize = 20;
+    private int _totalCount;
+    private int _totalPages = 1;
+
+    private bool _showDeleteDialog;
+    private bool _deleting;
+    private CustomerListModel? _customerToDelete;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadCustomers();
+    }
+
+    private async Task LoadCustomers()
+    {
+        _loading = true;
+        _error = null;
+
+        var result = await CustomerService.GetCustomersAsync(_currentPage, _pageSize, _searchTerm);
+
+        if (result.IsSuccess && result.Value is not null)
+        {
+            _customers = result.Value.Items;
+            _totalCount = result.Value.TotalCount;
+            _totalPages = result.Value.TotalPages;
+        }
+        else
+        {
+            _error = result.Error ?? L["ErrorLoadingCustomers"];
+        }
+
+        _loading = false;
+    }
+
+    private async Task OnPageChanged(int page)
+    {
+        _currentPage = page;
+        await LoadCustomers();
+    }
+
+    private void ConfirmDelete(CustomerListModel customer)
+    {
+        _customerToDelete = customer;
+        _showDeleteDialog = true;
+    }
+
+    private async Task DeleteCustomer()
+    {
+        if (_customerToDelete is null) { return; }
+
+        _deleting = true;
+        var result = await CustomerService.DeleteCustomerAsync(_customerToDelete.Id);
+
+        if (result.IsSuccess)
+        {
+            Snackbar.Add(L["CustomerDeletedSuccessfully"], Severity.Success);
+            _showDeleteDialog = false;
+            _customerToDelete = null;
+            await LoadCustomers();
+        }
+        else
+        {
+            Snackbar.Add(result.Error ?? L["ErrorDeletingCustomer"], Severity.Error);
+        }
+
+        _deleting = false;
+    }
+}

@@ -5,6 +5,8 @@ using Corelio.BlazorApp.Components;
 using Corelio.BlazorApp.Services;
 using Corelio.BlazorApp.Services.Authentication;
 using Corelio.BlazorApp.Services.Http;
+using Corelio.BlazorApp.Services.Customers;
+using Corelio.BlazorApp.Services.Pos;
 using Corelio.BlazorApp.Services.Pricing;
 using Corelio.BlazorApp.Services.Products;
 using Corelio.BlazorApp.Services.Theming;
@@ -100,6 +102,12 @@ builder.Services.AddScoped<IProductService, ProductService>();
 
 // Add Pricing service
 builder.Services.AddScoped<IPricingService, PricingService>();
+
+// Add Customer service
+builder.Services.AddScoped<ICustomerService, CustomerService>();
+
+// Add POS service
+builder.Services.AddScoped<IPosService, PosService>();
 
 // Add Theme services
 builder.Services.AddScoped<IDynamicThemeService, DynamicThemeService>();

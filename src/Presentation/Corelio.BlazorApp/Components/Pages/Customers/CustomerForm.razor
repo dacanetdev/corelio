@@ -1,0 +1,243 @@
+@page "/customers/new"
+@page "/customers/{Id:guid}/edit"
+@using Corelio.BlazorApp.Models.Customers
+@using Corelio.BlazorApp.Resources
+@using Corelio.BlazorApp.Services.Customers
+@using Corelio.Domain.Enums
+@using Microsoft.Extensions.Localization
+@inject ICustomerService CustomerService
+@inject IStringLocalizer<SharedResource> L
+@inject ISnackbar Snackbar
+@inject NavigationManager Nav
+
+<PageTitle>@(Id.HasValue ? L["EditCustomer"] : L["NewCustomer"]) - Corelio</PageTitle>
+
+<MudContainer MaxWidth="MaxWidth.Medium" Class="mt-4">
+    <MudStack Row="true" AlignItems="AlignItems.Center" Class="mb-4">
+        <MudIconButton Icon="@Icons.Material.Rounded.ArrowBack" OnClick="@(() => Nav.NavigateTo("/customers"))" />
+        <div>
+            <MudText Typo="Typo.h5">@(Id.HasValue ? L["EditCustomer"] : L["NewCustomer"])</MudText>
+        </div>
+    </MudStack>
+
+    @if (_loading)
+    {
+        <MudProgressLinear Indeterminate="true" Color="Color.Primary" />
+    }
+    else
+    {
+        <MudPaper Elevation="1" Class="pa-6">
+            <MudForm @ref="_form" Model="_model" @bind-IsValid="_isValid">
+
+                <!-- Customer Type Selector -->
+                <MudText Typo="Typo.subtitle1" Class="mb-2">@L["CustomerType"]</MudText>
+                <MudButtonGroup Variant="Variant.Outlined" Color="Color.Primary" Class="mb-4">
+                    <MudButton OnClick="@(() => SetCustomerType(CustomerType.Individual))"
+                               Variant="@(_model.CustomerType == CustomerType.Individual ? Variant.Filled : Variant.Outlined)"
+                               Color="Color.Primary">
+                        @L["Individual"]
+                    </MudButton>
+                    <MudButton OnClick="@(() => SetCustomerType(CustomerType.Business))"
+                               Variant="@(_model.CustomerType == CustomerType.Business ? Variant.Filled : Variant.Outlined)"
+                               Color="Color.Primary">
+                        @L["Business"]
+                    </MudButton>
+                </MudButtonGroup>
+
+                @if (_model.CustomerType == CustomerType.Individual)
+                {
+                    <MudGrid>
+                        <MudItem xs="12" sm="6">
+                            <MudTextField @bind-Value="_model.FirstName"
+                                          Label="@L["FirstName"]"
+                                          Required="true"
+                                          RequiredError="@L["FirstNameRequired"]"
+                                          MaxLength="100" />
+                        </MudItem>
+                        <MudItem xs="12" sm="6">
+                            <MudTextField @bind-Value="_model.LastName"
+                                          Label="@L["LastName"]"
+                                          Required="true"
+                                          RequiredError="@L["LastNameRequired"]"
+                                          MaxLength="100" />
+                        </MudItem>
+                    </MudGrid>
+                }
+                else
+                {
+                    <MudTextField @bind-Value="_model.BusinessName"
+                                  Label="@L["BusinessName"]"
+                                  Required="true"
+                                  RequiredError="@L["Required"]"
+                                  MaxLength="200"
+                                  Class="mb-3" />
+                }
+
+                <MudDivider Class="my-4" />
+                <MudText Typo="Typo.subtitle2" Class="mb-3">@L["BasicInformation"]</MudText>
+
+                <MudGrid>
+                    <MudItem xs="12" sm="6">
+                        <MudTextField @bind-Value="_model.Rfc"
+                                      Label="@L["RFC"]"
+                                      MaxLength="13"
+                                      HelperText="Ej: XAXX010101000" />
+                    </MudItem>
+                    @if (_model.CustomerType == CustomerType.Individual)
+                    {
+                        <MudItem xs="12" sm="6">
+                            <MudTextField @bind-Value="_model.Curp"
+                                          Label="@L["CURP"]"
+                                          MaxLength="18" />
+                        </MudItem>
+                    }
+                    <MudItem xs="12" sm="6">
+                        <MudTextField @bind-Value="_model.Email"
+                                      Label="@L["Email"]"
+                                      InputType="InputType.Email"
+                                      MaxLength="200" />
+                    </MudItem>
+                    <MudItem xs="12" sm="6">
+                        <MudTextField @bind-Value="_model.Phone"
+                                      Label="@L["Phone"]"
+                                      MaxLength="20" />
+                    </MudItem>
+                </MudGrid>
+
+                <MudDivider Class="my-4" />
+                <MudText Typo="Typo.subtitle2" Class="mb-3">Facturación (CFDI)</MudText>
+
+                <MudGrid>
+                    <MudItem xs="12" sm="6">
+                        <MudTextField @bind-Value="_model.TaxRegime"
+                                      Label="@L["TaxRegime"]"
+                                      MaxLength="10"
+                                      HelperText="Ej: 601, 612, 626" />
+                    </MudItem>
+                    <MudItem xs="12" sm="6">
+                        <MudTextField @bind-Value="_model.CfdiUse"
+                                      Label="@L["CfdiUse"]"
+                                      MaxLength="10"
+                                      HelperText="Ej: G01, G03, S01" />
+                    </MudItem>
+                </MudGrid>
+
+                <MudDivider Class="my-4" />
+
+                <MudSelect T="PaymentMethod?" @bind-Value="_model.PreferredPaymentMethod"
+                           Label="@L["PreferredPaymentMethod"]"
+                           Clearable="true">
+                    <MudSelectItem T="PaymentMethod?" Value="PaymentMethod.Cash">@L["Cash"]</MudSelectItem>
+                    <MudSelectItem T="PaymentMethod?" Value="PaymentMethod.Card">@L["Card"]</MudSelectItem>
+                    <MudSelectItem T="PaymentMethod?" Value="PaymentMethod.Transfer">@L["Transfer"]</MudSelectItem>
+                    <MudSelectItem T="PaymentMethod?" Value="PaymentMethod.Check">@L["Check"]</MudSelectItem>
+                </MudSelect>
+
+                <MudStack Row="true" Justify="Justify.FlexEnd" Class="mt-6" Spacing="2">
+                    <MudButton Variant="Variant.Text"
+                               OnClick="@(() => Nav.NavigateTo("/customers"))">
+                        @L["Cancel"]
+                    </MudButton>
+                    <MudButton Variant="Variant.Filled" Color="Color.Primary"
+                               OnClick="SaveCustomer" Disabled="_saving">
+                        @if (_saving)
+                        {
+                            <MudProgressCircular Size="Size.Small" Indeterminate="true" Class="mr-2" />
+                            @L["Saving"]
+                        }
+                        else
+                        {
+                            @L["Save"]
+                        }
+                    </MudButton>
+                </MudStack>
+            </MudForm>
+        </MudPaper>
+    }
+</MudContainer>
+
+@code {
+    [Parameter] public Guid? Id { get; set; }
+
+    private MudForm _form = null!;
+    private CustomerFormModel _model = new();
+    private bool _loading;
+    private bool _saving;
+    private bool _isValid;
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (Id.HasValue)
+        {
+            _loading = true;
+            var result = await CustomerService.GetCustomerByIdAsync(Id.Value);
+            if (result.IsSuccess && result.Value is not null)
+            {
+                var c = result.Value;
+                _model = new CustomerFormModel
+                {
+                    CustomerType = c.CustomerType,
+                    FirstName = c.FirstName,
+                    LastName = c.LastName,
+                    BusinessName = c.BusinessName,
+                    Rfc = c.Rfc,
+                    Curp = c.Curp,
+                    Email = c.Email,
+                    Phone = c.Phone,
+                    TaxRegime = c.TaxRegime,
+                    CfdiUse = c.CfdiUse,
+                    PreferredPaymentMethod = c.PreferredPaymentMethod
+                };
+            }
+            else
+            {
+                Snackbar.Add(result.Error ?? "Error loading customer", Severity.Error);
+                Nav.NavigateTo("/customers");
+            }
+
+            _loading = false;
+        }
+    }
+
+    private void SetCustomerType(CustomerType type)
+    {
+        _model.CustomerType = type;
+    }
+
+    private async Task SaveCustomer()
+    {
+        await _form.Validate();
+        if (!_isValid) { return; }
+
+        _saving = true;
+
+        if (Id.HasValue)
+        {
+            var result = await CustomerService.UpdateCustomerAsync(Id.Value, _model);
+            if (result.IsSuccess)
+            {
+                Snackbar.Add(L["CustomerUpdatedSuccessfully"], Severity.Success);
+                Nav.NavigateTo("/customers");
+            }
+            else
+            {
+                Snackbar.Add(result.Error ?? L["ErrorUpdatingCustomer"], Severity.Error);
+            }
+        }
+        else
+        {
+            var result = await CustomerService.CreateCustomerAsync(_model);
+            if (result.IsSuccess)
+            {
+                Snackbar.Add(L["CustomerCreatedSuccessfully"], Severity.Success);
+                Nav.NavigateTo("/customers");
+            }
+            else
+            {
+                Snackbar.Add(result.Error ?? L["ErrorCreatingCustomer"], Severity.Error);
+            }
+        }
+
+        _saving = false;
+    }
+}
