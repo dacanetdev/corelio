@@ -33,13 +33,13 @@ public static class DataSeeder
             // Users Module
             new() { Id = Guid.Parse("a1111111-1111-1111-1111-111111111111"), Code = "users.view", Name = "View Users", Module = PermissionModule.Users, Description = "View user list", CreatedAt = SeedDate },
             new() { Id = Guid.Parse("a1111111-1111-1111-1111-111111111112"), Code = "users.create", Name = "Create Users", Module = PermissionModule.Users, Description = "Create new users", CreatedAt = SeedDate },
-            new() { Id = Guid.Parse("a1111111-1111-1111-1111-111111111113"), Code = "users.edit", Name = "Edit Users", Module = PermissionModule.Users, Description = "Edit user details", CreatedAt = SeedDate },
+            new() { Id = Guid.Parse("a1111111-1111-1111-1111-111111111113"), Code = "users.update", Name = "Update Users", Module = PermissionModule.Users, Description = "Edit user details", CreatedAt = SeedDate },
             new() { Id = Guid.Parse("a1111111-1111-1111-1111-111111111114"), Code = "users.delete", Name = "Delete Users", Module = PermissionModule.Users, Description = "Delete users", IsDangerous = true, CreatedAt = SeedDate },
 
             // Products Module
             new() { Id = Guid.Parse("a2222222-2222-2222-2222-222222222221"), Code = "products.view", Name = "View Products", Module = PermissionModule.Products, Description = "View product list", CreatedAt = SeedDate },
             new() { Id = Guid.Parse("a2222222-2222-2222-2222-222222222222"), Code = "products.create", Name = "Create Products", Module = PermissionModule.Products, Description = "Create new products", CreatedAt = SeedDate },
-            new() { Id = Guid.Parse("a2222222-2222-2222-2222-222222222223"), Code = "products.edit", Name = "Edit Products", Module = PermissionModule.Products, Description = "Edit product details", CreatedAt = SeedDate },
+            new() { Id = Guid.Parse("a2222222-2222-2222-2222-222222222223"), Code = "products.update", Name = "Update Products", Module = PermissionModule.Products, Description = "Edit product details", CreatedAt = SeedDate },
             new() { Id = Guid.Parse("a2222222-2222-2222-2222-222222222224"), Code = "products.delete", Name = "Delete Products", Module = PermissionModule.Products, Description = "Delete products", CreatedAt = SeedDate },
 
             // Sales Module
@@ -57,11 +57,17 @@ public static class DataSeeder
 
             // Settings Module
             new() { Id = Guid.Parse("a6666666-6666-6666-6666-666666666661"), Code = "settings.view", Name = "View Settings", Module = PermissionModule.Settings, Description = "View system settings", CreatedAt = SeedDate },
-            new() { Id = Guid.Parse("a6666666-6666-6666-6666-666666666662"), Code = "settings.edit", Name = "Edit Settings", Module = PermissionModule.Settings, Description = "Modify system settings", IsDangerous = true, CreatedAt = SeedDate },
+            new() { Id = Guid.Parse("a6666666-6666-6666-6666-666666666662"), Code = "settings.update", Name = "Update Settings", Module = PermissionModule.Settings, Description = "Modify system settings", IsDangerous = true, CreatedAt = SeedDate },
 
             // Pricing Module
             new() { Id = Guid.Parse("a7777777-7777-7777-7777-777777777771"), Code = "pricing.view", Name = "View Pricing", Module = PermissionModule.Pricing, Description = "View pricing configuration and product prices", CreatedAt = SeedDate },
             new() { Id = Guid.Parse("a7777777-7777-7777-7777-777777777772"), Code = "pricing.manage", Name = "Manage Pricing", Module = PermissionModule.Pricing, Description = "Configure pricing tiers and update product prices", CreatedAt = SeedDate },
+
+            // Customers Module
+            new() { Id = Guid.Parse("a8888888-8888-8888-8888-888888888881"), Code = "customers.view", Name = "View Customers", Module = PermissionModule.Customers, Description = "View customer list and details", CreatedAt = SeedDate },
+            new() { Id = Guid.Parse("a8888888-8888-8888-8888-888888888882"), Code = "customers.create", Name = "Create Customers", Module = PermissionModule.Customers, Description = "Create new customers", CreatedAt = SeedDate },
+            new() { Id = Guid.Parse("a8888888-8888-8888-8888-888888888883"), Code = "customers.update", Name = "Update Customers", Module = PermissionModule.Customers, Description = "Edit customer details", CreatedAt = SeedDate },
+            new() { Id = Guid.Parse("a8888888-8888-8888-8888-888888888884"), Code = "customers.delete", Name = "Delete Customers", Module = PermissionModule.Customers, Description = "Soft-delete customers", IsDangerous = true, CreatedAt = SeedDate },
         };
 
         modelBuilder.Entity<Permission>().HasData(permissions);
@@ -191,6 +197,10 @@ public static class DataSeeder
             Guid.Parse("a6666666-6666-6666-6666-666666666662"),
             Guid.Parse("a7777777-7777-7777-7777-777777777771"), // pricing.view
             Guid.Parse("a7777777-7777-7777-7777-777777777772"), // pricing.manage
+            Guid.Parse("a8888888-8888-8888-8888-888888888881"), // customers.view
+            Guid.Parse("a8888888-8888-8888-8888-888888888882"), // customers.create
+            Guid.Parse("a8888888-8888-8888-8888-888888888883"), // customers.update
+            Guid.Parse("a8888888-8888-8888-8888-888888888884"), // customers.delete
         };
 
         foreach (var permissionId in allPermissionIds)
@@ -208,10 +218,10 @@ public static class DataSeeder
         {
             Guid.Parse("a1111111-1111-1111-1111-111111111111"), // users.view
             Guid.Parse("a1111111-1111-1111-1111-111111111112"), // users.create
-            Guid.Parse("a1111111-1111-1111-1111-111111111113"), // users.edit
+            Guid.Parse("a1111111-1111-1111-1111-111111111113"), // users.update
             Guid.Parse("a2222222-2222-2222-2222-222222222221"), // products.view
             Guid.Parse("a2222222-2222-2222-2222-222222222222"), // products.create
-            Guid.Parse("a2222222-2222-2222-2222-222222222223"), // products.edit
+            Guid.Parse("a2222222-2222-2222-2222-222222222223"), // products.update
             Guid.Parse("a2222222-2222-2222-2222-222222222224"), // products.delete
             Guid.Parse("a3333333-3333-3333-3333-333333333331"), // sales.view
             Guid.Parse("a3333333-3333-3333-3333-333333333332"), // sales.create
@@ -222,6 +232,9 @@ public static class DataSeeder
             Guid.Parse("a6666666-6666-6666-6666-666666666661"), // settings.view
             Guid.Parse("a7777777-7777-7777-7777-777777777771"), // pricing.view
             Guid.Parse("a7777777-7777-7777-7777-777777777772"), // pricing.manage
+            Guid.Parse("a8888888-8888-8888-8888-888888888881"), // customers.view
+            Guid.Parse("a8888888-8888-8888-8888-888888888882"), // customers.create
+            Guid.Parse("a8888888-8888-8888-8888-888888888883"), // customers.update
         };
 
         foreach (var permissionId in managerPermissionIds)
@@ -241,6 +254,7 @@ public static class DataSeeder
             Guid.Parse("a3333333-3333-3333-3333-333333333331"), // sales.view
             Guid.Parse("a3333333-3333-3333-3333-333333333332"), // sales.create
             Guid.Parse("a4444444-4444-4444-4444-444444444441"), // inventory.view
+            Guid.Parse("a8888888-8888-8888-8888-888888888881"), // customers.view
         };
 
         foreach (var permissionId in cashierPermissionIds)
