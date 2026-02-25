@@ -18,6 +18,7 @@ public class GetSalesQueryHandler(
             request.PageNumber,
             request.PageSize,
             request.Status,
+            request.SearchTerm,
             request.DateFrom,
             request.DateTo,
             cancellationToken);

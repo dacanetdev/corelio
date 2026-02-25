@@ -14,6 +14,7 @@ public interface ISaleRepository
         int pageNumber,
         int pageSize,
         SaleStatus? status = null,
+        string? searchTerm = null,
         DateTime? dateFrom = null,
         DateTime? dateTo = null,
         CancellationToken cancellationToken = default);

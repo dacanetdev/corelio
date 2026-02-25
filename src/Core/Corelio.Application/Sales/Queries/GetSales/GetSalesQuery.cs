@@ -6,11 +6,12 @@ using Corelio.SharedKernel.Messaging;
 namespace Corelio.Application.Sales.Queries.GetSales;
 
 /// <summary>
-/// Query to get a paged list of sales.
+/// Query to get a paged list of sales with optional filters.
 /// </summary>
 public record GetSalesQuery(
     int PageNumber = 1,
     int PageSize = 20,
     SaleStatus? Status = null,
+    string? SearchTerm = null,
     DateTime? DateFrom = null,
     DateTime? DateTo = null) : IRequest<Result<PagedResult<SaleListDto>>>;

@@ -1086,4 +1086,108 @@
   <data name="Sales" xml:space="preserve">
     <value>Ventas</value>
   </data>
+
+  <!-- Sale History & Management (US-8.1) -->
+  <data name="SaleHistory" xml:space="preserve">
+    <value>Historial de Ventas</value>
+  </data>
+  <data name="SaleHistoryDescription" xml:space="preserve">
+    <value>Consulta y gestiona todas las ventas completadas</value>
+  </data>
+  <data name="SaleDetail" xml:space="preserve">
+    <value>Detalle de Venta</value>
+  </data>
+  <data name="SaleDetailDescription" xml:space="preserve">
+    <value>Información completa de la venta</value>
+  </data>
+  <data name="NoSalesFound" xml:space="preserve">
+    <value>No se encontraron ventas</value>
+  </data>
+  <data name="NoSalesDescription" xml:space="preserve">
+    <value>No hay ventas que coincidan con los filtros seleccionados</value>
+  </data>
+  <data name="ErrorLoadingSales" xml:space="preserve">
+    <value>Error al cargar las ventas</value>
+  </data>
+  <data name="ErrorLoadingSaleDetail" xml:space="preserve">
+    <value>Error al cargar el detalle de la venta</value>
+  </data>
+  <data name="SearchSales" xml:space="preserve">
+    <value>Buscar por folio o cliente...</value>
+  </data>
+  <data name="SaleStatusDraft" xml:space="preserve">
+    <value>Borrador</value>
+  </data>
+  <data name="SaleStatusPending" xml:space="preserve">
+    <value>Pendiente</value>
+  </data>
+  <data name="SaleStatusCompleted" xml:space="preserve">
+    <value>Completada</value>
+  </data>
+  <data name="SaleStatusCancelled" xml:space="preserve">
+    <value>Cancelada</value>
+  </data>
+  <data name="SaleStatusRefunded" xml:space="preserve">
+    <value>Reembolsada</value>
+  </data>
+  <data name="SaleTypePOS" xml:space="preserve">
+    <value>POS</value>
+  </data>
+  <data name="SaleTypeInvoice" xml:space="preserve">
+    <value>Factura</value>
+  </data>
+  <data name="SaleTypeQuote" xml:space="preserve">
+    <value>Cotización</value>
+  </data>
+  <data name="SaleItems" xml:space="preserve">
+    <value>Artículos de Venta</value>
+  </data>
+  <data name="PaymentSummary" xml:space="preserve">
+    <value>Resumen de Pago</value>
+  </data>
+  <data name="ViewSale" xml:space="preserve">
+    <value>Ver Venta</value>
+  </data>
+  <data name="CancelSaleConfirmation" xml:space="preserve">
+    <value>¿Está seguro de que desea cancelar esta venta? Esta acción restaurará el inventario.</value>
+  </data>
+  <data name="SaleCancelledSuccessfully" xml:space="preserve">
+    <value>Venta cancelada exitosamente</value>
+  </data>
+  <data name="ErrorCancellingSale" xml:space="preserve">
+    <value>Error al cancelar la venta</value>
+  </data>
+  <data name="CompletedAt" xml:space="preserve">
+    <value>Fecha de Completado</value>
+  </data>
+  <data name="ItemCount" xml:space="preserve">
+    <value>Artículos</value>
+  </data>
+  <data name="DateFrom" xml:space="preserve">
+    <value>Fecha Desde</value>
+  </data>
+  <data name="DateTo" xml:space="preserve">
+    <value>Fecha Hasta</value>
+  </data>
+  <data name="ClearFilters" xml:space="preserve">
+    <value>Limpiar Filtros</value>
+  </data>
+  <data name="Date" xml:space="preserve">
+    <value>Fecha</value>
+  </data>
+  <data name="Warehouse" xml:space="preserve">
+    <value>Almacén</value>
+  </data>
+  <data name="SaleType" xml:space="preserve">
+    <value>Tipo de Venta</value>
+  </data>
+  <data name="Notes" xml:space="preserve">
+    <value>Notas</value>
+  </data>
+  <data name="Amount" xml:space="preserve">
+    <value>Monto</value>
+  </data>
+  <data name="Reference" xml:space="preserve">
+    <value>Referencia</value>
+  </data>
 </root>

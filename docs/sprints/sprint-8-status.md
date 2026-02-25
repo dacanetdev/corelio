@@ -3,10 +3,10 @@
 **Goal:** Extend the POS system with sales history, inventory management UI, receipt generation, and quote management — giving hardware store staff complete visibility and control over all sales operations.
 
 **Duration:** TBD (~3-4 days estimated at 8 SP/day velocity)
-**Status:** 🔴 Not Started (0%)
-**Started:** TBD
+**Status:** 🟡 In Progress (24%)
+**Started:** 2026-02-24
 **Total Story Points:** 21 pts (US-8.1: 5, US-8.2: 8, US-8.3: 5, US-8.4: 3) + ~2 SP tech debt (TD-3.1.A)
-**Completed:** 0/37 tasks (0%)
+**Completed:** 9/37 tasks (24%) — US-8.1 complete
 
 > 🎯 **This is the NEXT SPRINT — ready to begin.**
 > Prerequisites: Sprint 7 complete ✅ | Sale, InventoryItem, Payment entities exist ✅ | PosEndpoints, SaleEndpoints scaffolded ✅
@@ -25,19 +25,19 @@ Recommended to fold into Sprint 8 since the product domain is active.
 ## User Story 8.1: Sales History & Management UI
 **As a store manager, I want to view, search, and manage completed and cancelled sales so that I can review transactions and resolve disputes without needing database access.**
 
-**Status:** 🔴 Not Started
+**Status:** 🟢 Complete
 
 | Task ID | Task | Branch | Status | Notes |
 |---------|------|--------|--------|-------|
-| TASK-8.1.1 | Add `GetSalesQuery` + handler with pagination and filter support (dateFrom, dateTo, searchTerm, status, page, pageSize) | `feature/US-8.1-sales-history-ui` | 🔴 | Use `AsNoTracking()` |
-| TASK-8.1.2 | Add `GetSaleByIdQuery` + handler (includes `SaleItems` and `Payments`) | `feature/US-8.1-sales-history-ui` | 🔴 | |
-| TASK-8.1.3 | Update `SaleEndpoints.cs` — add `GET /api/v1/sales` (paginated list with query params) and `GET /api/v1/sales/{id}` (detail) | `feature/US-8.1-sales-history-ui` | 🔴 | |
-| TASK-8.1.4 | Create `SaleList.razor` — paginated table with filter bar (date range `dd/MM/yyyy`, search, status dropdown) | `feature/US-8.1-sales-history-ui` | 🔴 | |
-| TASK-8.1.5 | Create `SaleDetail.razor` (or modal) — items table, payment summary, cancel button | `feature/US-8.1-sales-history-ui` | 🔴 | |
-| TASK-8.1.6 | Add cancel sale flow to UI with `MudDialog` confirmation and Snackbar feedback | `feature/US-8.1-sales-history-ui` | 🔴 | Reuse existing `CancelSaleCommand` |
-| TASK-8.1.7 | Add "Historial de Ventas" navigation link to `NavMenu.razor` | `feature/US-8.1-sales-history-ui` | 🔴 | |
-| TASK-8.1.8 | Add ~25 es-MX localization keys (`SalesHistory`, `SaleDetail`, `CancelSale`, `SaleStatus`, `SaleItems`, `PaymentSummary`, etc.) | `feature/US-8.1-sales-history-ui` | 🔴 | |
-| TASK-8.1.9 | Unit tests for `GetSalesQuery` handler and filter logic (>70% coverage) | `feature/US-8.1-sales-history-ui` | 🔴 | |
+| TASK-8.1.1 | Add `GetSalesQuery` + handler with pagination and filter support (dateFrom, dateTo, searchTerm, status, page, pageSize) | `feature/US-8.1-sales-history-ui` | 🟢 | Added `string? SearchTerm`, updated `ISaleRepository.GetPagedAsync` + `SaleRepository` with ILike |
+| TASK-8.1.2 | Add `GetSaleByIdQuery` + handler (includes `SaleItems` and `Payments`) | `feature/US-8.1-sales-history-ui` | 🟢 | Already existed from Sprint 7; verified working |
+| TASK-8.1.3 | Update `SaleEndpoints.cs` — add `GET /api/v1/sales` (paginated list with query params) and `GET /api/v1/sales/{id}` (detail) + `DELETE /{id}` cancel | `feature/US-8.1-sales-history-ui` | 🟢 | Added `searchTerm` param + `DELETE /{id}` with `RequireAuthorization("sales.cancel")` |
+| TASK-8.1.4 | Create `SaleList.razor` — paginated table with filter bar (date range `dd/MM/yyyy`, search, status dropdown) | `feature/US-8.1-sales-history-ui` | 🟢 | Route `/sales`, color-coded status chips, date pickers, 300ms search debounce |
+| TASK-8.1.5 | Create `SaleDetail.razor` (or modal) — items table, payment summary, cancel button | `feature/US-8.1-sales-history-ui` | 🟢 | Route `/sales/{Id:guid}`, items table, payment rows, SubTotal/IVA/Total footer |
+| TASK-8.1.6 | Add cancel sale flow to UI with `MudDialog` confirmation and Snackbar feedback | `feature/US-8.1-sales-history-ui` | 🟢 | `CancelSaleCommandHandler` extended to allow Completed sales + restore inventory via `InventoryTransactionType.Return` |
+| TASK-8.1.7 | Add "Historial de Ventas" navigation link to `NavMenu.razor` | `feature/US-8.1-sales-history-ui` | 🟢 | Added under VENTAS section, after `/pos` |
+| TASK-8.1.8 | Add ~25 es-MX localization keys | `feature/US-8.1-sales-history-ui` | 🟢 | 34 keys added: SaleHistory, SaleDetail, status labels, type labels, error messages, date filter labels |
+| TASK-8.1.9 | Unit tests for `GetSalesQuery` handler and filter logic (>70% coverage) | `feature/US-8.1-sales-history-ui` | 🟢 | 7 tests in `GetSalesQueryHandlerTests`; 3 new tests in `CancelSaleCommandHandlerTests`; 141/141 app tests passing |
 
 **Acceptance Criteria:**
 - [ ] Manager navigates to `/ventas` and sees paginated table (20/page) with: Folio, Date (dd/MM/yyyy), Customer, Total ($MXN), Payment Method, Status
@@ -190,10 +190,10 @@ Recommended to fold into Sprint 8 since the product domain is active.
 | Story | Priority | SP | Status |
 |-------|----------|----|--------|
 | TD-3.1.A: Product handler unit tests | P1 High | ~2 | 🔴 Not Started |
-| US-8.1: Sales History & Management UI | P0 Critical | 5 | 🔴 Not Started |
+| US-8.1: Sales History & Management UI | P0 Critical | 5 | 🟢 Complete — PR pending |
 | US-8.2: Inventory Management UI | P0 Critical | 8 | 🔴 Not Started |
 | US-8.3: Receipt & Ticket Generation | P1 High | 5 | 🔴 Not Started |
 | US-8.4: Quote Management | P1 High | 3 | 🔴 Not Started |
-| **Total** | | **~23** | |
+| **Total** | | **~23** | **5/23 SP done (22%)** |
 
 **Recommended execution order:** US-8.1 → US-8.2 → US-8.3 (depends on 8.1) → US-8.4 → TD-3.1.A
