@@ -25,17 +25,26 @@ public class SaleRepository(ApplicationDbContext context) : ISaleRepository
         int pageNumber,
         int pageSize,
         SaleStatus? status = null,
+        string? searchTerm = null,
         DateTime? dateFrom = null,
         DateTime? dateTo = null,
         CancellationToken cancellationToken = default)
     {
         var query = context.Sales
             .Include(s => s.Customer)
+            .Include(s => s.Items)
             .AsQueryable();
 
         if (status.HasValue)
         {
             query = query.Where(s => s.Status == status.Value);
+        }
+
+        if (!string.IsNullOrWhiteSpace(searchTerm))
+        {
+            query = query.Where(s =>
+                EF.Functions.ILike(s.Folio, $"%{searchTerm}%") ||
+                (s.Customer != null && EF.Functions.ILike(s.Customer.FullName, $"%{searchTerm}%")));
         }
 
         if (dateFrom.HasValue)

@@ -1,0 +1,302 @@
+@page "/sales/{Id:guid}"
+@using Corelio.BlazorApp.Models.Pos
+@using Corelio.BlazorApp.Resources
+@using Corelio.BlazorApp.Services.Sales
+@using Microsoft.Extensions.Localization
+@using MudBlazor
+@using System.Globalization
+@inject ISaleService SaleService
+@inject IStringLocalizer<SharedResource> L
+@inject ISnackbar Snackbar
+@inject NavigationManager Nav
+
+<PageTitle>@L["SaleDetail"] - Corelio</PageTitle>
+
+<MudContainer MaxWidth="MaxWidth.Large" Class="mt-4">
+    <MudStack Row="true" AlignItems="AlignItems.Center" Class="mb-4">
+        <MudIconButton Icon="@Icons.Material.Rounded.ArrowBack"
+                       OnClick="@(() => Nav.NavigateTo("/sales"))" />
+        <div>
+            <MudText Typo="Typo.h5" GutterBottom="false">@L["SaleDetail"]</MudText>
+            <MudText Typo="Typo.body2" Color="Color.Secondary">@L["SaleDetailDescription"]</MudText>
+        </div>
+    </MudStack>
+
+    @if (_loading)
+    {
+        <MudProgressLinear Indeterminate="true" Color="Color.Primary" Class="mb-4" />
+    }
+    else if (_error is not null)
+    {
+        <MudAlert Severity="Severity.Error" Class="mb-4">@_error</MudAlert>
+    }
+    else if (_sale is not null)
+    {
+        @* Header Card *@
+        <MudPaper Elevation="1" Class="pa-4 mb-4">
+            <MudGrid>
+                <MudItem xs="12" md="6">
+                    <MudStack Spacing="2">
+                        <MudStack Row="true" AlignItems="AlignItems.Center" Spacing="2">
+                            <MudText Typo="Typo.h6">@_sale.Folio</MudText>
+                            <MudChip T="string" Size="Size.Small" Color="@GetStatusColor(_sale.Status)">
+                                @GetStatusLabel(_sale.Status)
+                            </MudChip>
+                        </MudStack>
+                        <MudText Typo="Typo.body2">
+                            <strong>@L["Customer"]:</strong> @(_sale.CustomerName ?? "—")
+                        </MudText>
+                        <MudText Typo="Typo.body2">
+                            <strong>@L["Date"]:</strong> @_sale.CreatedAt.ToString("dd/MM/yyyy HH:mm", new CultureInfo("es-MX"))
+                        </MudText>
+                        @if (_sale.CompletedAt.HasValue)
+                        {
+                            <MudText Typo="Typo.body2">
+                                <strong>@L["CompletedAt"]:</strong> @_sale.CompletedAt.Value.ToString("dd/MM/yyyy HH:mm", new CultureInfo("es-MX"))
+                            </MudText>
+                        }
+                    </MudStack>
+                </MudItem>
+                <MudItem xs="12" md="6">
+                    <MudStack Spacing="2">
+                        <MudText Typo="Typo.body2">
+                            <strong>@L["Warehouse"]:</strong> @_sale.WarehouseName
+                        </MudText>
+                        <MudText Typo="Typo.body2">
+                            <strong>@L["SaleType"]:</strong> @GetTypeLabel(_sale.Type)
+                        </MudText>
+                        @if (!string.IsNullOrWhiteSpace(_sale.Notes))
+                        {
+                            <MudText Typo="Typo.body2">
+                                <strong>@L["Notes"]:</strong> @_sale.Notes
+                            </MudText>
+                        }
+                    </MudStack>
+                </MudItem>
+            </MudGrid>
+
+            @if (CanCancel(_sale.Status))
+            {
+                <MudDivider Class="my-3" />
+                <MudButton Color="Color.Error"
+                           Variant="Variant.Outlined"
+                           StartIcon="@Icons.Material.Rounded.Cancel"
+                           OnClick="OpenCancelDialog"
+                           Disabled="_cancelling">
+                    @L["CancelSale"]
+                </MudButton>
+            }
+        </MudPaper>
+
+        @* Sale Items *@
+        <MudText Typo="Typo.h6" Class="mb-2">@L["SaleItems"]</MudText>
+        <MudPaper Elevation="1" Class="mb-4">
+            <MudTable Items="_sale.Items" Hover="true" Dense="true" Breakpoint="Breakpoint.Sm">
+                <HeaderContent>
+                    <MudTh>@L["ProductName"]</MudTh>
+                    <MudTh>@L["SKU"]</MudTh>
+                    <MudTh Style="text-align:right">@L["Quantity"]</MudTh>
+                    <MudTh Style="text-align:right">@L["UnitPrice"]</MudTh>
+                    <MudTh Style="text-align:right">@L["DiscountPercentage"]</MudTh>
+                    <MudTh Style="text-align:right">@L["TaxRate"]</MudTh>
+                    <MudTh Style="text-align:right">@L["LineTotal"]</MudTh>
+                </HeaderContent>
+                <RowTemplate>
+                    <MudTd DataLabel="@L["ProductName"]">@context.ProductName</MudTd>
+                    <MudTd DataLabel="@L["SKU"]">@context.ProductSku</MudTd>
+                    <MudTd DataLabel="@L["Quantity"]" Style="text-align:right">@context.Quantity</MudTd>
+                    <MudTd DataLabel="@L["UnitPrice"]" Style="text-align:right">
+                        @context.UnitPrice.ToString("C", new CultureInfo("es-MX"))
+                    </MudTd>
+                    <MudTd DataLabel="@L["DiscountPercentage"]" Style="text-align:right">
+                        @($"{context.DiscountPercentage:0.##}%")
+                    </MudTd>
+                    <MudTd DataLabel="@L["TaxRate"]" Style="text-align:right">
+                        @($"{context.TaxPercentage:0.##}%")
+                    </MudTd>
+                    <MudTd DataLabel="@L["LineTotal"]" Style="text-align:right">
+                        <strong>@context.LineTotal.ToString("C", new CultureInfo("es-MX"))</strong>
+                    </MudTd>
+                </RowTemplate>
+            </MudTable>
+        </MudPaper>
+
+        @* Payment Summary *@
+        <MudText Typo="Typo.h6" Class="mb-2">@L["PaymentSummary"]</MudText>
+        <MudPaper Elevation="1" Class="pa-4">
+            @if (_sale.Payments.Count > 0)
+            {
+                <MudTable Items="_sale.Payments" Hover="false" Dense="true" Breakpoint="Breakpoint.Sm" Elevation="0">
+                    <HeaderContent>
+                        <MudTh>@L["PaymentMethod"]</MudTh>
+                        <MudTh Style="text-align:right">@L["Amount"]</MudTh>
+                        <MudTh>@L["Reference"]</MudTh>
+                    </HeaderContent>
+                    <RowTemplate>
+                        <MudTd DataLabel="@L["PaymentMethod"]">@GetPaymentMethodLabel(context.Method)</MudTd>
+                        <MudTd DataLabel="@L["Amount"]" Style="text-align:right">
+                            @context.Amount.ToString("C", new CultureInfo("es-MX"))
+                        </MudTd>
+                        <MudTd DataLabel="@L["Reference"]">@(context.Reference ?? "—")</MudTd>
+                    </RowTemplate>
+                </MudTable>
+                <MudDivider Class="my-2" />
+            }
+            else
+            {
+                <MudText Typo="Typo.body2" Color="Color.Secondary" Class="mb-2">—</MudText>
+            }
+
+            <MudStack Spacing="1">
+                <MudStack Row="true" Justify="Justify.SpaceBetween">
+                    <MudText Typo="Typo.body2" Color="Color.Secondary">@L["SubTotal"]</MudText>
+                    <MudText Typo="Typo.body2">@_sale.SubTotal.ToString("C", new CultureInfo("es-MX"))</MudText>
+                </MudStack>
+                @if (_sale.DiscountAmount > 0)
+                {
+                    <MudStack Row="true" Justify="Justify.SpaceBetween">
+                        <MudText Typo="Typo.body2" Color="Color.Secondary">@L["Discount"]</MudText>
+                        <MudText Typo="Typo.body2" Color="Color.Error">-@_sale.DiscountAmount.ToString("C", new CultureInfo("es-MX"))</MudText>
+                    </MudStack>
+                }
+                <MudStack Row="true" Justify="Justify.SpaceBetween">
+                    <MudText Typo="Typo.body2" Color="Color.Secondary">@L["IvaToggle"] (16%)</MudText>
+                    <MudText Typo="Typo.body2">@_sale.TaxAmount.ToString("C", new CultureInfo("es-MX"))</MudText>
+                </MudStack>
+                <MudDivider />
+                <MudStack Row="true" Justify="Justify.SpaceBetween">
+                    <MudText Typo="Typo.h6">@L["Total"]</MudText>
+                    <MudText Typo="Typo.h6" Color="Color.Primary">
+                        @_sale.Total.ToString("C", new CultureInfo("es-MX"))
+                    </MudText>
+                </MudStack>
+            </MudStack>
+        </MudPaper>
+    }
+</MudContainer>
+
+@* Cancel Confirmation Dialog *@
+<MudDialog @bind-Visible="_showCancelDialog">
+    <TitleContent>@L["CancelSale"]</TitleContent>
+    <DialogContent>
+        <MudText>@L["CancelSaleConfirmation"]</MudText>
+        @if (_sale is not null)
+        {
+            <MudText Class="mt-2"><strong>@_sale.Folio</strong></MudText>
+        }
+    </DialogContent>
+    <DialogActions>
+        <MudButton OnClick="@(() => _showCancelDialog = false)">@L["Cancel"]</MudButton>
+        <MudButton Color="Color.Error" Variant="Variant.Filled"
+                   OnClick="ConfirmCancel" Disabled="_cancelling">
+            @if (_cancelling)
+            {
+                <MudProgressCircular Size="Size.Small" Indeterminate="true" />
+            }
+            else
+            {
+                @L["CancelSale"]
+            }
+        </MudButton>
+    </DialogActions>
+</MudDialog>
+
+@code {
+    [Parameter]
+    public Guid Id { get; set; }
+
+    private SaleModel? _sale;
+    private bool _loading = true;
+    private string? _error;
+    private bool _showCancelDialog;
+    private bool _cancelling;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadSale();
+    }
+
+    private async Task LoadSale()
+    {
+        _loading = true;
+        _error = null;
+
+        var result = await SaleService.GetSaleByIdAsync(Id);
+
+        if (result.IsSuccess && result.Value is not null)
+        {
+            _sale = result.Value;
+        }
+        else
+        {
+            _error = result.Error ?? L["ErrorLoadingSaleDetail"];
+        }
+
+        _loading = false;
+    }
+
+    private void OpenCancelDialog()
+    {
+        _showCancelDialog = true;
+    }
+
+    private async Task ConfirmCancel()
+    {
+        if (_sale is null) { return; }
+
+        _cancelling = true;
+        var result = await SaleService.CancelSaleAsync(_sale.Id);
+
+        if (result.IsSuccess)
+        {
+            Snackbar.Add(L["SaleCancelledSuccessfully"], Severity.Success);
+            _showCancelDialog = false;
+            await LoadSale();
+        }
+        else
+        {
+            Snackbar.Add(result.Error ?? L["ErrorCancellingSale"], Severity.Error);
+        }
+
+        _cancelling = false;
+    }
+
+    private static bool CanCancel(string status) =>
+        status.Equals("completed", StringComparison.OrdinalIgnoreCase) ||
+        status.Equals("pending", StringComparison.OrdinalIgnoreCase);
+
+    private Color GetStatusColor(string status) => status.ToLowerInvariant() switch
+    {
+        "completed" => Color.Success,
+        "pending" => Color.Warning,
+        "cancelled" => Color.Error,
+        _ => Color.Default
+    };
+
+    private string GetStatusLabel(string status) => status.ToLowerInvariant() switch
+    {
+        "completed" => L["SaleStatusCompleted"],
+        "pending" => L["SaleStatusPending"],
+        "cancelled" => L["SaleStatusCancelled"],
+        "draft" => L["SaleStatusDraft"],
+        "refunded" => L["SaleStatusRefunded"],
+        _ => status
+    };
+
+    private string GetTypeLabel(string type) => type.ToLowerInvariant() switch
+    {
+        "pos" => L["SaleTypePOS"],
+        "invoice" => L["SaleTypeInvoice"],
+        "quote" => L["SaleTypeQuote"],
+        _ => type
+    };
+
+    private string GetPaymentMethodLabel(string method) => method.ToLowerInvariant() switch
+    {
+        "cash" => L["Cash"],
+        "card" => L["Card"],
+        "transfer" => L["Transfer"],
+        "check" => L["Check"],
+        _ => method
+    };
+}

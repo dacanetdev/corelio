@@ -1,3 +1,4 @@
+using Corelio.Application.Sales.Commands.CancelSale;
 using Corelio.Application.Sales.Queries.GetSaleById;
 using Corelio.Application.Sales.Queries.GetSales;
 using Corelio.Domain.Enums;
@@ -30,6 +31,11 @@ public static class SaleEndpoints
             .WithSummary("Get a sale by ID")
             .RequireAuthorization("sales.view");
 
+        group.MapDelete("/{id:guid}", CancelSale)
+            .WithName("CancelSale")
+            .WithSummary("Cancel a sale (restores inventory for completed sales)")
+            .RequireAuthorization("sales.cancel");
+
         return app;
     }
 
@@ -37,6 +43,7 @@ public static class SaleEndpoints
         [FromQuery] int pageNumber,
         [FromQuery] int pageSize,
         [FromQuery] SaleStatus? status,
+        [FromQuery] string? searchTerm,
         [FromQuery] DateTime? dateFrom,
         [FromQuery] DateTime? dateTo,
         IMediator mediator,
@@ -46,6 +53,7 @@ public static class SaleEndpoints
             PageNumber: pageNumber > 0 ? pageNumber : 1,
             PageSize: pageSize > 0 ? pageSize : 20,
             Status: status,
+            SearchTerm: searchTerm,
             DateFrom: dateFrom,
             DateTo: dateTo);
 
@@ -60,6 +68,17 @@ public static class SaleEndpoints
     {
         var query = new GetSaleByIdQuery(id);
         var result = await mediator.Send(query, ct);
+        return result.ToHttpResult();
+    }
+
+    private static async Task<IResult> CancelSale(
+        Guid id,
+        [FromQuery] string? reason,
+        IMediator mediator,
+        CancellationToken ct)
+    {
+        var command = new CancelSaleCommand(id, reason);
+        var result = await mediator.Send(command, ct);
         return result.ToHttpResult();
     }
 }

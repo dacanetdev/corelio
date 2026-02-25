@@ -1,0 +1,236 @@
+@page "/sales"
+@using Corelio.BlazorApp.Models.Pos
+@using Corelio.BlazorApp.Resources
+@using Corelio.BlazorApp.Services.Sales
+@using Microsoft.Extensions.Localization
+@using MudBlazor
+@using System.Globalization
+@inject ISaleService SaleService
+@inject IStringLocalizer<SharedResource> L
+@inject ISnackbar Snackbar
+@inject NavigationManager Nav
+
+<PageTitle>@L["SaleHistory"] - Corelio</PageTitle>
+
+<MudContainer MaxWidth="MaxWidth.ExtraLarge" Class="mt-4">
+    <MudStack Row="true" AlignItems="AlignItems.Center" Justify="Justify.SpaceBetween" Class="mb-4">
+        <div>
+            <MudText Typo="Typo.h5" GutterBottom="false">@L["SaleHistory"]</MudText>
+            <MudText Typo="Typo.body2" Color="Color.Secondary">@L["SaleHistoryDescription"]</MudText>
+        </div>
+    </MudStack>
+
+    <MudPaper Elevation="1" Class="pa-4 mb-4">
+        <MudGrid>
+            <MudItem xs="12" md="4">
+                <MudTextField @bind-Value="_searchTerm"
+                              Placeholder="@L["SearchSales"]"
+                              Adornment="Adornment.Start"
+                              AdornmentIcon="@Icons.Material.Rounded.Search"
+                              Immediate="true"
+                              DebounceInterval="300"
+                              OnDebounceIntervalElapsed="OnSearchChanged"
+                              Class="mb-0" />
+            </MudItem>
+            <MudItem xs="12" md="3">
+                <MudSelect T="string" Value="_selectedStatus" ValueChanged="OnStatusChanged"
+                           Label="@L["Status"]" Clearable="true">
+                    <MudSelectItem T="string" Value="@("completed")">@L["SaleStatusCompleted"]</MudSelectItem>
+                    <MudSelectItem T="string" Value="@("pending")">@L["SaleStatusPending"]</MudSelectItem>
+                    <MudSelectItem T="string" Value="@("draft")">@L["SaleStatusDraft"]</MudSelectItem>
+                    <MudSelectItem T="string" Value="@("cancelled")">@L["SaleStatusCancelled"]</MudSelectItem>
+                </MudSelect>
+            </MudItem>
+            <MudItem xs="12" md="2">
+                <MudDatePicker Label="@L["DateFrom"]"
+                               Date="_dateFrom"
+                               DateChanged="OnDateFromChanged"
+                               DateFormat="dd/MM/yyyy"
+                               Culture="@(new CultureInfo("es-MX"))"
+                               Clearable="true" />
+            </MudItem>
+            <MudItem xs="12" md="2">
+                <MudDatePicker Label="@L["DateTo"]"
+                               Date="_dateTo"
+                               DateChanged="OnDateToChanged"
+                               DateFormat="dd/MM/yyyy"
+                               Culture="@(new CultureInfo("es-MX"))"
+                               Clearable="true" />
+            </MudItem>
+            <MudItem xs="12" md="1" Class="d-flex align-center">
+                <MudIconButton Icon="@Icons.Material.Rounded.FilterAltOff"
+                               Variant="Variant.Outlined"
+                               OnClick="ClearFilters" />
+            </MudItem>
+        </MudGrid>
+    </MudPaper>
+
+    @if (_loading)
+    {
+        <MudProgressLinear Indeterminate="true" Color="Color.Primary" Class="mb-4" />
+    }
+    else if (_error is not null)
+    {
+        <MudAlert Severity="Severity.Error" Class="mb-4">@_error</MudAlert>
+    }
+    else if (_sales.Count == 0)
+    {
+        <MudPaper Elevation="0" Class="pa-8 text-center">
+            <MudIcon Icon="@Icons.Material.Rounded.ReceiptLong" Color="Color.Secondary" Size="Size.Large" />
+            <MudText Typo="Typo.h6" Class="mt-2">@L["NoSalesFound"]</MudText>
+            <MudText Color="Color.Secondary">@L["NoSalesDescription"]</MudText>
+        </MudPaper>
+    }
+    else
+    {
+        <MudTable Items="_sales" Hover="true" Breakpoint="Breakpoint.Sm"
+                  Dense="true" Striped="true">
+            <HeaderContent>
+                <MudTh>@L["Folio"]</MudTh>
+                <MudTh>@L["Date"]</MudTh>
+                <MudTh>@L["Customer"]</MudTh>
+                <MudTh>@L["Total"]</MudTh>
+                <MudTh>@L["ItemCount"]</MudTh>
+                <MudTh>@L["Status"]</MudTh>
+                <MudTh>@L["Actions"]</MudTh>
+            </HeaderContent>
+            <RowTemplate>
+                <MudTd DataLabel="@L["Folio"]">
+                    <MudText Typo="Typo.body2" Class="fw-medium">@context.Folio</MudText>
+                </MudTd>
+                <MudTd DataLabel="@L["Date"]">
+                    @context.CreatedAt.ToString("dd/MM/yyyy HH:mm", new CultureInfo("es-MX"))
+                </MudTd>
+                <MudTd DataLabel="@L["Customer"]">
+                    @(context.CustomerName ?? "—")
+                </MudTd>
+                <MudTd DataLabel="@L["Total"]">
+                    @context.Total.ToString("C", new CultureInfo("es-MX"))
+                </MudTd>
+                <MudTd DataLabel="@L["ItemCount"]">
+                    @context.ItemCount
+                </MudTd>
+                <MudTd DataLabel="@L["Status"]">
+                    <MudChip T="string" Size="Size.Small" Color="@GetStatusColor(context.Status)">
+                        @GetStatusLabel(context.Status)
+                    </MudChip>
+                </MudTd>
+                <MudTd DataLabel="@L["Actions"]">
+                    <MudIconButton Icon="@Icons.Material.Rounded.Visibility"
+                                   Size="Size.Small"
+                                   OnClick="@(() => Nav.NavigateTo($"/sales/{context.Id}"))" />
+                </MudTd>
+            </RowTemplate>
+        </MudTable>
+
+        <MudStack Row="true" AlignItems="AlignItems.Center" Justify="Justify.SpaceBetween" Class="mt-4">
+            <MudText Typo="Typo.body2" Color="Color.Secondary">
+                @L["ShowingResults"] @((_currentPage - 1) * _pageSize + 1)–@Math.Min(_currentPage * _pageSize, _totalCount) @L["Of"] @_totalCount
+            </MudText>
+            <MudPagination Count="_totalPages" Selected="_currentPage"
+                           SelectedChanged="OnPageChanged" />
+        </MudStack>
+    }
+</MudContainer>
+
+@code {
+    private List<SaleListModel> _sales = [];
+    private bool _loading = true;
+    private string? _error;
+    private string _searchTerm = string.Empty;
+    private string? _selectedStatus;
+    private DateTime? _dateFrom;
+    private DateTime? _dateTo;
+    private int _currentPage = 1;
+    private int _pageSize = 20;
+    private int _totalCount;
+    private int _totalPages = 1;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadSales();
+    }
+
+    private async Task LoadSales()
+    {
+        _loading = true;
+        _error = null;
+
+        var result = await SaleService.GetSalesAsync(
+            _currentPage, _pageSize, _searchTerm, _selectedStatus, _dateFrom, _dateTo);
+
+        if (result.IsSuccess && result.Value is not null)
+        {
+            _sales = result.Value.Items;
+            _totalCount = result.Value.TotalCount;
+            _totalPages = result.Value.TotalPages;
+        }
+        else
+        {
+            _error = result.Error ?? L["ErrorLoadingSales"];
+        }
+
+        _loading = false;
+    }
+
+    private async Task OnSearchChanged()
+    {
+        _currentPage = 1;
+        await LoadSales();
+    }
+
+    private async Task OnStatusChanged(string? value)
+    {
+        _selectedStatus = value;
+        _currentPage = 1;
+        await LoadSales();
+    }
+
+    private async Task OnDateFromChanged(DateTime? value)
+    {
+        _dateFrom = value;
+        _currentPage = 1;
+        await LoadSales();
+    }
+
+    private async Task OnDateToChanged(DateTime? value)
+    {
+        _dateTo = value;
+        _currentPage = 1;
+        await LoadSales();
+    }
+
+    private async Task ClearFilters()
+    {
+        _searchTerm = string.Empty;
+        _selectedStatus = null;
+        _dateFrom = null;
+        _dateTo = null;
+        _currentPage = 1;
+        await LoadSales();
+    }
+
+    private async Task OnPageChanged(int page)
+    {
+        _currentPage = page;
+        await LoadSales();
+    }
+
+    private Color GetStatusColor(string status) => status.ToLowerInvariant() switch
+    {
+        "completed" => Color.Success,
+        "pending" => Color.Warning,
+        "cancelled" => Color.Error,
+        _ => Color.Default
+    };
+
+    private string GetStatusLabel(string status) => status.ToLowerInvariant() switch
+    {
+        "completed" => L["SaleStatusCompleted"],
+        "pending" => L["SaleStatusPending"],
+        "cancelled" => L["SaleStatusCancelled"],
+        "draft" => L["SaleStatusDraft"],
+        "refunded" => L["SaleStatusRefunded"],
+        _ => status
+    };
+}
