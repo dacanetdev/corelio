@@ -231,4 +231,146 @@
   <data name="CreateFirst" xml:space="preserve">
     <value>Create the first one</value>
   </data>
+  <!-- Inventory Management (US-8.2) -->
+  <data name="Inventory" xml:space="preserve">
+    <value>Inventory</value>
+  </data>
+  <data name="InventoryManagement" xml:space="preserve">
+    <value>Inventory Management</value>
+  </data>
+  <data name="InventoryDescription" xml:space="preserve">
+    <value>View stock levels and make manual adjustments by warehouse</value>
+  </data>
+  <data name="StockAdjustment" xml:space="preserve">
+    <value>Stock Adjustment</value>
+  </data>
+  <data name="StockAdjustmentTitle" xml:space="preserve">
+    <value>Adjust Stock</value>
+  </data>
+  <data name="AdjustStock" xml:space="preserve">
+    <value>Adjust Stock</value>
+  </data>
+  <data name="StockAdequate" xml:space="preserve">
+    <value>Adequate</value>
+  </data>
+  <data name="StockLow" xml:space="preserve">
+    <value>Low Stock</value>
+  </data>
+  <data name="StockOutOfStock" xml:space="preserve">
+    <value>Out of Stock</value>
+  </data>
+  <data name="LowStockOnly" xml:space="preserve">
+    <value>Low stock only</value>
+  </data>
+  <data name="FilterByWarehouse" xml:space="preserve">
+    <value>Filter by Warehouse</value>
+  </data>
+  <data name="AdjustmentReason" xml:space="preserve">
+    <value>Adjustment Reason</value>
+  </data>
+  <data name="AdjustmentNotes" xml:space="preserve">
+    <value>Adjustment Notes</value>
+  </data>
+  <data name="AdjustmentTypeIncrease" xml:space="preserve">
+    <value>Increase</value>
+  </data>
+  <data name="AdjustmentTypeDecrease" xml:space="preserve">
+    <value>Decrease</value>
+  </data>
+  <data name="AdjustmentQuantity" xml:space="preserve">
+    <value>Quantity to Adjust</value>
+  </data>
+  <data name="TransactionHistory" xml:space="preserve">
+    <value>Transaction History</value>
+  </data>
+  <data name="TransactionType" xml:space="preserve">
+    <value>Transaction Type</value>
+  </data>
+  <data name="QuantityBefore" xml:space="preserve">
+    <value>Previous Stock</value>
+  </data>
+  <data name="QuantityAfter" xml:space="preserve">
+    <value>New Stock</value>
+  </data>
+  <data name="QuantityChange" xml:space="preserve">
+    <value>Change</value>
+  </data>
+  <data name="ReasonDamaged" xml:space="preserve">
+    <value>Damaged</value>
+  </data>
+  <data name="ReasonLost" xml:space="preserve">
+    <value>Lost</value>
+  </data>
+  <data name="ReasonStolen" xml:space="preserve">
+    <value>Stolen</value>
+  </data>
+  <data name="ReasonFound" xml:space="preserve">
+    <value>Found</value>
+  </data>
+  <data name="ReasonCountCorrection" xml:space="preserve">
+    <value>Count Correction</value>
+  </data>
+  <data name="ReasonOther" xml:space="preserve">
+    <value>Other</value>
+  </data>
+  <data name="TxTypeSale" xml:space="preserve">
+    <value>Sale</value>
+  </data>
+  <data name="TxTypePurchase" xml:space="preserve">
+    <value>Purchase</value>
+  </data>
+  <data name="TxTypeAdjustmentPositive" xml:space="preserve">
+    <value>Positive Adjustment</value>
+  </data>
+  <data name="TxTypeAdjustmentNegative" xml:space="preserve">
+    <value>Negative Adjustment</value>
+  </data>
+  <data name="TxTypeReturn" xml:space="preserve">
+    <value>Return</value>
+  </data>
+  <data name="TxTypeDamaged" xml:space="preserve">
+    <value>Damaged</value>
+  </data>
+  <data name="TxTypeLost" xml:space="preserve">
+    <value>Lost</value>
+  </data>
+  <data name="TxTypeFound" xml:space="preserve">
+    <value>Found</value>
+  </data>
+  <data name="CurrentStock" xml:space="preserve">
+    <value>Current Stock</value>
+  </data>
+  <data name="AvailableStock" xml:space="preserve">
+    <value>Available Stock</value>
+  </data>
+  <data name="ReservedStock" xml:space="preserve">
+    <value>Reserved Stock</value>
+  </data>
+  <data name="NoInventoryFound" xml:space="preserve">
+    <value>No inventory items found</value>
+  </data>
+  <data name="NoInventoryDescription" xml:space="preserve">
+    <value>Add products to the catalog to see them here</value>
+  </data>
+  <data name="NoTransactionsFound" xml:space="preserve">
+    <value>No transactions recorded</value>
+  </data>
+  <data name="ErrorLoadingInventory" xml:space="preserve">
+    <value>Error loading inventory</value>
+  </data>
+  <data name="AdjustmentSuccess" xml:space="preserve">
+    <value>Stock adjustment applied successfully</value>
+  </data>
+  <data name="AdjustmentError" xml:space="preserve">
+    <value>Error applying stock adjustment</value>
+  </data>
+  <data name="InsufficientStock" xml:space="preserve">
+    <value>Quantity cannot exceed available stock</value>
+  </data>
+  <data name="ViewTransactions" xml:space="preserve">
+    <value>View Transactions</value>
+  </data>
+  <data name="BackToInventory" xml:space="preserve">
+    <value>Back to Inventory</value>
+  </data>
 </root>

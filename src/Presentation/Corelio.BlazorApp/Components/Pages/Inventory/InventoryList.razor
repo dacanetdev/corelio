@@ -1,0 +1,259 @@
+@page "/inventory"
+@using Corelio.BlazorApp.Components.Dialogs
+@using Corelio.BlazorApp.Models.Inventory
+@using Corelio.BlazorApp.Resources
+@using Corelio.BlazorApp.Services.Inventory
+@using Microsoft.Extensions.Localization
+@using MudBlazor
+@inject IInventoryService InventoryService
+@inject IStringLocalizer<SharedResource> L
+@inject ISnackbar Snackbar
+@inject NavigationManager Nav
+@inject IDialogService DialogService
+
+<PageTitle>@L["InventoryManagement"] - Corelio</PageTitle>
+
+<MudContainer MaxWidth="MaxWidth.ExtraLarge" Class="mt-4">
+    <MudStack Row="true" AlignItems="AlignItems.Center" Justify="Justify.SpaceBetween" Class="mb-4">
+        <div>
+            <MudText Typo="Typo.h5" GutterBottom="false">@L["InventoryManagement"]</MudText>
+            <MudText Typo="Typo.body2" Color="Color.Secondary">@L["InventoryDescription"]</MudText>
+        </div>
+    </MudStack>
+
+    <MudPaper Elevation="1" Class="pa-4 mb-4">
+        <MudGrid>
+            <MudItem xs="12" md="4">
+                <MudTextField @bind-Value="_searchTerm"
+                              Placeholder="@L["Search"]"
+                              Adornment="Adornment.Start"
+                              AdornmentIcon="@Icons.Material.Rounded.Search"
+                              Immediate="true"
+                              DebounceInterval="300"
+                              OnDebounceIntervalElapsed="OnSearchChanged"
+                              Class="mb-0" />
+            </MudItem>
+            <MudItem xs="12" md="3">
+                <MudSelect T="Guid?" Value="_selectedWarehouseId" ValueChanged="OnWarehouseChanged"
+                           Label="@L["FilterByWarehouse"]" Clearable="true">
+                    @foreach (var warehouse in _warehouses)
+                    {
+                        <MudSelectItem T="Guid?" Value="@((Guid?)warehouse.Id)">
+                            @warehouse.Name@(warehouse.IsDefault ? " ★" : "")
+                        </MudSelectItem>
+                    }
+                </MudSelect>
+            </MudItem>
+            <MudItem xs="12" md="3" Class="d-flex align-center">
+                <MudCheckBox T="bool" Value="_lowStockOnly" ValueChanged="OnLowStockChanged"
+                             Label="@L["LowStockOnly"]" Color="Color.Warning" />
+            </MudItem>
+            <MudItem xs="12" md="2" Class="d-flex align-center">
+                <MudIconButton Icon="@Icons.Material.Rounded.FilterAltOff"
+                               Variant="Variant.Outlined"
+                               OnClick="ClearFilters" />
+            </MudItem>
+        </MudGrid>
+    </MudPaper>
+
+    @if (_loading)
+    {
+        <MudProgressLinear Indeterminate="true" Color="Color.Primary" Class="mb-4" />
+    }
+    else if (_error is not null)
+    {
+        <MudAlert Severity="Severity.Error" Class="mb-4">@_error</MudAlert>
+    }
+    else if (_items.Count == 0)
+    {
+        <MudPaper Elevation="0" Class="pa-8 text-center">
+            <MudIcon Icon="@Icons.Material.Rounded.Inventory2" Color="Color.Secondary" Size="Size.Large" />
+            <MudText Typo="Typo.h6" Class="mt-2">@L["NoInventoryFound"]</MudText>
+            <MudText Color="Color.Secondary">@L["NoInventoryDescription"]</MudText>
+        </MudPaper>
+    }
+    else
+    {
+        <MudTable Items="_items" Hover="true" Breakpoint="Breakpoint.Sm"
+                  Dense="true" Striped="true">
+            <HeaderContent>
+                <MudTh>@L["ProductName"]</MudTh>
+                <MudTh>@L["SKU"]</MudTh>
+                <MudTh>@L["Warehouse"]</MudTh>
+                <MudTh Style="text-align:right">@L["CurrentStock"]</MudTh>
+                <MudTh Style="text-align:right">@L["AvailableStock"]</MudTh>
+                <MudTh Style="text-align:right">@L["MinStockLevel"]</MudTh>
+                <MudTh>@L["Status"]</MudTh>
+                <MudTh>@L["Actions"]</MudTh>
+            </HeaderContent>
+            <RowTemplate>
+                <MudTd DataLabel="@L["ProductName"]">
+                    <MudText Typo="Typo.body2" Class="fw-medium">@context.ProductName</MudText>
+                </MudTd>
+                <MudTd DataLabel="@L["SKU"]">
+                    <MudText Typo="Typo.caption" Color="Color.Secondary">@context.ProductSku</MudText>
+                </MudTd>
+                <MudTd DataLabel="@L["Warehouse"]">@context.WarehouseName</MudTd>
+                <MudTd DataLabel="@L["CurrentStock"]" Style="text-align:right">
+                    @context.Quantity
+                </MudTd>
+                <MudTd DataLabel="@L["AvailableStock"]" Style="text-align:right">
+                    <MudText Color="@GetStockColor(context.StockStatus)">
+                        <strong>@context.AvailableQuantity</strong>
+                    </MudText>
+                </MudTd>
+                <MudTd DataLabel="@L["MinStockLevel"]" Style="text-align:right">
+                    @context.MinimumLevel
+                </MudTd>
+                <MudTd DataLabel="@L["Status"]">
+                    <MudChip T="string" Size="Size.Small" Color="@GetStockColor(context.StockStatus)">
+                        @GetStockStatusLabel(context.StockStatus)
+                    </MudChip>
+                </MudTd>
+                <MudTd DataLabel="@L["Actions"]">
+                    <MudStack Row="true" Spacing="0">
+                        <MudIconButton Icon="@Icons.Material.Rounded.Tune"
+                                       Size="Size.Small"
+                                       Color="Color.Primary"
+                                       OnClick="@(() => OpenAdjustDialog(context))" />
+                        <MudIconButton Icon="@Icons.Material.Rounded.History"
+                                       Size="Size.Small"
+                                       OnClick="@(() => Nav.NavigateTo($"/inventory/{context.Id}/history"))" />
+                    </MudStack>
+                </MudTd>
+            </RowTemplate>
+        </MudTable>
+
+        <MudStack Row="true" AlignItems="AlignItems.Center" Justify="Justify.SpaceBetween" Class="mt-4">
+            <MudText Typo="Typo.body2" Color="Color.Secondary">
+                @L["ShowingResults"] @((_currentPage - 1) * _pageSize + 1)–@Math.Min(_currentPage * _pageSize, _totalCount) @L["Of"] @_totalCount
+            </MudText>
+            <MudPagination Count="_totalPages" Selected="_currentPage"
+                           SelectedChanged="OnPageChanged" />
+        </MudStack>
+    }
+</MudContainer>
+
+@code {
+    private List<InventoryItemModel> _items = [];
+    private List<WarehouseModel> _warehouses = [];
+    private bool _loading = true;
+    private string? _error;
+    private string _searchTerm = string.Empty;
+    private Guid? _selectedWarehouseId;
+    private bool _lowStockOnly;
+    private int _currentPage = 1;
+    private int _pageSize = 20;
+    private int _totalCount;
+    private int _totalPages = 1;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadWarehouses();
+        await LoadInventory();
+    }
+
+    private async Task LoadWarehouses()
+    {
+        var result = await InventoryService.GetWarehousesAsync();
+        if (result.IsSuccess && result.Value is not null)
+        {
+            _warehouses = result.Value;
+        }
+    }
+
+    private async Task LoadInventory()
+    {
+        _loading = true;
+        _error = null;
+
+        var result = await InventoryService.GetInventoryItemsAsync(
+            _currentPage, _pageSize, _selectedWarehouseId, _lowStockOnly, _searchTerm);
+
+        if (result.IsSuccess && result.Value is not null)
+        {
+            _items = result.Value.Items;
+            _totalCount = result.Value.TotalCount;
+            _totalPages = result.Value.TotalPages;
+        }
+        else
+        {
+            _error = result.Error ?? L["ErrorLoadingInventory"];
+        }
+
+        _loading = false;
+    }
+
+    private async Task OnSearchChanged()
+    {
+        _currentPage = 1;
+        await LoadInventory();
+    }
+
+    private async Task OnWarehouseChanged(Guid? value)
+    {
+        _selectedWarehouseId = value;
+        _currentPage = 1;
+        await LoadInventory();
+    }
+
+    private async Task OnLowStockChanged(bool value)
+    {
+        _lowStockOnly = value;
+        _currentPage = 1;
+        await LoadInventory();
+    }
+
+    private async Task ClearFilters()
+    {
+        _searchTerm = string.Empty;
+        _selectedWarehouseId = null;
+        _lowStockOnly = false;
+        _currentPage = 1;
+        await LoadInventory();
+    }
+
+    private async Task OnPageChanged(int page)
+    {
+        _currentPage = page;
+        await LoadInventory();
+    }
+
+    private async Task OpenAdjustDialog(InventoryItemModel item)
+    {
+        var parameters = new DialogParameters
+        {
+            { "Item", item }
+        };
+
+        var options = new DialogOptions
+        {
+            CloseButton = true,
+            MaxWidth = MaxWidth.Small,
+            FullWidth = true
+        };
+
+        var dialog = await DialogService.ShowAsync<StockAdjustmentDialog>(
+            L["StockAdjustmentTitle"], parameters, options);
+
+        var result = await dialog.Result;
+        if (result is { Canceled: false })
+        {
+            await LoadInventory();
+        }
+    }
+
+    private Color GetStockColor(string status) => status switch
+    {
+        "OutOfStock" => Color.Error,
+        "LowStock" => Color.Warning,
+        _ => Color.Success
+    };
+
+    private string GetStockStatusLabel(string status) => status switch
+    {
+        "OutOfStock" => L["StockOutOfStock"],
+        "LowStock" => L["StockLow"],
+        _ => L["StockAdequate"]
+    };
+}

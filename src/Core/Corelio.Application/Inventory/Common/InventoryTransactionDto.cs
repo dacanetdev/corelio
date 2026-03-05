@@ -11,4 +11,4 @@ public record InventoryTransactionDto(
     decimal NewQuantity,
     string? Notes,
     DateTime CreatedAt,
-    string? CreatedBy);
+    Guid? CreatedBy);

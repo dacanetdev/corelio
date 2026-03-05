@@ -8,6 +8,7 @@ using Corelio.BlazorApp.Services.Http;
 using Corelio.BlazorApp.Services.Customers;
 using Corelio.BlazorApp.Services.Pos;
 using Corelio.BlazorApp.Services.Sales;
+using Corelio.BlazorApp.Services.Inventory;
 using Corelio.BlazorApp.Services.Pricing;
 using Corelio.BlazorApp.Services.Products;
 using Corelio.BlazorApp.Services.Theming;
@@ -112,6 +113,9 @@ builder.Services.AddScoped<IPosService, PosService>();
 
 // Add Sale service
 builder.Services.AddScoped<ISaleService, SaleService>();
+
+// Add Inventory service
+builder.Services.AddScoped<IInventoryService, InventoryService>();
 
 // Add Theme services
 builder.Services.AddScoped<IDynamicThemeService, DynamicThemeService>();
