@@ -1,0 +1,150 @@
+@page "/inventory/{Id:guid}/history"
+@using Corelio.BlazorApp.Models.Inventory
+@using Corelio.BlazorApp.Resources
+@using Corelio.BlazorApp.Services.Inventory
+@using Microsoft.Extensions.Localization
+@using MudBlazor
+@using System.Globalization
+@inject IInventoryService InventoryService
+@inject IStringLocalizer<SharedResource> L
+@inject NavigationManager Nav
+
+<PageTitle>@L["TransactionHistory"] - Corelio</PageTitle>
+
+<MudContainer MaxWidth="MaxWidth.Large" Class="mt-4">
+    <MudStack Row="true" AlignItems="AlignItems.Center" Class="mb-4">
+        <MudIconButton Icon="@Icons.Material.Rounded.ArrowBack"
+                       OnClick="@(() => Nav.NavigateTo("/inventory"))" />
+        <div>
+            <MudText Typo="Typo.h5" GutterBottom="false">@L["TransactionHistory"]</MudText>
+            <MudText Typo="Typo.body2" Color="Color.Secondary">@L["InventoryDescription"]</MudText>
+        </div>
+    </MudStack>
+
+    @if (_loading)
+    {
+        <MudProgressLinear Indeterminate="true" Color="Color.Primary" Class="mb-4" />
+    }
+    else if (_error is not null)
+    {
+        <MudAlert Severity="Severity.Error" Class="mb-4">@_error</MudAlert>
+    }
+    else if (_transactions.Count == 0)
+    {
+        <MudPaper Elevation="0" Class="pa-8 text-center">
+            <MudIcon Icon="@Icons.Material.Rounded.History" Color="Color.Secondary" Size="Size.Large" />
+            <MudText Typo="Typo.h6" Class="mt-2">@L["NoTransactionsFound"]</MudText>
+        </MudPaper>
+    }
+    else
+    {
+        <MudTable Items="_transactions" Hover="true" Breakpoint="Breakpoint.Sm"
+                  Dense="true" Striped="true">
+            <HeaderContent>
+                <MudTh>@L["Date"]</MudTh>
+                <MudTh>@L["TransactionType"]</MudTh>
+                <MudTh Style="text-align:right">@L["QuantityChange"]</MudTh>
+                <MudTh Style="text-align:right">@L["QuantityBefore"]</MudTh>
+                <MudTh Style="text-align:right">@L["QuantityAfter"]</MudTh>
+                <MudTh>@L["Notes"]</MudTh>
+                <MudTh>@L["CreatedBy"]</MudTh>
+            </HeaderContent>
+            <RowTemplate>
+                <MudTd DataLabel="@L["Date"]">
+                    @context.CreatedAt.ToString("dd/MM/yyyy HH:mm", new CultureInfo("es-MX"))
+                </MudTd>
+                <MudTd DataLabel="@L["TransactionType"]">
+                    <MudChip T="string" Size="Size.Small" Color="@GetTxColor(context.Quantity)">
+                        @GetTxTypeLabel(context.Type)
+                    </MudChip>
+                </MudTd>
+                <MudTd DataLabel="@L["QuantityChange"]" Style="text-align:right">
+                    <MudText Color="@GetTxColor(context.Quantity)">
+                        <strong>@(context.Quantity >= 0 ? "+" : "")@context.Quantity</strong>
+                    </MudText>
+                </MudTd>
+                <MudTd DataLabel="@L["QuantityBefore"]" Style="text-align:right">
+                    @context.PreviousQuantity
+                </MudTd>
+                <MudTd DataLabel="@L["QuantityAfter"]" Style="text-align:right">
+                    @context.NewQuantity
+                </MudTd>
+                <MudTd DataLabel="@L["Notes"]">
+                    @(context.Notes ?? "—")
+                </MudTd>
+                <MudTd DataLabel="@L["CreatedBy"]">
+                    @(context.CreatedBy?.ToString() ?? "—")
+                </MudTd>
+            </RowTemplate>
+        </MudTable>
+
+        <MudStack Row="true" AlignItems="AlignItems.Center" Justify="Justify.SpaceBetween" Class="mt-4">
+            <MudText Typo="Typo.body2" Color="Color.Secondary">
+                @L["ShowingResults"] @((_currentPage - 1) * _pageSize + 1)–@Math.Min(_currentPage * _pageSize, _totalCount) @L["Of"] @_totalCount
+            </MudText>
+            <MudPagination Count="_totalPages" Selected="_currentPage"
+                           SelectedChanged="OnPageChanged" />
+        </MudStack>
+    }
+</MudContainer>
+
+@code {
+    [Parameter]
+    public Guid Id { get; set; }
+
+    private List<InventoryTransactionModel> _transactions = [];
+    private bool _loading = true;
+    private string? _error;
+    private int _currentPage = 1;
+    private int _pageSize = 50;
+    private int _totalCount;
+    private int _totalPages = 1;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadTransactions();
+    }
+
+    private async Task LoadTransactions()
+    {
+        _loading = true;
+        _error = null;
+
+        var result = await InventoryService.GetTransactionsAsync(Id, _currentPage, _pageSize);
+
+        if (result.IsSuccess && result.Value is not null)
+        {
+            _transactions = result.Value.Items;
+            _totalCount = result.Value.TotalCount;
+            _totalPages = result.Value.TotalPages;
+        }
+        else
+        {
+            _error = result.Error ?? L["ErrorLoadingInventory"];
+        }
+
+        _loading = false;
+    }
+
+    private async Task OnPageChanged(int page)
+    {
+        _currentPage = page;
+        await LoadTransactions();
+    }
+
+    private Color GetTxColor(decimal quantity) =>
+        quantity >= 0 ? Color.Success : Color.Error;
+
+    private string GetTxTypeLabel(string type) => type switch
+    {
+        "Sale" => L["TxTypeSale"],
+        "Purchase" => L["TxTypePurchase"],
+        "AdjustmentPositive" => L["TxTypeAdjustmentPositive"],
+        "AdjustmentNegative" => L["TxTypeAdjustmentNegative"],
+        "Return" => L["TxTypeReturn"],
+        "Damaged" => L["TxTypeDamaged"],
+        "Lost" => L["TxTypeLost"],
+        "Found" => L["TxTypeFound"],
+        _ => type
+    };
+}

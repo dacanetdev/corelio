@@ -1,0 +1,189 @@
+@using System.Globalization
+@using Corelio.BlazorApp.Models.Inventory
+@using Corelio.BlazorApp.Resources
+@using Corelio.BlazorApp.Services.Inventory
+@using Microsoft.Extensions.Localization
+@inject IStringLocalizer<SharedResource> L
+@inject IInventoryService InventoryService
+@inject ISnackbar Snackbar
+
+<MudDialog>
+    <TitleContent>
+        <MudText Typo="Typo.h6">
+            <MudIcon Icon="@Icons.Material.Rounded.Tune" Class="mr-2" />
+            @L["StockAdjustmentTitle"]
+        </MudText>
+    </TitleContent>
+    <DialogContent>
+        <MudStack Spacing="3">
+            @* Product info summary *@
+            <MudPaper Elevation="0" Class="pa-3" Style="background: var(--mud-palette-background-grey); border-radius: var(--mud-default-borderradius);">
+                <MudText Typo="Typo.subtitle2">@Item.ProductName</MudText>
+                <MudText Typo="Typo.caption" Color="Color.Secondary">@Item.ProductSku</MudText>
+                <MudGrid Spacing="2" Class="mt-2">
+                    <MudItem xs="4">
+                        <MudText Typo="Typo.caption" Color="Color.Secondary">@L["CurrentStock"]</MudText>
+                        <MudText Typo="Typo.body2"><strong>@Item.Quantity</strong></MudText>
+                    </MudItem>
+                    <MudItem xs="4">
+                        <MudText Typo="Typo.caption" Color="Color.Secondary">@L["ReservedStock"]</MudText>
+                        <MudText Typo="Typo.body2">@Item.ReservedQuantity</MudText>
+                    </MudItem>
+                    <MudItem xs="4">
+                        <MudText Typo="Typo.caption" Color="Color.Secondary">@L["AvailableStock"]</MudText>
+                        <MudText Typo="Typo.body2" Color="@GetStockColor()"><strong>@Item.AvailableQuantity</strong></MudText>
+                    </MudItem>
+                </MudGrid>
+            </MudPaper>
+
+            @* Increase / Decrease radio *@
+            <MudRadioGroup T="bool" Value="_isIncrease" ValueChanged="OnTypeChanged">
+                <MudStack Row="true" Spacing="4">
+                    <MudRadio Value="true" Color="Color.Success">@L["AdjustmentTypeIncrease"]</MudRadio>
+                    <MudRadio Value="false" Color="Color.Error">@L["AdjustmentTypeDecrease"]</MudRadio>
+                </MudStack>
+            </MudRadioGroup>
+
+            @* Quantity *@
+            <MudNumericField T="decimal"
+                             Label="@L["AdjustmentQuantity"]"
+                             Value="_quantity"
+                             ValueChanged="OnQuantityChanged"
+                             Variant="Variant.Outlined"
+                             Min="0.0001m"
+                             Format="N4"
+                             Required="true"
+                             RequiredError="@L["Required"]" />
+
+            @if (!_isIncrease && _quantity > Item.AvailableQuantity && _quantity > 0)
+            {
+                <MudAlert Severity="Severity.Error" Dense="true">@L["InsufficientStock"]</MudAlert>
+            }
+
+            @* Reason code *@
+            <MudSelect T="string"
+                       Label="@L["AdjustmentReason"]"
+                       Value="_reasonCode"
+                       ValueChanged="@((v) => _reasonCode = v)"
+                       Variant="Variant.Outlined"
+                       Required="true"
+                       RequiredError="@L["Required"]">
+                <MudSelectItem Value="@("Damaged")">@L["ReasonDamaged"]</MudSelectItem>
+                <MudSelectItem Value="@("Lost")">@L["ReasonLost"]</MudSelectItem>
+                <MudSelectItem Value="@("Stolen")">@L["ReasonStolen"]</MudSelectItem>
+                <MudSelectItem Value="@("Found")">@L["ReasonFound"]</MudSelectItem>
+                <MudSelectItem Value="@("CountCorrection")">@L["ReasonCountCorrection"]</MudSelectItem>
+                <MudSelectItem Value="@("Other")">@L["ReasonOther"]</MudSelectItem>
+            </MudSelect>
+
+            @* Notes *@
+            <MudTextField T="string"
+                          Label="@L["AdjustmentNotes"]"
+                          Value="_notes"
+                          ValueChanged="@((v) => _notes = v)"
+                          Variant="Variant.Outlined"
+                          Lines="2"
+                          MaxLength="500" />
+
+            @if (!string.IsNullOrEmpty(_errorMessage))
+            {
+                <MudAlert Severity="Severity.Error" Dense="true">@_errorMessage</MudAlert>
+            }
+        </MudStack>
+    </DialogContent>
+    <DialogActions>
+        <MudButton OnClick="Cancel" Variant="Variant.Text">@L["Cancel"]</MudButton>
+        <MudButton OnClick="Apply"
+                   Variant="Variant.Filled"
+                   Color="@(_isIncrease ? Color.Success : Color.Error)"
+                   Disabled="_applying || !IsValid()">
+            @if (_applying)
+            {
+                <MudProgressCircular Class="ms-n1" Size="Size.Small" Indeterminate="true" />
+                <MudText Class="ms-2">@L["Saving"]</MudText>
+            }
+            else
+            {
+                @L["AdjustStock"]
+            }
+        </MudButton>
+    </DialogActions>
+</MudDialog>
+
+@code {
+    [CascadingParameter]
+    private MudDialogInstance MudDialog { get; set; } = null!;
+
+    [Parameter]
+    public InventoryItemModel Item { get; set; } = null!;
+
+    private bool _isIncrease = true;
+    private decimal _quantity;
+    private string _reasonCode = string.Empty;
+    private string? _notes;
+    private bool _applying;
+    private string? _errorMessage;
+
+    private void OnTypeChanged(bool value)
+    {
+        _isIncrease = value;
+        _errorMessage = null;
+    }
+
+    private void OnQuantityChanged(decimal value)
+    {
+        _quantity = value;
+        _errorMessage = null;
+    }
+
+    private bool IsValid()
+    {
+        if (_quantity <= 0) { return false; }
+        if (string.IsNullOrWhiteSpace(_reasonCode)) { return false; }
+        if (!_isIncrease && _quantity > Item.AvailableQuantity) { return false; }
+        return true;
+    }
+
+    private Color GetStockColor() => Item.StockStatus switch
+    {
+        "OutOfStock" => Color.Error,
+        "LowStock" => Color.Warning,
+        _ => Color.Success
+    };
+
+    private async Task Apply()
+    {
+        if (!IsValid()) { return; }
+
+        _applying = true;
+        _errorMessage = null;
+
+        var request = new AdjustStockRequest
+        {
+            InventoryItemId = Item.Id,
+            Quantity = _quantity,
+            IsIncrease = _isIncrease,
+            ReasonCode = _reasonCode,
+            Notes = _notes
+        };
+
+        var result = await InventoryService.AdjustStockAsync(request);
+
+        if (result.IsSuccess)
+        {
+            Snackbar.Add(L["AdjustmentSuccess"], Severity.Success);
+            MudDialog.Close(DialogResult.Ok(true));
+        }
+        else
+        {
+            _errorMessage = result.Error ?? L["AdjustmentError"];
+        }
+
+        _applying = false;
+    }
+
+    private void Cancel()
+    {
+        MudDialog.Cancel();
+    }
+}
