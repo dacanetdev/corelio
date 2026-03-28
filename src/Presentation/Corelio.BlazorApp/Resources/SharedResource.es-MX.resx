@@ -1332,4 +1332,22 @@
   <data name="BackToInventory" xml:space="preserve">
     <value>Volver a Inventario</value>
   </data>
+  <data name="PrintTicket" xml:space="preserve">
+    <value>Imprimir Ticket</value>
+  </data>
+  <data name="DownloadTicket" xml:space="preserve">
+    <value>Descargar Ticket</value>
+  </data>
+  <data name="DownloadingTicket" xml:space="preserve">
+    <value>Descargando...</value>
+  </data>
+  <data name="TicketGenerationError" xml:space="preserve">
+    <value>Error al generar el ticket</value>
+  </data>
+  <data name="TicketDownloaded" xml:space="preserve">
+    <value>Ticket descargado correctamente</value>
+  </data>
+  <data name="GeneratingTicket" xml:space="preserve">
+    <value>Generando ticket...</value>
+  </data>
 </root>

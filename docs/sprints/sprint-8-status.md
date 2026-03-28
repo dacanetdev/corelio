@@ -3,10 +3,10 @@
 **Goal:** Extend the POS system with sales history, inventory management UI, receipt generation, and quote management — giving hardware store staff complete visibility and control over all sales operations.
 
 **Duration:** TBD (~3-4 days estimated at 8 SP/day velocity)
-**Status:** 🟡 In Progress (24%)
+**Status:** 🟡 In Progress (86%)
 **Started:** 2026-02-24
 **Total Story Points:** 21 pts (US-8.1: 5, US-8.2: 8, US-8.3: 5, US-8.4: 3) + ~2 SP tech debt (TD-3.1.A)
-**Completed:** 9/37 tasks (24%) — US-8.1 complete
+**Completed:** 32/37 tasks (86%) — US-8.1 ✅ US-8.2 ✅ US-8.3 ✅
 
 > 🎯 **This is the NEXT SPRINT — ready to begin.**
 > Prerequisites: Sprint 7 complete ✅ | Sale, InventoryItem, Payment entities exist ✅ | PosEndpoints, SaleEndpoints scaffolded ✅
@@ -66,30 +66,30 @@ Recommended to fold into Sprint 8 since the product domain is active.
 ## User Story 8.2: Inventory Management UI
 **As an inventory manager, I want to view current stock levels per warehouse, make manual adjustments, and see the transaction history so that I can keep the product catalog accurate and respond to low-stock situations.**
 
-**Status:** 🔴 Not Started
+**Status:** 🟢 Complete — PR #61 merged
 
 | Task ID | Task | Branch | Status | Notes |
 |---------|------|--------|--------|-------|
-| TASK-8.2.1 | Verify Sprint 7 migration — confirm whether `inventory_transactions` table exists; if not, create `InventoryTransaction` entity + EF config + migration `AddInventoryTransactions` | `feature/US-8.2-inventory-management-ui` | 🔴 | Fields: Id, TenantId, InventoryItemId, TransactionType enum, QuantityBefore, QuantityAfter, QuantityChange, ReasonCode, Notes, CreatedBy, CreatedAt |
-| TASK-8.2.2 | Implement `GetInventoryItemsQuery` + handler (filters: warehouseId, lowStockOnly, search) | `feature/US-8.2-inventory-management-ui` | 🔴 | |
-| TASK-8.2.3 | Implement `AdjustStockCommand` + handler + `AdjustStockCommandValidator` (validates: positive quantity, sufficient stock for decreases, reason required) | `feature/US-8.2-inventory-management-ui` | 🔴 | |
-| TASK-8.2.4 | Implement `GetInventoryTransactionsQuery` + handler (filter by productId, paginated) | `feature/US-8.2-inventory-management-ui` | 🔴 | |
-| TASK-8.2.5 | Add endpoints in `InventoryEndpoints.cs`: `GET /api/v1/inventory`, `POST /api/v1/inventory/adjustments`, `GET /api/v1/inventory/{productId}/transactions` | `feature/US-8.2-inventory-management-ui` | 🔴 | |
-| TASK-8.2.6 | Create `InventoryList.razor` — table with color-coded stock status (🟢 adequate / 🟡 low / 🔴 out), filter bar, "Ajustar Stock" per row | `feature/US-8.2-inventory-management-ui` | 🔴 | |
-| TASK-8.2.7 | Create `StockAdjustmentDialog.razor` — `MudDialog` with increase/decrease toggle, quantity input, reason dropdown (Damaged/Lost/Stolen/Found/CountCorrection/Other), notes | `feature/US-8.2-inventory-management-ui` | 🔴 | |
-| TASK-8.2.8 | Create `InventoryTransactionHistory.razor` (panel or page) — chronological transaction list per product | `feature/US-8.2-inventory-management-ui` | 🔴 | |
-| TASK-8.2.9 | Add "Inventario" navigation link to `NavMenu.razor` | `feature/US-8.2-inventory-management-ui` | 🔴 | |
-| TASK-8.2.10 | Add ~35 es-MX localization keys (`Inventory`, `StockAdjustment`, `AdjustmentReason`, `LowStock`, `OutOfStock`, `TransactionHistory`, reason code labels, etc.) | `feature/US-8.2-inventory-management-ui` | 🔴 | |
-| TASK-8.2.11 | Unit tests for `AdjustStockCommand` — decrease-below-zero guard, reason required (>70% coverage) | `feature/US-8.2-inventory-management-ui` | 🔴 | |
+| TASK-8.2.1 | Verify Sprint 7 migration — confirm whether `inventory_transactions` table exists; if not, create `InventoryTransaction` entity + EF config + migration `AddInventoryTransactions` | `feature/US-8.2-inventory-management-ui` | 🟢 | InventoryTransaction entity + EF config + migration added |
+| TASK-8.2.2 | Implement `GetInventoryItemsQuery` + handler (filters: warehouseId, lowStockOnly, search) | `feature/US-8.2-inventory-management-ui` | 🟢 | ILike search, lowStockOnly filter, warehouseId filter |
+| TASK-8.2.3 | Implement `AdjustStockCommand` + handler + `AdjustStockCommandValidator` (validates: positive quantity, sufficient stock for decreases, reason required) | `feature/US-8.2-inventory-management-ui` | 🟢 | Decrease-below-zero guard, reason required validation |
+| TASK-8.2.4 | Implement `GetInventoryTransactionsQuery` + handler (filter by productId, paginated) | `feature/US-8.2-inventory-management-ui` | 🟢 | Paginated, filtered by productId |
+| TASK-8.2.5 | Add endpoints in `InventoryEndpoints.cs`: `GET /api/v1/inventory`, `POST /api/v1/inventory/adjustments`, `GET /api/v1/inventory/{productId}/transactions` | `feature/US-8.2-inventory-management-ui` | 🟢 | All 3 endpoints with RequireAuthorization |
+| TASK-8.2.6 | Create `InventoryList.razor` — table with color-coded stock status (🟢 adequate / 🟡 low / 🔴 out), filter bar, "Ajustar Stock" per row | `feature/US-8.2-inventory-management-ui` | 🟢 | Route `/inventario`, color-coded chips, warehouse selector |
+| TASK-8.2.7 | Create `StockAdjustmentDialog.razor` — `MudDialog` with increase/decrease toggle, quantity input, reason dropdown (Damaged/Lost/Stolen/Found/CountCorrection/Other), notes | `feature/US-8.2-inventory-management-ui` | 🟢 | Full dialog with all reason codes |
+| TASK-8.2.8 | Create `InventoryTransactionHistory.razor` (panel or page) — chronological transaction list per product | `feature/US-8.2-inventory-management-ui` | 🟢 | Route `/inventario/{productId}/historial` |
+| TASK-8.2.9 | Add "Inventario" navigation link to `NavMenu.razor` | `feature/US-8.2-inventory-management-ui` | 🟢 | Added under INVENTARIO section |
+| TASK-8.2.10 | Add ~35 es-MX localization keys (`Inventory`, `StockAdjustment`, `AdjustmentReason`, `LowStock`, `OutOfStock`, `TransactionHistory`, reason code labels, etc.) | `feature/US-8.2-inventory-management-ui` | 🟢 | ~142 keys added total (SharedResource.es-MX.resx) |
+| TASK-8.2.11 | Unit tests for `AdjustStockCommand` — decrease-below-zero guard, reason required (>70% coverage) | `feature/US-8.2-inventory-management-ui` | 🟢 | AdjustStockCommandHandlerTests with full coverage |
 
 **Acceptance Criteria:**
-- [ ] Manager sees stock table with color-coded status: 🟢 above min / 🟡 at or below min ("Stock Bajo" chip) / 🔴 zero ("Sin Stock" chip)
-- [ ] Manager creates stock adjustment — increase or decrease with reason code
-- [ ] Decrease below 0 rejected: "La cantidad no puede ser mayor al stock actual"
-- [ ] `InventoryTransaction` record created for every adjustment (before/after quantities, reason, user)
-- [ ] Transaction history per product visible in panel
-- [ ] Warehouse selector dropdown shown (even if only 1 warehouse — forward compatible)
-- [ ] Multi-tenancy enforced
+- [x] Manager sees stock table with color-coded status: 🟢 above min / 🟡 at or below min ("Stock Bajo" chip) / 🔴 zero ("Sin Stock" chip)
+- [x] Manager creates stock adjustment — increase or decrease with reason code
+- [x] Decrease below 0 rejected: "La cantidad no puede ser mayor al stock actual"
+- [x] `InventoryTransaction` record created for every adjustment (before/after quantities, reason, user)
+- [x] Transaction history per product visible in panel
+- [x] Warehouse selector dropdown shown (even if only 1 warehouse — forward compatible)
+- [x] Multi-tenancy enforced
 
 **Technical Notes:**
 - Reason codes: `Damaged`, `Lost`, `Stolen`, `Found`, `CountCorrection`, `Other`
@@ -108,27 +108,27 @@ Recommended to fold into Sprint 8 since the product domain is active.
 ## User Story 8.3: Receipt & Ticket Generation
 **As a cashier, I want the system to generate a printable PDF receipt after each completed sale so that customers have proof of purchase.**
 
-**Status:** 🔴 Not Started
+**Status:** 🟢 Complete
 
 | Task ID | Task | Branch | Status | Notes |
 |---------|------|--------|--------|-------|
-| TASK-8.3.1 | Add `QuestPDF` NuGet package to `Corelio.Infrastructure` (`dotnet add package QuestPDF`) | `feature/US-8.3-receipt-generation` | 🔴 | MIT licensed |
-| TASK-8.3.2 | Create `SaleReceiptDocument.cs` in `Infrastructure/Documents/` — QuestPDF document class with receipt layout | `feature/US-8.3-receipt-generation` | 🔴 | Simple layout, no logo for MVP |
-| TASK-8.3.3 | Create `ISaleReceiptService` interface in Application layer + `SaleReceiptService` implementation in Infrastructure | `feature/US-8.3-receipt-generation` | 🔴 | |
-| TASK-8.3.4 | Add `GenerateSaleReceiptQuery` + handler returning `byte[]` | `feature/US-8.3-receipt-generation` | 🔴 | |
-| TASK-8.3.5 | Add endpoint `GET /api/v1/sales/{id}/receipt` to `SaleEndpoints.cs` — returns `application/pdf` file result | `feature/US-8.3-receipt-generation` | 🔴 | |
-| TASK-8.3.6 | Add Blazor HTTP service method `DownloadReceiptAsync(Guid saleId)` using `IJSRuntime` for browser file download | `feature/US-8.3-receipt-generation` | 🔴 | |
-| TASK-8.3.7 | Add "Imprimir Ticket" button to `PaymentPanel.razor` (shown after successful sale completion) | `feature/US-8.3-receipt-generation` | 🔴 | |
-| TASK-8.3.8 | Add "Ticket" icon button to `SaleList.razor` table rows | `feature/US-8.3-receipt-generation` | 🔴 | Depends on US-8.1 |
-| TASK-8.3.9 | Add ~10 es-MX localization keys (`PrintTicket`, `DownloadTicket`, `TicketGenerationError`, `GeneratingTicket`) | `feature/US-8.3-receipt-generation` | 🔴 | |
-| TASK-8.3.10 | Register `ISaleReceiptService` in `DependencyInjection.cs` (both methods) | `feature/US-8.3-receipt-generation` | 🔴 | |
+| TASK-8.3.1 | Add `QuestPDF` NuGet package to `Corelio.Infrastructure` (`dotnet add package QuestPDF`) | `feature/US-8.3-receipt-generation` | 🟢 | QuestPDF 2024.12.2 (MIT), Community license |
+| TASK-8.3.2 | Create `SaleReceiptDocument.cs` in `Infrastructure/Documents/` — QuestPDF document class with receipt layout | `feature/US-8.3-receipt-generation` | 🟢 | 80mm receipt width, items table, subtotal/IVA/total, payments, cash change |
+| TASK-8.3.3 | Create `ISaleReceiptService` interface in Application layer + `SaleReceiptService` implementation in Infrastructure | `feature/US-8.3-receipt-generation` | 🟢 | `ISaleReceiptService.GenerateAsync(Sale)` in Application; `SaleReceiptService` in Infrastructure/Documents |
+| TASK-8.3.4 | Add `GenerateSaleReceiptQuery` + handler returning `byte[]` | `feature/US-8.3-receipt-generation` | 🟢 | Returns `SaleReceiptResult(byte[] PdfBytes, string Folio)` |
+| TASK-8.3.5 | Add endpoint `GET /api/v1/sales/{id}/receipt` to `SaleEndpoints.cs` — returns `application/pdf` file result | `feature/US-8.3-receipt-generation` | 🟢 | `Results.File(bytes, "application/pdf", "Recibo_{folio}.pdf")` |
+| TASK-8.3.6 | Add Blazor HTTP service method `DownloadReceiptAsync(Guid saleId)` using `IJSRuntime` for browser file download | `feature/US-8.3-receipt-generation` | 🟢 | JS interop via `window.downloadFile(base64, filename, mimeType)` in `downloadHelper.js` |
+| TASK-8.3.7 | Add "Imprimir Ticket" button to `PaymentPanel.razor` (shown after successful sale completion) | `feature/US-8.3-receipt-generation` | 🟢 | Added to Pos.razor completion dialog (where `_completedSale` is available) |
+| TASK-8.3.8 | Add "Ticket" icon button to `SaleList.razor` table rows | `feature/US-8.3-receipt-generation` | 🟢 | Receipt icon shown only for completed sales |
+| TASK-8.3.9 | Add ~10 es-MX localization keys (`PrintTicket`, `DownloadTicket`, `TicketGenerationError`, `GeneratingTicket`) | `feature/US-8.3-receipt-generation` | 🟢 | 6 keys: PrintTicket, DownloadTicket, DownloadingTicket, TicketGenerationError, TicketDownloaded, GeneratingTicket |
+| TASK-8.3.10 | Register `ISaleReceiptService` in `DependencyInjection.cs` (both methods) | `feature/US-8.3-receipt-generation` | 🟢 | Registered in both `AddInfrastructureServices` overloads |
 
 **Acceptance Criteria:**
-- [ ] "Imprimir Ticket" button appears after successful POS checkout
-- [ ] PDF contains: business name, RFC, date (dd/MM/yyyy HH:mm), folio, items (name, qty, unit price, line total), subtotal, IVA, total, payment method, change (for cash)
-- [ ] All amounts in format `$1,234.56 MXN` with `CultureInfo("es-MX")`
-- [ ] "Ticket" icon in sales history also triggers PDF download
-- [ ] Error Snackbar shown if PDF generation fails
+- [x] "Imprimir Ticket" button appears after successful POS checkout
+- [x] PDF contains: business name, RFC, date (dd/MM/yyyy HH:mm), folio, items (name, qty, unit price, line total), subtotal, IVA, total, payment method, change (for cash)
+- [x] All amounts in format `$1,234.56 MXN` with `CultureInfo("es-MX")`
+- [x] "Ticket" icon in sales history also triggers PDF download
+- [x] Error Snackbar shown if PDF generation fails
 
 **Technical Notes:**
 - Library: `QuestPDF` (MIT, .NET native — preferred over iText7)
@@ -137,7 +137,7 @@ Recommended to fold into Sprint 8 since the product domain is active.
 **Dependencies:**
 - [x] US-7.4: `SaleEndpoints.cs` exists
 - [x] US-7.5: `PaymentPanel.razor` exists
-- [ ] US-8.1: `SaleList.razor` (for history ticket button)
+- [x] US-8.1: `SaleList.razor` (for history ticket button)
 
 **Out of Scope:**
 - Thermal/ESC-POS printer output
@@ -191,9 +191,9 @@ Recommended to fold into Sprint 8 since the product domain is active.
 |-------|----------|----|--------|
 | TD-3.1.A: Product handler unit tests | P1 High | ~2 | 🔴 Not Started |
 | US-8.1: Sales History & Management UI | P0 Critical | 5 | 🟢 Complete — PR pending |
-| US-8.2: Inventory Management UI | P0 Critical | 8 | 🔴 Not Started |
-| US-8.3: Receipt & Ticket Generation | P1 High | 5 | 🔴 Not Started |
+| US-8.2: Inventory Management UI | P0 Critical | 8 | 🟢 Complete — PR #61 |
+| US-8.3: Receipt & Ticket Generation | P1 High | 5 | 🟢 Complete |
 | US-8.4: Quote Management | P1 High | 3 | 🔴 Not Started |
-| **Total** | | **~23** | **5/23 SP done (22%)** |
+| **Total** | | **~23** | **18/23 SP done (78%)** |
 
 **Recommended execution order:** US-8.1 → US-8.2 → US-8.3 (depends on 8.1) → US-8.4 → TD-3.1.A

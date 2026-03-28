@@ -1,4 +1,6 @@
+using Corelio.Application.Common.Models;
 using Corelio.Application.Sales.Commands.CancelSale;
+using Corelio.Application.Sales.Queries.GenerateSaleReceipt;
 using Corelio.Application.Sales.Queries.GetSaleById;
 using Corelio.Application.Sales.Queries.GetSales;
 using Corelio.Domain.Enums;
@@ -29,6 +31,11 @@ public static class SaleEndpoints
         group.MapGet("/{id:guid}", GetSaleById)
             .WithName("GetSaleById")
             .WithSummary("Get a sale by ID")
+            .RequireAuthorization("sales.view");
+
+        group.MapGet("/{id:guid}/receipt", GetReceipt)
+            .WithName("GetSaleReceipt")
+            .WithSummary("Generate and download a PDF receipt for a sale")
             .RequireAuthorization("sales.view");
 
         group.MapDelete("/{id:guid}", CancelSale)
@@ -69,6 +76,26 @@ public static class SaleEndpoints
         var query = new GetSaleByIdQuery(id);
         var result = await mediator.Send(query, ct);
         return result.ToHttpResult();
+    }
+
+    private static async Task<IResult> GetReceipt(
+        Guid id,
+        IMediator mediator,
+        CancellationToken ct)
+    {
+        var query = new GenerateSaleReceiptQuery(id);
+        var result = await mediator.Send(query, ct);
+        if (!result.IsSuccess)
+        {
+            return result.Error!.Type == ErrorType.NotFound
+                ? Results.NotFound(result.Error.Message)
+                : Results.Problem(result.Error.Message);
+        }
+
+        return Results.File(
+            result.Value.PdfBytes,
+            "application/pdf",
+            $"Recibo_{result.Value.Folio}.pdf");
     }
 
     private static async Task<IResult> CancelSale(

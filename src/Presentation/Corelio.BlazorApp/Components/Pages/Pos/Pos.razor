@@ -3,8 +3,11 @@
 @using Corelio.BlazorApp.Models.Pos
 @using Corelio.BlazorApp.Resources
 @using Corelio.BlazorApp.Services.Pos
+@using Corelio.BlazorApp.Services.Sales
 @using Microsoft.Extensions.Localization
 @inject IPosService PosService
+@inject ISaleService SaleService
+@inject IJSRuntime JS
 @inject IStringLocalizer<SharedResource> L
 @inject ISnackbar Snackbar
 
@@ -81,6 +84,21 @@
         }
     </DialogContent>
     <DialogActions>
+        <MudButton Variant="Variant.Outlined"
+                   Color="Color.Secondary"
+                   StartIcon="@Icons.Material.Rounded.Receipt"
+                   OnClick="PrintTicket"
+                   Disabled="_printingTicket">
+            @if (_printingTicket)
+            {
+                <MudProgressCircular Size="Size.Small" Indeterminate="true" Class="mr-2" />
+                @L["DownloadingTicket"]
+            }
+            else
+            {
+                @L["PrintTicket"]
+            }
+        </MudButton>
         <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="StartNewSale">
             @L["NewSale"]
         </MudButton>
@@ -131,6 +149,7 @@
 @code {
     private CartState _cart = new();
     private bool _showReceipt;
+    private bool _printingTicket;
     private SaleModel? _completedSale;
     private readonly DialogOptions _receiptOptions = new() { MaxWidth = MaxWidth.Small, FullWidth = true };
 
@@ -158,5 +177,30 @@
         _completedSale = null;
         _showReceipt = false;
         StateHasChanged();
+    }
+
+    private async Task PrintTicket()
+    {
+        if (_completedSale is null || _printingTicket) { return; }
+
+        _printingTicket = true;
+        try
+        {
+            var result = await SaleService.DownloadReceiptAsync(_completedSale.Id);
+            if (result.IsSuccess)
+            {
+                var base64 = Convert.ToBase64String(result.Value!);
+                await JS.InvokeVoidAsync("downloadFile", base64, $"Recibo_{_completedSale.Folio}.pdf", "application/pdf");
+                Snackbar.Add(L["TicketDownloaded"], Severity.Success);
+            }
+            else
+            {
+                Snackbar.Add(L["TicketGenerationError"], Severity.Error);
+            }
+        }
+        finally
+        {
+            _printingTicket = false;
+        }
     }
 }
