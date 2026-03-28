@@ -25,4 +25,8 @@ public interface ISaleService
         Guid id,
         string? reason = null,
         CancellationToken cancellationToken = default);
+
+    Task<Result<byte[]>> DownloadReceiptAsync(
+        Guid id,
+        CancellationToken cancellationToken = default);
 }

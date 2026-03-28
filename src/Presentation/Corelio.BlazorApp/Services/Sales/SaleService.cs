@@ -129,4 +129,28 @@ public class SaleService(AuthenticatedHttpClient httpClient, ILogger<SaleService
             return Result<bool>.Failure($"Error cancelling sale: {ex.Message}");
         }
     }
+
+    public async Task<Result<byte[]>> DownloadReceiptAsync(
+        Guid id,
+        CancellationToken cancellationToken = default)
+    {
+        try
+        {
+            var response = await httpClient.GetAsync($"{BaseUrl}/{id}/receipt", cancellationToken);
+
+            if (response.IsSuccessStatusCode)
+            {
+                var bytes = await response.Content.ReadAsByteArrayAsync(cancellationToken);
+                return Result<byte[]>.Success(bytes);
+            }
+
+            var error = await response.GetErrorMessageAsync(cancellationToken);
+            return Result<byte[]>.Failure(error);
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "Error downloading receipt for sale {Id}", id);
+            return Result<byte[]>.Failure($"Error downloading receipt: {ex.Message}");
+        }
+    }
 }

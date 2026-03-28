@@ -6,6 +6,7 @@
 @using MudBlazor
 @using System.Globalization
 @inject ISaleService SaleService
+@inject IJSRuntime JS
 @inject IStringLocalizer<SharedResource> L
 @inject ISnackbar Snackbar
 @inject NavigationManager Nav
@@ -119,6 +120,13 @@
                     <MudIconButton Icon="@Icons.Material.Rounded.Visibility"
                                    Size="Size.Small"
                                    OnClick="@(() => Nav.NavigateTo($"/sales/{context.Id}"))" />
+                    @if (context.Status.ToLowerInvariant() == "completed")
+                    {
+                        <MudIconButton Icon="@Icons.Material.Rounded.Receipt"
+                                       Size="Size.Small"
+                                       Color="Color.Secondary"
+                                       OnClick="@(() => DownloadReceipt(context.Id, context.Folio))" />
+                    }
                 </MudTd>
             </RowTemplate>
         </MudTable>
@@ -233,4 +241,19 @@
         "refunded" => L["SaleStatusRefunded"],
         _ => status
     };
+
+    private async Task DownloadReceipt(Guid saleId, string folio)
+    {
+        var result = await SaleService.DownloadReceiptAsync(saleId);
+        if (result.IsSuccess)
+        {
+            var base64 = Convert.ToBase64String(result.Value!);
+            await JS.InvokeVoidAsync("downloadFile", base64, $"Recibo_{folio}.pdf", "application/pdf");
+            Snackbar.Add(L["TicketDownloaded"], Severity.Success);
+        }
+        else
+        {
+            Snackbar.Add(L["TicketGenerationError"], Severity.Error);
+        }
+    }
 }

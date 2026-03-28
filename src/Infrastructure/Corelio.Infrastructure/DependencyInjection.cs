@@ -4,6 +4,7 @@ using Corelio.Application.Common.Interfaces.Email;
 using Corelio.Domain.Common.Interfaces;
 using Corelio.Domain.Repositories;
 using Corelio.Infrastructure.Authentication;
+using Corelio.Infrastructure.Documents;
 using Corelio.Infrastructure.Email;
 using Corelio.Infrastructure.MultiTenancy;
 using Corelio.Infrastructure.Persistence;
@@ -70,6 +71,9 @@ public static class DependencyInjection
         services.AddScoped<IInventoryRepository, InventoryRepository>();
         services.AddScoped<IPosSearchService, PosSearchService>();
         services.AddScoped<IUnitOfWork, UnitOfWork>();
+
+        // Register document generation services
+        services.AddScoped<ISaleReceiptService, SaleReceiptService>();
 
         // Register distributed cache (for tenant caching)
         // Note: For non-Aspire deployments, configure Redis connection string in appsettings.json
@@ -160,6 +164,9 @@ public static class DependencyInjection
         builder.Services.AddScoped<IInventoryRepository, InventoryRepository>();
         builder.Services.AddScoped<IPosSearchService, PosSearchService>();
         builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
+
+        // Register document generation services
+        builder.Services.AddScoped<ISaleReceiptService, SaleReceiptService>();
 
         // Register interceptors (injected into ApplicationDbContext via constructor)
         builder.Services.AddScoped<TenantInterceptor>();
