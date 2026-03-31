@@ -135,6 +135,24 @@
             }
         </MudButton>
 
+        <MudButton Variant="Variant.Outlined"
+                   Color="Color.Secondary"
+                   FullWidth="true"
+                   StartIcon="@Icons.Material.Rounded.RequestQuote"
+                   OnClick="SaveAsQuote"
+                   Disabled="@(_processing || Cart.IsEmpty)"
+                   Class="mb-2">
+            @if (_savingQuote)
+            {
+                <MudProgressCircular Size="Size.Small" Indeterminate="true" Class="mr-2" />
+                <span>@L["Saving"]</span>
+            }
+            else
+            {
+                @L["SaveAsQuote"]
+            }
+        </MudButton>
+
         <MudButton Variant="Variant.Text"
                    Color="Color.Default"
                    FullWidth="true"
@@ -188,9 +206,11 @@
     [Parameter] public CartState Cart { get; set; } = new();
     [Parameter] public EventCallback<SaleModel> OnSaleCompleted { get; set; }
     [Parameter] public EventCallback OnSaleCancelled { get; set; }
+    [Parameter] public EventCallback<string> OnQuoteSaved { get; set; }
 
     private List<PaymentRequestModel> _payments = [new() { Method = PaymentMethod.Cash, Amount = 0 }];
     private bool _processing;
+    private bool _savingQuote;
 
     private decimal TotalPaid => _payments.Sum(p => p.Amount);
 
@@ -255,5 +275,42 @@
     {
         await OnSaleCancelled.InvokeAsync();
         _payments = [new() { Method = PaymentMethod.Cash, Amount = 0 }];
+    }
+
+    private async Task SaveAsQuote()
+    {
+        if (Cart.IsEmpty || _savingQuote || _processing) { return; }
+
+        _savingQuote = true;
+
+        var createRequest = new CreateSaleRequestModel
+        {
+            Items = Cart.Items.Select(i => new CartItemRequestModel
+            {
+                ProductId = i.ProductId,
+                Quantity = i.Quantity,
+                UnitPrice = i.UnitPrice,
+                DiscountPercentage = i.DiscountPercentage
+            }).ToList(),
+            Type = "Quote"
+        };
+
+        var createResult = await PosService.CreateSaleAsync(createRequest);
+        if (createResult.IsSuccess)
+        {
+            // Get the folio by loading the created sale
+            var saleResult = await PosService.GetSaleAsync(createResult.Value);
+            var folio = saleResult.IsSuccess ? saleResult.Value?.Folio ?? createResult.Value.ToString() : createResult.Value.ToString();
+
+            Cart.Clear();
+            _payments = [new() { Method = PaymentMethod.Cash, Amount = 0 }];
+            await OnQuoteSaved.InvokeAsync(folio);
+        }
+        else
+        {
+            Snackbar.Add(createResult.Error ?? L["QuoteSaveError"], Severity.Error);
+        }
+
+        _savingQuote = false;
     }
 }

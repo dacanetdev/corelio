@@ -1350,4 +1350,51 @@
   <data name="GeneratingTicket" xml:space="preserve">
     <value>Generando ticket...</value>
   </data>
+
+  <!-- Quote Management -->
+  <data name="Quotes" xml:space="preserve">
+    <value>Cotizaciones</value>
+  </data>
+  <data name="QuoteList" xml:space="preserve">
+    <value>Lista de Cotizaciones</value>
+  </data>
+  <data name="QuoteListDescription" xml:space="preserve">
+    <value>Administra las cotizaciones enviadas a clientes</value>
+  </data>
+  <data name="CreateQuote" xml:space="preserve">
+    <value>Crear Cotización</value>
+  </data>
+  <data name="SaveAsQuote" xml:space="preserve">
+    <value>Guardar como Cotización</value>
+  </data>
+  <data name="QuoteSaved" xml:space="preserve">
+    <value>Cotización guardada: {0}</value>
+  </data>
+  <data name="ConvertToSale" xml:space="preserve">
+    <value>Convertir a Venta</value>
+  </data>
+  <data name="QuoteConverted" xml:space="preserve">
+    <value>Cotización convertida exitosamente</value>
+  </data>
+  <data name="QuoteExpired" xml:space="preserve">
+    <value>Vencida</value>
+  </data>
+  <data name="QuoteExpires" xml:space="preserve">
+    <value>Vence</value>
+  </data>
+  <data name="QuoteValid" xml:space="preserve">
+    <value>Vigente</value>
+  </data>
+  <data name="NoQuotesFound" xml:space="preserve">
+    <value>No se encontraron cotizaciones</value>
+  </data>
+  <data name="NoQuotesDescription" xml:space="preserve">
+    <value>Las cotizaciones aparecerán aquí</value>
+  </data>
+  <data name="QuoteConvertError" xml:space="preserve">
+    <value>Error al convertir la cotización</value>
+  </data>
+  <data name="QuoteSaveError" xml:space="preserve">
+    <value>Error al guardar la cotización</value>
+  </data>
 </root>

@@ -14,4 +14,5 @@ public record SaleListDto(
     decimal Total,
     int ItemCount,
     DateTime CreatedAt,
-    DateTime? CompletedAt);
+    DateTime? CompletedAt,
+    DateTime? ExpiresAt);

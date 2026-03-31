@@ -28,12 +28,18 @@ public class SaleRepository(ApplicationDbContext context) : ISaleRepository
         string? searchTerm = null,
         DateTime? dateFrom = null,
         DateTime? dateTo = null,
+        SaleType? type = null,
         CancellationToken cancellationToken = default)
     {
         var query = context.Sales
             .Include(s => s.Customer)
             .Include(s => s.Items)
             .AsQueryable();
+
+        if (type.HasValue)
+        {
+            query = query.Where(s => s.Type == type.Value);
+        }
 
         if (status.HasValue)
         {
