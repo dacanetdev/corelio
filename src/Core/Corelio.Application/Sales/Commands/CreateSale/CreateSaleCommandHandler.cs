@@ -101,7 +101,8 @@ public class CreateSaleCommandHandler(
             TaxAmount = totalTax,
             Total = subTotal + totalTax,
             Notes = request.Notes,
-            Items = saleItems
+            Items = saleItems,
+            ExpiresAt = request.Type == SaleType.Quote ? DateTime.UtcNow.AddDays(30) : null
         };
 
         saleRepository.Add(sale);

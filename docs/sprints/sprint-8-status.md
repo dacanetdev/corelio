@@ -3,10 +3,10 @@
 **Goal:** Extend the POS system with sales history, inventory management UI, receipt generation, and quote management — giving hardware store staff complete visibility and control over all sales operations.
 
 **Duration:** TBD (~3-4 days estimated at 8 SP/day velocity)
-**Status:** 🟡 In Progress (86%)
+**Status:** 🟡 In Progress (95%)
 **Started:** 2026-02-24
 **Total Story Points:** 21 pts (US-8.1: 5, US-8.2: 8, US-8.3: 5, US-8.4: 3) + ~2 SP tech debt (TD-3.1.A)
-**Completed:** 32/37 tasks (86%) — US-8.1 ✅ US-8.2 ✅ US-8.3 ✅
+**Completed:** 40/42 tasks (95%) — US-8.1 ✅ US-8.2 ✅ US-8.3 ✅ US-8.4 ✅
 
 > 🎯 **This is the NEXT SPRINT — ready to begin.**
 > Prerequisites: Sprint 7 complete ✅ | Sale, InventoryItem, Payment entities exist ✅ | PosEndpoints, SaleEndpoints scaffolded ✅
@@ -149,18 +149,18 @@ Recommended to fold into Sprint 8 since the product domain is active.
 ## User Story 8.4: Quote Management
 **As a seller, I want to create quotes from the POS and convert them to sales when the customer decides to purchase, so that I can provide formal estimates without deducting inventory.**
 
-**Status:** 🔴 Not Started
+**Status:** 🟢 Complete
 
 | Task ID | Task | Branch | Status | Notes |
 |---------|------|--------|--------|-------|
-| TASK-8.4.1 | Verify `Sale.SaleType` enum includes `Quote` and `Sale.ExpiresAt` nullable field exists; create migration `AddSaleExpiresAt` if needed | `feature/US-8.4-quote-management` | 🔴 | |
-| TASK-8.4.2 | Create `CreateQuoteCommand` + handler (no inventory deduction, sets `SaleType = Quote`, `ExpiresAt = now + 30 days`) | `feature/US-8.4-quote-management` | 🔴 | |
-| TASK-8.4.3 | Create `ConvertQuoteToSaleCommand` + handler (validates open + not expired, deducts inventory, changes type to Sale) | `feature/US-8.4-quote-management` | 🔴 | |
-| TASK-8.4.4 | Update `GetSalesQuery` to filter by `SaleType` and expose open quotes | `feature/US-8.4-quote-management` | 🔴 | |
-| TASK-8.4.5 | Add "Guardar como Cotización" button to POS cart toolbar or `PaymentPanel.razor` | `feature/US-8.4-quote-management` | 🔴 | |
-| TASK-8.4.6 | Create `QuoteList.razor` at `/cotizaciones` — table with expiry indicator, convert and cancel actions | `feature/US-8.4-quote-management` | 🔴 | |
-| TASK-8.4.7 | Add "Cotizaciones" navigation link to `NavMenu.razor` | `feature/US-8.4-quote-management` | 🔴 | |
-| TASK-8.4.8 | Add ~15 es-MX localization keys (`Quotes`, `QuoteList`, `CreateQuote`, `ConvertToSale`, `QuoteExpired`, `SaveAsQuote`, etc.) | `feature/US-8.4-quote-management` | 🔴 | |
+| TASK-8.4.1 | Verify `Sale.SaleType` enum includes `Quote` and `Sale.ExpiresAt` nullable field exists; create migration `AddSaleExpiresAt` if needed | `feature/US-8.4-quote-management` | 🟢 | SaleType.Quote confirmed; ExpiresAt added to Sale + migration AddSaleExpiresAt |
+| TASK-8.4.2 | Create `CreateQuoteCommand` + handler (no inventory deduction, sets `SaleType = Quote`, `ExpiresAt = now + 30 days`) | `feature/US-8.4-quote-management` | 🟢 | Reused CreateSaleCommand with Type=Quote; CreateSaleCommandHandler auto-sets ExpiresAt=UtcNow+30d |
+| TASK-8.4.3 | Create `ConvertQuoteToSaleCommand` + handler (validates open + not expired, marks quote Cancelled, UI navigates to /pos?quoteId=X) | `feature/US-8.4-quote-management` | 🟢 | ConvertQuoteToSaleCommand validates + cancels quote; POS pre-loads cart from quote items |
+| TASK-8.4.4 | Update `GetSalesQuery` to filter by `SaleType` and expose open quotes | `feature/US-8.4-quote-management` | 🟢 | SaleType? Type added to query/repo/endpoint; POST /api/v1/sales/{id}/convert added |
+| TASK-8.4.5 | Add "Guardar como Cotización" button to POS cart toolbar or `PaymentPanel.razor` | `feature/US-8.4-quote-management` | 🟢 | Button added to PaymentPanel; Pos.razor accepts ?quoteId= to pre-load cart from quote items |
+| TASK-8.4.6 | Create `QuoteList.razor` at `/cotizaciones` — table with expiry indicator, convert and cancel actions | `feature/US-8.4-quote-management` | 🟢 | Route /cotizaciones; expiry chip (green=valid/red=expired); convert→/pos?quoteId=X; cancel action |
+| TASK-8.4.7 | Add "Cotizaciones" navigation link to `NavMenu.razor` | `feature/US-8.4-quote-management` | 🟢 | Added under VENTAS section with RequestQuote icon |
+| TASK-8.4.8 | Add ~15 es-MX localization keys (`Quotes`, `QuoteList`, `CreateQuote`, `ConvertToSale`, `QuoteExpired`, `SaveAsQuote`, etc.) | `feature/US-8.4-quote-management` | 🟢 | 15 keys added: Quotes, QuoteList, QuoteListDescription, CreateQuote, SaveAsQuote, QuoteSaved, ConvertToSale, QuoteConverted, QuoteExpired, QuoteExpires, QuoteValid, NoQuotesFound, NoQuotesDescription, QuoteConvertError, QuoteSaveError |
 
 **Acceptance Criteria:**
 - [ ] Seller clicks "Guardar como Cotización" — sale saved with `SaleType = Quote`, no inventory deducted, folio shown in confirmation
@@ -193,7 +193,7 @@ Recommended to fold into Sprint 8 since the product domain is active.
 | US-8.1: Sales History & Management UI | P0 Critical | 5 | 🟢 Complete — PR pending |
 | US-8.2: Inventory Management UI | P0 Critical | 8 | 🟢 Complete — PR #61 |
 | US-8.3: Receipt & Ticket Generation | P1 High | 5 | 🟢 Complete |
-| US-8.4: Quote Management | P1 High | 3 | 🔴 Not Started |
-| **Total** | | **~23** | **18/23 SP done (78%)** |
+| US-8.4: Quote Management | P1 High | 3 | 🟢 Complete |
+| **Total** | | **~23** | **21/23 SP done (91%)** |
 
 **Recommended execution order:** US-8.1 → US-8.2 → US-8.3 (depends on 8.1) → US-8.4 → TD-3.1.A

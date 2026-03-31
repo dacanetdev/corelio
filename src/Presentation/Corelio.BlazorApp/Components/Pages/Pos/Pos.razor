@@ -44,7 +44,8 @@
         </MudText>
         <PaymentPanel Cart="_cart"
                       OnSaleCompleted="HandleSaleCompleted"
-                      OnSaleCancelled="HandleSaleCancelled" />
+                      OnSaleCancelled="HandleSaleCancelled"
+                      OnQuoteSaved="HandleQuoteSaved" />
     </div>
 </div>
 
@@ -147,11 +148,42 @@
 </style>
 
 @code {
+    [Parameter, SupplyParameterFromQuery] public Guid? QuoteId { get; set; }
+
     private CartState _cart = new();
     private bool _showReceipt;
     private bool _printingTicket;
     private SaleModel? _completedSale;
     private readonly DialogOptions _receiptOptions = new() { MaxWidth = MaxWidth.Small, FullWidth = true };
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (QuoteId.HasValue)
+        {
+            var result = await SaleService.GetSaleByIdAsync(QuoteId.Value);
+            if (result.IsSuccess && result.Value is not null)
+            {
+                foreach (var item in result.Value.Items)
+                {
+                    _cart.Items.Add(new CartItem
+                    {
+                        ProductId = item.ProductId,
+                        ProductName = item.ProductName,
+                        ProductSku = item.ProductSku,
+                        UnitPrice = item.UnitPrice,
+                        Quantity = item.Quantity,
+                        DiscountPercentage = item.DiscountPercentage,
+                        IvaEnabled = item.TaxPercentage > 0,
+                        TaxRate = item.TaxPercentage / 100m
+                    });
+                }
+            }
+            else
+            {
+                Snackbar.Add(L["QuoteConvertError"], Severity.Warning);
+            }
+        }
+    }
 
     private void AddToCart(PosProductModel product)
     {
@@ -169,6 +201,13 @@
     {
         _cart.Clear();
         StateHasChanged();
+    }
+
+    private void HandleQuoteSaved(string folio)
+    {
+        _cart.Clear();
+        StateHasChanged();
+        Snackbar.Add(string.Format(L["QuoteSaved"], folio), Severity.Success);
     }
 
     private void StartNewSale()

@@ -15,6 +15,7 @@ public interface ISaleService
         string? status = null,
         DateTime? dateFrom = null,
         DateTime? dateTo = null,
+        string? type = null,
         CancellationToken cancellationToken = default);
 
     Task<Result<SaleModel>> GetSaleByIdAsync(
@@ -27,6 +28,10 @@ public interface ISaleService
         CancellationToken cancellationToken = default);
 
     Task<Result<byte[]>> DownloadReceiptAsync(
+        Guid id,
+        CancellationToken cancellationToken = default);
+
+    Task<Result<bool>> ConvertQuoteToSaleAsync(
         Guid id,
         CancellationToken cancellationToken = default);
 }

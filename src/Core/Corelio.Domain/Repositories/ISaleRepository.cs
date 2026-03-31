@@ -17,6 +17,7 @@ public interface ISaleRepository
         string? searchTerm = null,
         DateTime? dateFrom = null,
         DateTime? dateTo = null,
+        SaleType? type = null,
         CancellationToken cancellationToken = default);
 
     /// <summary>

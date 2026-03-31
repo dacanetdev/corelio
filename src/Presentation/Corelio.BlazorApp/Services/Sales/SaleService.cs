@@ -19,6 +19,7 @@ public class SaleService(AuthenticatedHttpClient httpClient, ILogger<SaleService
         string? status = null,
         DateTime? dateFrom = null,
         DateTime? dateTo = null,
+        string? type = null,
         CancellationToken cancellationToken = default)
     {
         try
@@ -47,6 +48,11 @@ public class SaleService(AuthenticatedHttpClient httpClient, ILogger<SaleService
             if (dateTo.HasValue)
             {
                 queryParams.Add($"dateTo={dateTo.Value:O}");
+            }
+
+            if (!string.IsNullOrWhiteSpace(type))
+            {
+                queryParams.Add($"saleType={Uri.EscapeDataString(type)}");
             }
 
             var url = $"{BaseUrl}?{string.Join("&", queryParams)}";
@@ -151,6 +157,29 @@ public class SaleService(AuthenticatedHttpClient httpClient, ILogger<SaleService
         {
             logger.LogError(ex, "Error downloading receipt for sale {Id}", id);
             return Result<byte[]>.Failure($"Error downloading receipt: {ex.Message}");
+        }
+    }
+
+    public async Task<Result<bool>> ConvertQuoteToSaleAsync(
+        Guid id,
+        CancellationToken cancellationToken = default)
+    {
+        try
+        {
+            var response = await httpClient.PostAsJsonAsync($"{BaseUrl}/{id}/convert", new { }, cancellationToken);
+
+            if (response.IsSuccessStatusCode)
+            {
+                return Result<bool>.Success(true);
+            }
+
+            var error = await response.GetErrorMessageAsync(cancellationToken);
+            return Result<bool>.Failure(error);
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "Error converting quote {Id} to sale", id);
+            return Result<bool>.Failure($"Error converting quote: {ex.Message}");
         }
     }
 }

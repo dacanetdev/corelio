@@ -75,6 +75,9 @@ public class SaleConfiguration : IEntityTypeConfiguration<Sale>
         builder.Property(s => s.CompletedAt)
             .HasColumnName("completed_at");
 
+        builder.Property(s => s.ExpiresAt)
+            .HasColumnName("expires_at");
+
         // Audit fields
         builder.Property(s => s.CreatedAt).HasColumnName("created_at").IsRequired();
         builder.Property(s => s.UpdatedAt).HasColumnName("updated_at");

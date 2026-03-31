@@ -184,4 +184,5 @@ public class SaleListModel
     public int ItemCount { get; set; }
     public DateTime CreatedAt { get; set; }
     public DateTime? CompletedAt { get; set; }
+    public DateTime? ExpiresAt { get; set; }
 }

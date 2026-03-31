@@ -1,5 +1,6 @@
 using Corelio.Application.Common.Models;
 using Corelio.Application.Sales.Commands.CancelSale;
+using Corelio.Application.Sales.Commands.ConvertQuoteToSale;
 using Corelio.Application.Sales.Queries.GenerateSaleReceipt;
 using Corelio.Application.Sales.Queries.GetSaleById;
 using Corelio.Application.Sales.Queries.GetSales;
@@ -43,6 +44,11 @@ public static class SaleEndpoints
             .WithSummary("Cancel a sale (restores inventory for completed sales)")
             .RequireAuthorization("sales.cancel");
 
+        group.MapPost("/{id:guid}/convert", ConvertQuote)
+            .WithName("ConvertQuoteToSale")
+            .WithSummary("Convert an open quote to sale (marks quote as cancelled; POS pre-loads cart)")
+            .RequireAuthorization("sales.create");
+
         return app;
     }
 
@@ -53,6 +59,7 @@ public static class SaleEndpoints
         [FromQuery] string? searchTerm,
         [FromQuery] DateTime? dateFrom,
         [FromQuery] DateTime? dateTo,
+        [FromQuery] SaleType? saleType,
         IMediator mediator,
         CancellationToken ct)
     {
@@ -62,7 +69,8 @@ public static class SaleEndpoints
             Status: status,
             SearchTerm: searchTerm,
             DateFrom: dateFrom,
-            DateTo: dateTo);
+            DateTo: dateTo,
+            Type: saleType);
 
         var result = await mediator.Send(query, ct);
         return result.ToHttpResult();
@@ -93,7 +101,7 @@ public static class SaleEndpoints
         }
 
         return Results.File(
-            result.Value.PdfBytes,
+            result.Value!.PdfBytes,
             "application/pdf",
             $"Recibo_{result.Value.Folio}.pdf");
     }
@@ -105,6 +113,16 @@ public static class SaleEndpoints
         CancellationToken ct)
     {
         var command = new CancelSaleCommand(id, reason);
+        var result = await mediator.Send(command, ct);
+        return result.ToHttpResult();
+    }
+
+    private static async Task<IResult> ConvertQuote(
+        Guid id,
+        IMediator mediator,
+        CancellationToken ct)
+    {
+        var command = new ConvertQuoteToSaleCommand(id);
         var result = await mediator.Send(command, ct);
         return result.ToHttpResult();
     }

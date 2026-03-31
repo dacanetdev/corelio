@@ -65,6 +65,11 @@ public class Sale : TenantAuditableEntity
     /// </summary>
     public DateTime? CompletedAt { get; set; }
 
+    /// <summary>
+    /// Expiry date for quotes (30 days from creation). Null for non-quote sales.
+    /// </summary>
+    public DateTime? ExpiresAt { get; set; }
+
     // Navigation
     public ICollection<SaleItem> Items { get; set; } = [];
     public ICollection<Payment> Payments { get; set; } = [];

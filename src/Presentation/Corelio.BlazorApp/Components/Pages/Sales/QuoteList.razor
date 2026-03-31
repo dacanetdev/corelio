@@ -1,0 +1,290 @@
+@page "/cotizaciones"
+@using Corelio.BlazorApp.Models.Pos
+@using Corelio.BlazorApp.Resources
+@using Corelio.BlazorApp.Services.Sales
+@using Microsoft.Extensions.Localization
+@using MudBlazor
+@using System.Globalization
+@inject ISaleService SaleService
+@inject IStringLocalizer<SharedResource> L
+@inject ISnackbar Snackbar
+@inject NavigationManager Nav
+
+<PageTitle>@L["Quotes"] - Corelio</PageTitle>
+
+<MudContainer MaxWidth="MaxWidth.ExtraLarge" Class="mt-4">
+    <MudStack Row="true" AlignItems="AlignItems.Center" Justify="Justify.SpaceBetween" Class="mb-4">
+        <div>
+            <MudText Typo="Typo.h5" GutterBottom="false">@L["Quotes"]</MudText>
+            <MudText Typo="Typo.body2" Color="Color.Secondary">@L["QuoteListDescription"]</MudText>
+        </div>
+    </MudStack>
+
+    <MudPaper Elevation="1" Class="pa-4 mb-4">
+        <MudGrid>
+            <MudItem xs="12" md="5">
+                <MudTextField @bind-Value="_searchTerm"
+                              Placeholder="@L["SearchSales"]"
+                              Adornment="Adornment.Start"
+                              AdornmentIcon="@Icons.Material.Rounded.Search"
+                              Immediate="true"
+                              DebounceInterval="300"
+                              OnDebounceIntervalElapsed="OnSearchChanged"
+                              Class="mb-0" />
+            </MudItem>
+            <MudItem xs="12" md="2">
+                <MudDatePicker Label="@L["DateFrom"]"
+                               Date="_dateFrom"
+                               DateChanged="OnDateFromChanged"
+                               DateFormat="dd/MM/yyyy"
+                               Culture="@(new CultureInfo("es-MX"))"
+                               Clearable="true" />
+            </MudItem>
+            <MudItem xs="12" md="2">
+                <MudDatePicker Label="@L["DateTo"]"
+                               Date="_dateTo"
+                               DateChanged="OnDateToChanged"
+                               DateFormat="dd/MM/yyyy"
+                               Culture="@(new CultureInfo("es-MX"))"
+                               Clearable="true" />
+            </MudItem>
+            <MudItem xs="12" md="2">
+                <MudSelect T="string" Value="_selectedStatus" ValueChanged="OnStatusChanged"
+                           Label="@L["Status"]" Clearable="true">
+                    <MudSelectItem T="string" Value="@("draft")">@L["QuoteValid"]</MudSelectItem>
+                    <MudSelectItem T="string" Value="@("cancelled")">@L["SaleStatusCancelled"]</MudSelectItem>
+                </MudSelect>
+            </MudItem>
+            <MudItem xs="12" md="1" Class="d-flex align-center">
+                <MudIconButton Icon="@Icons.Material.Rounded.FilterAltOff"
+                               Variant="Variant.Outlined"
+                               OnClick="ClearFilters" />
+            </MudItem>
+        </MudGrid>
+    </MudPaper>
+
+    @if (_loading)
+    {
+        <MudProgressLinear Indeterminate="true" Color="Color.Primary" Class="mb-4" />
+    }
+    else if (_error is not null)
+    {
+        <MudAlert Severity="Severity.Error" Class="mb-4">@_error</MudAlert>
+    }
+    else if (_quotes.Count == 0)
+    {
+        <MudPaper Elevation="0" Class="pa-8 text-center">
+            <MudIcon Icon="@Icons.Material.Rounded.RequestQuote" Color="Color.Secondary" Size="Size.Large" />
+            <MudText Typo="Typo.h6" Class="mt-2">@L["NoQuotesFound"]</MudText>
+            <MudText Color="Color.Secondary">@L["NoQuotesDescription"]</MudText>
+        </MudPaper>
+    }
+    else
+    {
+        <MudTable Items="_quotes" Hover="true" Breakpoint="Breakpoint.Sm"
+                  Dense="true" Striped="true">
+            <HeaderContent>
+                <MudTh>@L["Folio"]</MudTh>
+                <MudTh>@L["Date"]</MudTh>
+                <MudTh>@L["Customer"]</MudTh>
+                <MudTh>@L["Total"]</MudTh>
+                <MudTh>@L["ItemCount"]</MudTh>
+                <MudTh>@L["QuoteExpires"]</MudTh>
+                <MudTh>@L["Status"]</MudTh>
+                <MudTh>@L["Actions"]</MudTh>
+            </HeaderContent>
+            <RowTemplate>
+                <MudTd DataLabel="@L["Folio"]">
+                    <MudText Typo="Typo.body2" Class="fw-medium">@context.Folio</MudText>
+                </MudTd>
+                <MudTd DataLabel="@L["Date"]">
+                    @context.CreatedAt.ToString("dd/MM/yyyy HH:mm", new CultureInfo("es-MX"))
+                </MudTd>
+                <MudTd DataLabel="@L["Customer"]">
+                    @(context.CustomerName ?? "—")
+                </MudTd>
+                <MudTd DataLabel="@L["Total"]">
+                    @context.Total.ToString("C", new CultureInfo("es-MX"))
+                </MudTd>
+                <MudTd DataLabel="@L["ItemCount"]">
+                    @context.ItemCount
+                </MudTd>
+                <MudTd DataLabel="@L["QuoteExpires"]">
+                    @if (context.ExpiresAt.HasValue)
+                    {
+                        var expired = context.ExpiresAt.Value < DateTime.UtcNow;
+                        <MudChip T="string" Size="Size.Small" Color="@(expired ? Color.Error : Color.Success)">
+                            @context.ExpiresAt.Value.ToLocalTime().ToString("dd/MM/yyyy", new CultureInfo("es-MX"))
+                        </MudChip>
+                    }
+                    else
+                    {
+                        <span>—</span>
+                    }
+                </MudTd>
+                <MudTd DataLabel="@L["Status"]">
+                    <MudChip T="string" Size="Size.Small" Color="@GetStatusColor(context)">
+                        @GetStatusLabel(context)
+                    </MudChip>
+                </MudTd>
+                <MudTd DataLabel="@L["Actions"]">
+                    @if (context.Status.ToLowerInvariant() == "draft")
+                    {
+                        var isExpired = context.ExpiresAt.HasValue && context.ExpiresAt.Value < DateTime.UtcNow;
+                        <MudIconButton Icon="@Icons.Material.Rounded.ShoppingCart"
+                                       Size="Size.Small"
+                                       Color="Color.Primary"
+                                       Disabled="@(isExpired || _converting == context.Id)"
+                                       OnClick="@(() => ConvertToSale(context))"
+                                       title="@L["ConvertToSale"]" />
+                        <MudIconButton Icon="@Icons.Material.Rounded.Cancel"
+                                       Size="Size.Small"
+                                       Color="Color.Error"
+                                       Disabled="@(_converting == context.Id)"
+                                       OnClick="@(() => CancelQuote(context.Id))" />
+                    }
+                </MudTd>
+            </RowTemplate>
+        </MudTable>
+
+        <MudStack Row="true" AlignItems="AlignItems.Center" Justify="Justify.SpaceBetween" Class="mt-4">
+            <MudText Typo="Typo.body2" Color="Color.Secondary">
+                @L["ShowingResults"] @((_currentPage - 1) * _pageSize + 1)–@Math.Min(_currentPage * _pageSize, _totalCount) @L["Of"] @_totalCount
+            </MudText>
+            <MudPagination Count="_totalPages" Selected="_currentPage"
+                           SelectedChanged="OnPageChanged" />
+        </MudStack>
+    }
+</MudContainer>
+
+@code {
+    private List<SaleListModel> _quotes = [];
+    private bool _loading = true;
+    private string? _error;
+    private string _searchTerm = string.Empty;
+    private string? _selectedStatus = "draft";
+    private DateTime? _dateFrom;
+    private DateTime? _dateTo;
+    private int _currentPage = 1;
+    private int _pageSize = 20;
+    private int _totalCount;
+    private int _totalPages = 1;
+    private Guid? _converting;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadQuotes();
+    }
+
+    private async Task LoadQuotes()
+    {
+        _loading = true;
+        _error = null;
+
+        var result = await SaleService.GetSalesAsync(
+            _currentPage, _pageSize, _searchTerm, _selectedStatus, _dateFrom, _dateTo, type: "Quote");
+
+        if (result.IsSuccess && result.Value is not null)
+        {
+            _quotes = result.Value.Items;
+            _totalCount = result.Value.TotalCount;
+            _totalPages = result.Value.TotalPages;
+        }
+        else
+        {
+            _error = result.Error ?? L["ErrorLoadingSales"];
+        }
+
+        _loading = false;
+    }
+
+    private async Task OnSearchChanged()
+    {
+        _currentPage = 1;
+        await LoadQuotes();
+    }
+
+    private async Task OnStatusChanged(string? value)
+    {
+        _selectedStatus = value;
+        _currentPage = 1;
+        await LoadQuotes();
+    }
+
+    private async Task OnDateFromChanged(DateTime? value)
+    {
+        _dateFrom = value;
+        _currentPage = 1;
+        await LoadQuotes();
+    }
+
+    private async Task OnDateToChanged(DateTime? value)
+    {
+        _dateTo = value;
+        _currentPage = 1;
+        await LoadQuotes();
+    }
+
+    private async Task ClearFilters()
+    {
+        _searchTerm = string.Empty;
+        _selectedStatus = "draft";
+        _dateFrom = null;
+        _dateTo = null;
+        _currentPage = 1;
+        await LoadQuotes();
+    }
+
+    private async Task OnPageChanged(int page)
+    {
+        _currentPage = page;
+        await LoadQuotes();
+    }
+
+    private async Task ConvertToSale(SaleListModel quote)
+    {
+        _converting = quote.Id;
+        var result = await SaleService.ConvertQuoteToSaleAsync(quote.Id);
+        if (result.IsSuccess)
+        {
+            Snackbar.Add(L["QuoteConverted"], Severity.Success);
+            Nav.NavigateTo($"/pos?quoteId={quote.Id}");
+        }
+        else
+        {
+            Snackbar.Add(result.Error ?? L["QuoteConvertError"], Severity.Error);
+            _converting = null;
+        }
+    }
+
+    private async Task CancelQuote(Guid id)
+    {
+        _converting = id;
+        var result = await SaleService.CancelSaleAsync(id, "Cotización cancelada");
+        if (result.IsSuccess)
+        {
+            Snackbar.Add(L["SaleStatusCancelled"], Severity.Info);
+            await LoadQuotes();
+        }
+        else
+        {
+            Snackbar.Add(result.Error ?? L["ErrorLoadingSales"], Severity.Error);
+        }
+
+        _converting = null;
+    }
+
+    private Color GetStatusColor(SaleListModel quote)
+    {
+        if (quote.Status.ToLowerInvariant() == "cancelled") { return Color.Default; }
+        if (quote.ExpiresAt.HasValue && quote.ExpiresAt.Value < DateTime.UtcNow) { return Color.Error; }
+        return Color.Warning;
+    }
+
+    private string GetStatusLabel(SaleListModel quote)
+    {
+        if (quote.Status.ToLowerInvariant() == "cancelled") { return L["SaleStatusCancelled"]; }
+        if (quote.ExpiresAt.HasValue && quote.ExpiresAt.Value < DateTime.UtcNow) { return L["QuoteExpired"]; }
+        return L["QuoteValid"];
+    }
+}

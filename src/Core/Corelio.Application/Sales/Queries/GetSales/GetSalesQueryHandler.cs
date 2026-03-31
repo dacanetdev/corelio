@@ -21,6 +21,7 @@ public class GetSalesQueryHandler(
             request.SearchTerm,
             request.DateFrom,
             request.DateTo,
+            request.Type,
             cancellationToken);
 
         var dtos = items.Select(s => new SaleListDto(
@@ -32,7 +33,8 @@ public class GetSalesQueryHandler(
             s.Total,
             s.Items.Count,
             s.CreatedAt,
-            s.CompletedAt)).ToList();
+            s.CompletedAt,
+            s.ExpiresAt)).ToList();
 
         var pagedResult = PagedResult<SaleListDto>.Create(
             dtos,

@@ -27,7 +27,7 @@ public class GetSalesQueryHandlerTests
         var sales = CreateSaleList(5);
 
         _saleRepositoryMock.Setup(x => x.GetPagedAsync(
-                1, 20, null, null, null, null, It.IsAny<CancellationToken>()))
+                1, 20, null, null, null, null, null, It.IsAny<CancellationToken>()))
             .ReturnsAsync((sales, 5));
 
         var query = new GetSalesQuery();
@@ -51,7 +51,7 @@ public class GetSalesQueryHandlerTests
         var sales = CreateSaleList(2);
 
         _saleRepositoryMock.Setup(x => x.GetPagedAsync(
-                1, 20, null, "V-001", null, null, It.IsAny<CancellationToken>()))
+                1, 20, null, "V-001", null, null, null, It.IsAny<CancellationToken>()))
             .ReturnsAsync((sales, 2));
 
         var query = new GetSalesQuery(SearchTerm: "V-001");
@@ -63,7 +63,7 @@ public class GetSalesQueryHandlerTests
         result.IsSuccess.Should().BeTrue();
         result.Value!.Items.Should().HaveCount(2);
         _saleRepositoryMock.Verify(x => x.GetPagedAsync(
-            1, 20, null, "V-001", null, null, It.IsAny<CancellationToken>()), Times.Once);
+            1, 20, null, "V-001", null, null, null, It.IsAny<CancellationToken>()), Times.Once);
     }
 
     [Fact]
@@ -73,7 +73,7 @@ public class GetSalesQueryHandlerTests
         var sales = CreateSaleList(3);
 
         _saleRepositoryMock.Setup(x => x.GetPagedAsync(
-                1, 20, SaleStatus.Completed, null, null, null, It.IsAny<CancellationToken>()))
+                1, 20, SaleStatus.Completed, null, null, null, null, It.IsAny<CancellationToken>()))
             .ReturnsAsync((sales, 3));
 
         var query = new GetSalesQuery(Status: SaleStatus.Completed);
@@ -84,7 +84,7 @@ public class GetSalesQueryHandlerTests
         // Assert
         result.IsSuccess.Should().BeTrue();
         _saleRepositoryMock.Verify(x => x.GetPagedAsync(
-            1, 20, SaleStatus.Completed, null, null, null, It.IsAny<CancellationToken>()), Times.Once);
+            1, 20, SaleStatus.Completed, null, null, null, null, It.IsAny<CancellationToken>()), Times.Once);
     }
 
     [Fact]
@@ -96,7 +96,7 @@ public class GetSalesQueryHandlerTests
         var dateTo = new DateTime(2026, 1, 31, 23, 59, 59, DateTimeKind.Utc);
 
         _saleRepositoryMock.Setup(x => x.GetPagedAsync(
-                1, 20, null, null, dateFrom, dateTo, It.IsAny<CancellationToken>()))
+                1, 20, null, null, dateFrom, dateTo, null, It.IsAny<CancellationToken>()))
             .ReturnsAsync((sales, 4));
 
         var query = new GetSalesQuery(DateFrom: dateFrom, DateTo: dateTo);
@@ -107,7 +107,7 @@ public class GetSalesQueryHandlerTests
         // Assert
         result.IsSuccess.Should().BeTrue();
         _saleRepositoryMock.Verify(x => x.GetPagedAsync(
-            1, 20, null, null, dateFrom, dateTo, It.IsAny<CancellationToken>()), Times.Once);
+            1, 20, null, null, dateFrom, dateTo, null, It.IsAny<CancellationToken>()), Times.Once);
     }
 
     [Fact]
@@ -115,8 +115,8 @@ public class GetSalesQueryHandlerTests
     {
         // Arrange
         _saleRepositoryMock.Setup(x => x.GetPagedAsync(
-                1, 20, null, null, null, null, It.IsAny<CancellationToken>()))
-            .ReturnsAsync(([], 0));
+                1, 20, null, null, null, null, null, It.IsAny<CancellationToken>()))
+            .ReturnsAsync((new List<Sale>(), 0));
 
         var query = new GetSalesQuery();
 
@@ -139,7 +139,7 @@ public class GetSalesQueryHandlerTests
         var sales = CreateSaleList(10);
 
         _saleRepositoryMock.Setup(x => x.GetPagedAsync(
-                2, 10, null, null, null, null, It.IsAny<CancellationToken>()))
+                2, 10, null, null, null, null, null, It.IsAny<CancellationToken>()))
             .ReturnsAsync((sales, 35));
 
         var query = new GetSalesQuery(PageNumber: 2, PageSize: 10);
@@ -184,7 +184,7 @@ public class GetSalesQueryHandlerTests
         };
 
         _saleRepositoryMock.Setup(x => x.GetPagedAsync(
-                1, 20, null, null, null, null, It.IsAny<CancellationToken>()))
+                1, 20, null, null, null, null, null, It.IsAny<CancellationToken>()))
             .ReturnsAsync(([sale], 1));
 
         var query = new GetSalesQuery();

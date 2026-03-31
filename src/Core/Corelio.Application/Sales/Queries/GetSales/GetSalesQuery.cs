@@ -14,4 +14,5 @@ public record GetSalesQuery(
     SaleStatus? Status = null,
     string? SearchTerm = null,
     DateTime? DateFrom = null,
-    DateTime? DateTo = null) : IRequest<Result<PagedResult<SaleListDto>>>;
+    DateTime? DateTo = null,
+    SaleType? Type = null) : IRequest<Result<PagedResult<SaleListDto>>>;
