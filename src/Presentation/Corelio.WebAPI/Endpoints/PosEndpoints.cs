@@ -45,7 +45,7 @@ public static class PosEndpoints
             .RequireAuthorization("sales.create");
 
         group.MapDelete("/sales/{id:guid}", CancelSale)
-            .WithName("CancelSale")
+            .WithName("CancelPosSale")
             .WithSummary("Cancel a Draft sale")
             .RequireAuthorization("sales.create");
 
