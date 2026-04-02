@@ -51,8 +51,8 @@
             <MudItem xs="12" md="2">
                 <MudSelect T="string" Value="_selectedStatus" ValueChanged="OnStatusChanged"
                            Label="@L["Status"]" Clearable="true">
-                    <MudSelectItem T="string" Value="@("draft")">@L["QuoteValid"]</MudSelectItem>
-                    <MudSelectItem T="string" Value="@("cancelled")">@L["SaleStatusCancelled"]</MudSelectItem>
+                    <MudSelectItem T="string" Value="@("Draft")">@L["QuoteValid"]</MudSelectItem>
+                    <MudSelectItem T="string" Value="@("Cancelled")">@L["SaleStatusCancelled"]</MudSelectItem>
                 </MudSelect>
             </MudItem>
             <MudItem xs="12" md="1" Class="d-flex align-center">
@@ -162,7 +162,7 @@
     private bool _loading = true;
     private string? _error;
     private string _searchTerm = string.Empty;
-    private string? _selectedStatus = "draft";
+    private string? _selectedStatus = "Draft";
     private DateTime? _dateFrom;
     private DateTime? _dateTo;
     private int _currentPage = 1;
@@ -228,7 +228,7 @@
     private async Task ClearFilters()
     {
         _searchTerm = string.Empty;
-        _selectedStatus = "draft";
+        _selectedStatus = "Draft";
         _dateFrom = null;
         _dateTo = null;
         _currentPage = 1;
