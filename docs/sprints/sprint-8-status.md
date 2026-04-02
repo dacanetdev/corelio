@@ -3,13 +3,11 @@
 **Goal:** Extend the POS system with sales history, inventory management UI, receipt generation, and quote management — giving hardware store staff complete visibility and control over all sales operations.
 
 **Duration:** TBD (~3-4 days estimated at 8 SP/day velocity)
-**Status:** 🟡 In Progress (95%)
+**Status:** 🟢 Complete (100%)
 **Started:** 2026-02-24
-**Total Story Points:** 21 pts (US-8.1: 5, US-8.2: 8, US-8.3: 5, US-8.4: 3) + ~2 SP tech debt (TD-3.1.A)
-**Completed:** 40/42 tasks (95%) — US-8.1 ✅ US-8.2 ✅ US-8.3 ✅ US-8.4 ✅
-
-> 🎯 **This is the NEXT SPRINT — ready to begin.**
-> Prerequisites: Sprint 7 complete ✅ | Sale, InventoryItem, Payment entities exist ✅ | PosEndpoints, SaleEndpoints scaffolded ✅
+**Completed:** 2026-04-02
+**Total Story Points:** 23 pts (US-8.1: 5, US-8.2: 8, US-8.3: 5, US-8.4: 3, TD-3.1.A: 2)
+**Completed:** 42/42 tasks (100%) — US-8.1 ✅ US-8.2 ✅ US-8.3 ✅ US-8.4 ✅ TD-3.1.A ✅
 
 ---
 
@@ -18,7 +16,7 @@ Recommended to fold into Sprint 8 since the product domain is active.
 
 | Task ID | Task | Branch | Status | Notes |
 |---------|------|--------|--------|-------|
-| TASK-TD-3.1.A | Unit tests for `CreateProduct`, `UpdateProduct`, `DeleteProduct`, `GetProductsQuery`, `GetProductByIdQuery` handlers (>70% coverage) | `feature/US-8.0-product-handler-tests` | 🔴 | Deferred from Sprint 3 |
+| TASK-TD-3.1.A | Unit tests for `CreateProduct`, `UpdateProduct`, `DeleteProduct`, `GetProductsQuery`, `GetProductByIdQuery` handlers (>70% coverage) | `main` | 🟢 | 42 tests passing (CreateProduct: 9, UpdateProduct: 9, DeleteProduct: 7, GetProductsQuery: 8, GetProductById: 6+ tests) |
 
 ---
 
@@ -189,11 +187,11 @@ Recommended to fold into Sprint 8 since the product domain is active.
 
 | Story | Priority | SP | Status |
 |-------|----------|----|--------|
-| TD-3.1.A: Product handler unit tests | P1 High | ~2 | 🔴 Not Started |
+| TD-3.1.A: Product handler unit tests | P1 High | ~2 | 🟢 Complete — 42 tests |
 | US-8.1: Sales History & Management UI | P0 Critical | 5 | 🟢 Complete — PR pending |
 | US-8.2: Inventory Management UI | P0 Critical | 8 | 🟢 Complete — PR #61 |
 | US-8.3: Receipt & Ticket Generation | P1 High | 5 | 🟢 Complete |
 | US-8.4: Quote Management | P1 High | 3 | 🟢 Complete |
-| **Total** | | **~23** | **21/23 SP done (91%)** |
+| **Total** | | **~23** | **23/23 SP done (100%)** |
 
 **Recommended execution order:** US-8.1 → US-8.2 → US-8.3 (depends on 8.1) → US-8.4 → TD-3.1.A
