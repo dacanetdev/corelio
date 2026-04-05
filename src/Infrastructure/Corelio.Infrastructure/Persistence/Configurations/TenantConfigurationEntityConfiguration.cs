@@ -57,6 +57,26 @@ public class TenantConfigurationEntityConfiguration : IEntityTypeConfiguration<T
         builder.Property(tc => tc.CfdiCertificateExpiresAt)
             .HasColumnName("cfdi_certificate_expires_at");
 
+        builder.Property(tc => tc.CfdiCertificateData)
+            .HasColumnName("cfdi_certificate_data")
+            .HasColumnType("bytea");
+
+        builder.Property(tc => tc.IssuerRfc)
+            .HasColumnName("issuer_rfc")
+            .HasMaxLength(13);
+
+        builder.Property(tc => tc.IssuerName)
+            .HasColumnName("issuer_name")
+            .HasMaxLength(300);
+
+        builder.Property(tc => tc.IssuerTaxRegime)
+            .HasColumnName("issuer_tax_regime")
+            .HasMaxLength(3);
+
+        builder.Property(tc => tc.IssuerPostalCode)
+            .HasColumnName("issuer_postal_code")
+            .HasMaxLength(10);
+
         builder.Property(tc => tc.CfdiSeries)
             .HasColumnName("cfdi_series")
             .HasMaxLength(10)

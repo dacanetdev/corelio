@@ -55,6 +55,31 @@ public class TenantConfiguration : AuditableEntity
     public DateTime? CfdiCertificateExpiresAt { get; set; }
 
     /// <summary>
+    /// CSD certificate PFX file bytes (encrypted). Used for DB-based certificate storage.
+    /// </summary>
+    public byte[]? CfdiCertificateData { get; set; }
+
+    /// <summary>
+    /// RFC of the issuer (tenant's RFC for CFDI).
+    /// </summary>
+    public string? IssuerRfc { get; set; }
+
+    /// <summary>
+    /// Legal name of the issuer.
+    /// </summary>
+    public string? IssuerName { get; set; }
+
+    /// <summary>
+    /// SAT tax regime code for the issuer (e.g., "601" for General de Ley).
+    /// </summary>
+    public string? IssuerTaxRegime { get; set; }
+
+    /// <summary>
+    /// Postal code of the place of expedition (LugarExpedicion in CFDI XML).
+    /// </summary>
+    public string? IssuerPostalCode { get; set; }
+
+    /// <summary>
     /// Invoice series (A, B, C, etc.).
     /// </summary>
     public string CfdiSeries { get; set; } = "A";
