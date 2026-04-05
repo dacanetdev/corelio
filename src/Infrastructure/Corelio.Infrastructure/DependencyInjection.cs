@@ -69,6 +69,7 @@ public static class DependencyInjection
         services.AddScoped<ICustomerRepository, CustomerRepository>();
         services.AddScoped<ISaleRepository, SaleRepository>();
         services.AddScoped<IInventoryRepository, InventoryRepository>();
+        services.AddScoped<IInvoiceRepository, InvoiceRepository>();
         services.AddScoped<IPosSearchService, PosSearchService>();
         services.AddScoped<IUnitOfWork, UnitOfWork>();
 
@@ -162,6 +163,7 @@ public static class DependencyInjection
         builder.Services.AddScoped<ICustomerRepository, CustomerRepository>();
         builder.Services.AddScoped<ISaleRepository, SaleRepository>();
         builder.Services.AddScoped<IInventoryRepository, InventoryRepository>();
+        builder.Services.AddScoped<IInvoiceRepository, InvoiceRepository>();
         builder.Services.AddScoped<IPosSearchService, PosSearchService>();
         builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 

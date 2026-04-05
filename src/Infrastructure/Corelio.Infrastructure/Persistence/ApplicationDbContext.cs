@@ -1,5 +1,6 @@
 using Corelio.Domain.Common.Interfaces;
 using Corelio.Domain.Entities;
+using Corelio.Domain.Entities.CFDI;
 using Corelio.Infrastructure.Persistence.Interceptors;
 using Microsoft.EntityFrameworkCore;
 
@@ -57,6 +58,10 @@ public class ApplicationDbContext(
     public DbSet<Sale> Sales => Set<Sale>();
     public DbSet<SaleItem> SaleItems => Set<SaleItem>();
     public DbSet<Payment> Payments => Set<Payment>();
+
+    // CFDI entities
+    public DbSet<Invoice> Invoices => Set<Invoice>();
+    public DbSet<InvoiceItem> InvoiceItems => Set<InvoiceItem>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -159,5 +164,13 @@ public class ApplicationDbContext(
         // Payment - strict tenant isolation
         modelBuilder.Entity<Payment>()
             .HasQueryFilter(p => !tenantProvider.HasTenantContext || p.TenantId == tenantProvider.TenantId);
+
+        // Invoice - strict tenant isolation
+        modelBuilder.Entity<Invoice>()
+            .HasQueryFilter(i => !tenantProvider.HasTenantContext || i.TenantId == tenantProvider.TenantId);
+
+        // InvoiceItem - strict tenant isolation
+        modelBuilder.Entity<InvoiceItem>()
+            .HasQueryFilter(ii => !tenantProvider.HasTenantContext || ii.TenantId == tenantProvider.TenantId);
     }
 }
