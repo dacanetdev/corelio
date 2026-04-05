@@ -8,9 +8,17 @@ namespace Corelio.Domain.Repositories;
 public interface ITenantConfigurationRepository
 {
     /// <summary>
+    /// Gets the configuration for the specified tenant.
+    /// </summary>
+    Task<TenantConfiguration?> GetByTenantIdAsync(Guid tenantId, CancellationToken cancellationToken = default);
+
+    /// <summary>
     /// Adds a new tenant configuration to the repository.
     /// </summary>
-    /// <param name="configuration">The tenant configuration to add.</param>
-    /// <param name="cancellationToken">Cancellation token.</param>
     Task AddAsync(TenantConfiguration configuration, CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// Marks the configuration as modified so changes are persisted on next SaveChanges.
+    /// </summary>
+    void Update(TenantConfiguration configuration);
 }
