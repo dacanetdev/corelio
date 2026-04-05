@@ -80,6 +80,9 @@ public static class DependencyInjection
         // Register CFDI services
         services.AddScoped<ICertificateService, DatabaseCertificateService>();
         services.AddScoped<ICfdiXmlGenerator, CfdiXmlGenerator>();
+        services.AddScoped<IPACProvider, MockPACProvider>();
+        services.AddScoped<ICFDIService, CfdiService>();
+        services.AddScoped<IInvoicePdfService, InvoicePdfService>();
 
         // Register distributed cache (for tenant caching)
         // Note: For non-Aspire deployments, configure Redis connection string in appsettings.json
@@ -178,6 +181,9 @@ public static class DependencyInjection
         // Register CFDI services
         builder.Services.AddScoped<ICertificateService, DatabaseCertificateService>();
         builder.Services.AddScoped<ICfdiXmlGenerator, CfdiXmlGenerator>();
+        builder.Services.AddScoped<IPACProvider, MockPACProvider>();
+        builder.Services.AddScoped<ICFDIService, CfdiService>();
+        builder.Services.AddScoped<IInvoicePdfService, InvoicePdfService>();
 
         // Register interceptors (injected into ApplicationDbContext via constructor)
         builder.Services.AddScoped<TenantInterceptor>();
