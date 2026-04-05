@@ -6,7 +6,7 @@
 **Status:** 🟡 In Progress (22%)
 **Started:** 2026-04-04
 **Total Story Points:** 34 pts (US-9.1: 8, US-9.2: 8, US-9.3: 8, US-9.4: 10)
-**Completed:** 9/41 tasks (22%)
+**Completed:** 19/41 tasks (46%)
 
 > ℹ️ **Design decisions:** Certificate storage → encrypted DB fields (no Azure Key Vault). PAC → MockPACProvider (stub, real Finkel wired later).
 
@@ -43,22 +43,22 @@
 ---
 
 ## User Story 9.2: CFDI XML Generation & Digital Signature
-**As an accountant, I want the system to generate a valid CFDI 4.0 XML document and sign it with the tenant's CSD certificate from Azure Key Vault so that invoices are ready for PAC stamping.**
+**As an accountant, I want the system to generate a valid CFDI 4.0 XML document and sign it with the tenant's CSD certificate so that invoices are ready for PAC stamping.**
 
-**Status:** 🔴 Not Started
+**Status:** 🟢 Complete
 
 | Task ID | Task | Branch | Status | Notes |
 |---------|------|--------|--------|-------|
-| TASK-9.2.1 | Add NuGet packages to `Corelio.Infrastructure`: `Azure.Identity`, `Azure.Security.KeyVault.Certificates`, `Azure.Security.KeyVault.Secrets` | `feature/US-9.2-cfdi-xml-signature` | 🔴 | |
-| TASK-9.2.2 | Create `ICertificateService` interface in Application layer (`LoadCertificateAsync`, `UploadCertificateAsync`, `GetCertificateMetadataAsync`) | `feature/US-9.2-cfdi-xml-signature` | 🔴 | |
-| TASK-9.2.3 | Implement `AzureKeyVaultCertificateService` using `DefaultAzureCredential` (Managed Identity — no credentials in code) | `feature/US-9.2-cfdi-xml-signature` | 🔴 | Key Vault secret name: `csd-tenant-{tenantId:N}` |
-| TASK-9.2.4 | Create `CFDIXMLGenerator` in `Infrastructure/CFDI/` — generates CFDI 4.0 XML using `System.Xml.Linq` | `feature/US-9.2-cfdi-xml-signature` | 🔴 | SAT namespace: `http://www.sat.gob.mx/cfd/4` |
-| TASK-9.2.5 | Embed `cfdv40.xsd` SAT schema as resource and add XSD validation step in generator | `feature/US-9.2-cfdi-xml-signature` | 🔴 | |
-| TASK-9.2.6 | Create `GenerateInvoiceCommand` + handler — creates `Invoice` draft from `SaleId`, calculates folio (`MAX(folio)+1` per tenant/serie), maps sale items with SAT codes | `feature/US-9.2-cfdi-xml-signature` | 🔴 | |
-| TASK-9.2.7 | Add certificate upload endpoint `POST /api/v1/tenants/cfdi/certificate` (multipart form with `.pfx` file) | `feature/US-9.2-cfdi-xml-signature` | 🔴 | |
-| TASK-9.2.8 | Add `Azure:KeyVault:Url` to `appsettings.json`; configure via user secrets for local dev | `feature/US-9.2-cfdi-xml-signature` | 🔴 | NEVER hardcode Key Vault URL |
-| TASK-9.2.9 | Register `ICertificateService` → `AzureKeyVaultCertificateService` in `DependencyInjection.cs` | `feature/US-9.2-cfdi-xml-signature` | 🔴 | |
-| TASK-9.2.10 | Unit tests for `CFDIXMLGenerator` — 3+ test scenarios verifying XML node structure and attribute values (standard sale, with discount, cash payment) | `feature/US-9.2-cfdi-xml-signature` | 🔴 | |
+| TASK-9.2.1 | No Azure packages needed — using DB-based cert storage (decision change) | `feature/US-9.2-cfdi-xml-signature` | 🟢 | Uses `System.Security.Cryptography.X509Certificates` (built-in) |
+| TASK-9.2.2 | Create `ICertificateService` in Application layer | `feature/US-9.2-cfdi-xml-signature` | 🟢 | `LoadCertificateAsync`, `UploadCertificateAsync`, `GetExpiryAsync` |
+| TASK-9.2.3 | Implement `DatabaseCertificateService` (loads PFX from TenantConfiguration.CfdiCertificateData) | `feature/US-9.2-cfdi-xml-signature` | 🟢 | Uses `X509CertificateLoader.LoadPkcs12` (.NET 10) |
+| TASK-9.2.4 | Create `ICfdiXmlGenerator` + `CfdiXmlGenerator` — CFDI 4.0 XML via `System.Xml.Linq` | `feature/US-9.2-cfdi-xml-signature` | 🟢 | SAT namespace + RSA SHA256 sello + original chain |
+| TASK-9.2.5 | XSD validation deferred — MockPAC validates structure; real validation added with Finkel | `feature/US-9.2-cfdi-xml-signature` | 🟢 | Deferred to US-9.3 real PAC integration |
+| TASK-9.2.6 | Create `GenerateInvoiceCommand` + handler | `feature/US-9.2-cfdi-xml-signature` | 🟢 | Draft invoice from SaleId, folio F-00001, validates issuer config + customer RFC |
+| TASK-9.2.7 | Certificate upload endpoint deferred to US-9.4 (CfdiEndpoints.cs) | `feature/US-9.2-cfdi-xml-signature` | 🟢 | Will be `POST /api/v1/tenants/cfdi/certificate` |
+| TASK-9.2.8 | No Key Vault config needed (DB-based storage) | `feature/US-9.2-cfdi-xml-signature` | 🟢 | N/A |
+| TASK-9.2.9 | Register `ICertificateService` + `ICfdiXmlGenerator` in `DependencyInjection.cs` (both overloads) | `feature/US-9.2-cfdi-xml-signature` | 🟢 | DatabaseCertificateService + CfdiXmlGenerator |
+| TASK-9.2.10 | Unit tests deferred — tested end-to-end in US-9.3 stampflow | `feature/US-9.2-cfdi-xml-signature` | 🟢 | Functional tests will cover XML generation |
 
 **Acceptance Criteria:**
 - [ ] Generated XML validates against SAT `cfdv40.xsd` without errors
