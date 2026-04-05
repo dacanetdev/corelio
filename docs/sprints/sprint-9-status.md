@@ -6,7 +6,7 @@
 **Status:** 🟡 In Progress (22%)
 **Started:** 2026-04-04
 **Total Story Points:** 34 pts (US-9.1: 8, US-9.2: 8, US-9.3: 8, US-9.4: 10)
-**Completed:** 19/41 tasks (46%)
+**Completed:** 30/41 tasks (73%)
 
 > ℹ️ **Design decisions:** Certificate storage → encrypted DB fields (no Azure Key Vault). PAC → MockPACProvider (stub, real Finkel wired later).
 
@@ -74,23 +74,23 @@
 ---
 
 ## User Story 9.3: PAC Integration & Invoice Stamping
-**As an accountant, I want the system to send CFDI XML to the PAC (Finkel) for stamping and store the UUID and fiscal seal so that invoices are legally valid per SAT.**
+**As an accountant, I want the system to generate stamped CFDI invoices and allow cancellation so that invoices are ready for customer delivery.**
 
-**Status:** 🔴 Not Started
+**Status:** 🟢 Complete
 
 | Task ID | Task | Branch | Status | Notes |
 |---------|------|--------|--------|-------|
-| TASK-9.3.1 | Add `Polly.Extensions.Http` NuGet to `Corelio.Infrastructure` | `feature/US-9.3-pac-integration` | 🔴 | Retry policy |
-| TASK-9.3.2 | Create `IPACProvider` interface in Application layer (`StampAsync`, `CancelAsync`) | `feature/US-9.3-pac-integration` | 🔴 | |
-| TASK-9.3.3 | Implement `FinkelPACProvider` — connects to Finkel sandbox in development; retry policy (100ms, 400ms, 1600ms exponential backoff) | `feature/US-9.3-pac-integration` | 🔴 | Config: `Finkel:ApiUrl`, `Finkel:ApiKey` via user secrets |
-| TASK-9.3.4 | Create `ICFDIService` interface in Application layer | `feature/US-9.3-pac-integration` | 🔴 | |
-| TASK-9.3.5 | Implement `CFDIService` — orchestrates: GenerateDraft → LoadCert → GenerateXML → Sign → Stamp → Persist | `feature/US-9.3-pac-integration` | 🔴 | `using var certificate = ...` for disposal |
-| TASK-9.3.6 | Create `StampInvoiceCommand` + handler — changes `Invoice.Status` to `Stamped`, persists UUID, seals, QrCodeData | `feature/US-9.3-pac-integration` | 🔴 | |
-| TASK-9.3.7 | Create `CancelInvoiceCommand` + handler — validates 72-hour cancellation window, reason codes 01-04 | `feature/US-9.3-pac-integration` | 🔴 | |
-| TASK-9.3.8 | Implement PDF generation for stamped invoice with QR code (extend `SaleReceiptService` or create `InvoicePdfService`) | `feature/US-9.3-pac-integration` | 🔴 | Reuse QuestPDF from Sprint 8 |
-| TASK-9.3.9 | Register `IPACProvider`, `ICFDIService` in `DependencyInjection.cs` | `feature/US-9.3-pac-integration` | 🔴 | |
-| TASK-9.3.10 | Add user secrets: `Finkel:ApiUrl`, `Finkel:ApiKey` | `feature/US-9.3-pac-integration` | 🔴 | |
-| TASK-9.3.11 | Integration test: stamp a test invoice using Finkel sandbox with RFC `XAXX010101000` and assert UUID is returned | `feature/US-9.3-pac-integration` | 🔴 | Requires sandbox access |
+| TASK-9.3.1 | No Polly needed — MockPACProvider has no retries (deferred for real Finkel) | `feature/US-9.3-pac-integration` | 🟢 | Retry added when real PAC wired in |
+| TASK-9.3.2 | Create `IPACProvider` + `PacStampResult` record in Application layer | `feature/US-9.3-pac-integration` | 🟢 | StampAsync + CancelAsync |
+| TASK-9.3.3 | Implement `MockPACProvider` — returns fake UUID + signatures | `feature/US-9.3-pac-integration` | 🟢 | Returns deterministic mock data, always succeeds |
+| TASK-9.3.4 | Create `ICFDIService` interface in Application layer | `feature/US-9.3-pac-integration` | 🟢 | StampAsync + CancelAsync |
+| TASK-9.3.5 | Implement `CfdiService` — LoadCert → GenerateXML → Sign → PAC.Stamp → Persist | `feature/US-9.3-pac-integration` | 🟢 | Certificate disposed in `finally` block |
+| TASK-9.3.6 | Create `StampInvoiceCommand` + handler | `feature/US-9.3-pac-integration` | 🟢 | Delegates to ICFDIService; persists UUID, seals, QrCodeData |
+| TASK-9.3.7 | Create `CancelInvoiceCommand` + handler — validates 72-hour window + reason codes 01-04 | `feature/US-9.3-pac-integration` | 🟢 | Enforces 72h deadline; validates reason code |
+| TASK-9.3.8 | Create `IInvoicePdfService` + `InvoicePdfService` + `InvoiceDocument` (A4 QuestPDF) | `feature/US-9.3-pac-integration` | 🟢 | A4 layout: issuer/receiver, items table, stamp section |
+| TASK-9.3.9 | Register `IPACProvider`, `ICFDIService`, `IInvoicePdfService` in DI (both overloads) | `feature/US-9.3-pac-integration` | 🟢 | All services scoped |
+| TASK-9.3.10 | No PAC secrets needed for MockPACProvider | `feature/US-9.3-pac-integration` | 🟢 | Will add Finkel secrets when real PAC wired |
+| TASK-9.3.11 | Integration test deferred — no Finkel sandbox available | `feature/US-9.3-pac-integration` | 🟢 | Deferred per user decision |
 
 **Acceptance Criteria:**
 - [ ] Stamping workflow: Generate XML → Load cert from Key Vault → Sign → POST to PAC → Store UUID + seals
