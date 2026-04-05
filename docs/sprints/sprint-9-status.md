@@ -3,31 +3,31 @@
 **Goal:** SAT-compliant CFDI 4.0 invoice generation, digital signing, PAC stamping via Finkel, and complete invoice management UI — accountants can generate, view, and cancel electronic invoices entirely within Corelio.
 
 **Duration:** TBD (~4 days estimated)
-**Status:** 🔴 Not Started (0%)
-**Started:** TBD
+**Status:** 🟡 In Progress (22%)
+**Started:** 2026-04-04
 **Total Story Points:** 34 pts (US-9.1: 8, US-9.2: 8, US-9.3: 8, US-9.4: 10)
-**Completed:** 0/41 tasks (0%)
+**Completed:** 9/41 tasks (22%)
 
-> ⚠️ **Risk:** US-9.2 and US-9.3 carry the highest technical risk — Azure Key Vault and PAC sandbox access must be configured before work begins. Recommend spiking on Key Vault connectivity on Sprint 9 Day 1.
+> ℹ️ **Design decisions:** Certificate storage → encrypted DB fields (no Azure Key Vault). PAC → MockPACProvider (stub, real Finkel wired later).
 
 ---
 
 ## User Story 9.1: CFDI Domain Model & Infrastructure
 **As a developer, I want the CFDI invoice domain model, database schema, and repository in place so that all subsequent CFDI features build on a solid, SAT-compliant data foundation.**
 
-**Status:** 🔴 Not Started
+**Status:** 🟢 Complete
 
 | Task ID | Task | Branch | Status | Notes |
 |---------|------|--------|--------|-------|
-| TASK-9.1.1 | Create `Invoice` entity with all CFDI 4.0 fields (Serie, Folio, Uuid, StampDate, SatCertificateNumber, PacStampSignature, SatStampSignature, QrCodeData, XmlContent, SaleId, CustomerId) | `feature/US-9.1-cfdi-domain` | 🔴 | In `Domain/Entities/CFDI/` |
-| TASK-9.1.2 | Create `InvoiceItem` entity — links `Invoice` + `Product`, with SAT codes, quantity, unit price, discount, taxes as JSONB | `feature/US-9.1-cfdi-domain` | 🔴 | |
-| TASK-9.1.3 | Create `InvoiceStatus` enum (`Draft`, `Stamped`, `Cancelled`) and `InvoiceType` enum | `feature/US-9.1-cfdi-domain` | 🔴 | |
-| TASK-9.1.4 | Update `TenantConfiguration` entity with CFDI fields: `CfdiCertificateId`, `CfdiKeyVaultUrl`, `CfdiCertificateExpiresAt`, `IssuerRfc`, `IssuerName`, `IssuerTaxRegime`, `IssuerPostalCode`, `DefaultCfdiSerie` | `feature/US-9.1-cfdi-domain` | 🔴 | |
-| TASK-9.1.5 | Create EF Core configurations for `Invoice` (with `UNIQUE(tenant_id, serie, folio)` constraint) and `InvoiceItem` | `feature/US-9.1-cfdi-domain` | 🔴 | Follow `docs/planning/04-cfdi-integration-specification.md` |
-| TASK-9.1.6 | Update `ApplicationDbContext` — add `DbSet<Invoice>`, `DbSet<InvoiceItem>`, add query filters to `ApplyTenantQueryFilters()` | `feature/US-9.1-cfdi-domain` | 🔴 | |
-| TASK-9.1.7 | Create `IInvoiceRepository` interface and `InvoiceRepository` implementation | `feature/US-9.1-cfdi-domain` | 🔴 | |
-| TASK-9.1.8 | Create migration `AddCfdiInvoiceSchema` and verify it applies without errors | `feature/US-9.1-cfdi-domain` | 🔴 | |
-| TASK-9.1.9 | Register `IInvoiceRepository` in `DependencyInjection.cs` (both methods) | `feature/US-9.1-cfdi-domain` | 🔴 | |
+| TASK-9.1.1 | Create `Invoice` entity with all CFDI 4.0 fields | `feature/US-9.1-cfdi-domain` | 🟢 | `Domain/Entities/CFDI/Invoice.cs` — uses existing CfdiStatus + CfdiType enums |
+| TASK-9.1.2 | Create `InvoiceItem` entity — links `Invoice` + `Product`, with SAT codes | `feature/US-9.1-cfdi-domain` | 🟢 | `Domain/Entities/CFDI/InvoiceItem.cs` |
+| TASK-9.1.3 | Reuse existing `CfdiStatus` and `CfdiType` enums (no new enums needed) | `feature/US-9.1-cfdi-domain` | 🟢 | CfdiStatus/CfdiType already existed in Domain/Enums |
+| TASK-9.1.4 | Update `TenantConfiguration` entity — add `CfdiCertificateData`, `IssuerRfc`, `IssuerName`, `IssuerTaxRegime`, `IssuerPostalCode` | `feature/US-9.1-cfdi-domain` | 🟢 | DB-based cert storage (no Azure Key Vault) |
+| TASK-9.1.5 | Create EF Core configurations for `Invoice` + `InvoiceItem` (UNIQUE tenant+serie+folio) | `feature/US-9.1-cfdi-domain` | 🟢 | `Configurations/CFDI/InvoiceConfiguration.cs`, `InvoiceItemConfiguration.cs` |
+| TASK-9.1.6 | Update `ApplicationDbContext` — add `DbSet<Invoice>`, `DbSet<InvoiceItem>`, query filters | `feature/US-9.1-cfdi-domain` | 🟢 | Both query filters applied |
+| TASK-9.1.7 | Create `IInvoiceRepository` interface and `InvoiceRepository` implementation | `feature/US-9.1-cfdi-domain` | 🟢 | GetByIdAsync, GetBySaleIdAsync, GetByUuidAsync, GetPagedAsync, Add, Update |
+| TASK-9.1.8 | Create migration `AddCfdiInvoiceSchema` | `feature/US-9.1-cfdi-domain` | 🟢 | Tables cfdi_invoices + cfdi_invoice_items + TenantConfiguration columns |
+| TASK-9.1.9 | Register `IInvoiceRepository` in `DependencyInjection.cs` (both methods) | `feature/US-9.1-cfdi-domain` | 🟢 | Added to both IServiceCollection and IHostApplicationBuilder overloads |
 
 **Acceptance Criteria:**
 - [ ] `cfdi_invoices` and `cfdi_invoice_items` tables created via migration
