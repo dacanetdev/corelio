@@ -1,0 +1,350 @@
+@page "/facturas/{Id:guid}"
+@using Corelio.BlazorApp.Components.Dialogs
+@using Corelio.BlazorApp.Models.Cfdi
+@using Corelio.BlazorApp.Resources
+@using Corelio.BlazorApp.Services.Cfdi
+@using Microsoft.Extensions.Localization
+@using MudBlazor
+@using System.Globalization
+@inject ICfdiHttpService CfdiService
+@inject IStringLocalizer<SharedResource> L
+@inject ISnackbar Snackbar
+@inject NavigationManager Nav
+@inject IDialogService DialogService
+@inject IJSRuntime JS
+
+<PageTitle>@L["InvoiceDetail"] - Corelio</PageTitle>
+
+<MudContainer MaxWidth="MaxWidth.Large" Class="mt-4">
+    @if (_loading)
+    {
+        <MudProgressLinear Indeterminate="true" Color="Color.Primary" Class="mb-4" />
+    }
+    else if (_error is not null)
+    {
+        <MudAlert Severity="Severity.Error" Class="mb-4">@_error</MudAlert>
+    }
+    else if (_invoice is not null)
+    {
+        <MudStack Row="true" AlignItems="AlignItems.Center" Justify="Justify.SpaceBetween" Class="mb-4">
+            <MudStack Row="true" AlignItems="AlignItems.Center" Spacing="2">
+                <MudIconButton Icon="@Icons.Material.Rounded.ArrowBack"
+                               OnClick="@(() => Nav.NavigateTo("/facturas"))" />
+                <div>
+                    <MudText Typo="Typo.h5" GutterBottom="false">
+                        @L["InvoiceDetail"] — @_invoice.Serie-@_invoice.Folio
+                    </MudText>
+                    @if (_invoice.Uuid is not null)
+                    {
+                        <MudText Typo="Typo.caption" Color="Color.Secondary">
+                            @L["FiscalFolio"]: @_invoice.Uuid
+                        </MudText>
+                    }
+                </div>
+                <MudChip T="string" Size="Size.Medium" Color="@GetStatusColor(_invoice.Status)">
+                    @GetStatusLabel(_invoice.Status)
+                </MudChip>
+            </MudStack>
+
+            <MudStack Row="true" Spacing="1">
+                @if (_invoice.Status == "Draft")
+                {
+                    <MudButton Variant="Variant.Filled"
+                               Color="Color.Primary"
+                               StartIcon="@Icons.Material.Rounded.Verified"
+                               OnClick="StampInvoice"
+                               Disabled="_actionLoading">
+                        @L["StampInvoice"]
+                    </MudButton>
+                }
+
+                @if (_invoice.Status == "Stamped")
+                {
+                    <MudButton Variant="Variant.Outlined"
+                               StartIcon="@Icons.Material.Rounded.Code"
+                               OnClick="DownloadXml"
+                               Disabled="_actionLoading">
+                        @L["DownloadXml"]
+                    </MudButton>
+
+                    <MudButton Variant="Variant.Outlined"
+                               StartIcon="@Icons.Material.Rounded.PictureAsPdf"
+                               OnClick="DownloadPdf"
+                               Disabled="_actionLoading">
+                        @L["DownloadPdf"]
+                    </MudButton>
+
+                    @if (IsWithin72Hours())
+                    {
+                        <MudButton Variant="Variant.Filled"
+                                   Color="Color.Error"
+                                   StartIcon="@Icons.Material.Rounded.Cancel"
+                                   OnClick="OpenCancelDialog"
+                                   Disabled="_actionLoading">
+                            @L["CancelInvoice"]
+                        </MudButton>
+                    }
+                }
+            </MudStack>
+        </MudStack>
+
+        @if (_actionLoading)
+        {
+            <MudProgressLinear Indeterminate="true" Color="Color.Primary" Class="mb-4" />
+        }
+
+        <MudGrid>
+            <!-- Issuer Card -->
+            <MudItem xs="12" md="6">
+                <MudPaper Elevation="1" Class="pa-4">
+                    <MudText Typo="Typo.subtitle1" Class="mb-3 fw-bold">@L["IssuerData"]</MudText>
+                    <MudStack Spacing="1">
+                        <MudText><strong>RFC:</strong> @_invoice.IssuerRfc</MudText>
+                        <MudText><strong>@L["IssuerName"]:</strong> @_invoice.IssuerName</MudText>
+                        <MudText><strong>@L["TaxRegime"]:</strong> @_invoice.IssuerTaxRegime</MudText>
+                    </MudStack>
+                </MudPaper>
+            </MudItem>
+
+            <!-- Receiver Card -->
+            <MudItem xs="12" md="6">
+                <MudPaper Elevation="1" Class="pa-4">
+                    <MudText Typo="Typo.subtitle1" Class="mb-3 fw-bold">@L["ReceiverData"]</MudText>
+                    <MudStack Spacing="1">
+                        <MudText><strong>RFC:</strong> @_invoice.ReceiverRfc</MudText>
+                        <MudText><strong>@L["ReceiverName"]:</strong> @_invoice.ReceiverName</MudText>
+                        <MudText><strong>@L["TaxRegime"]:</strong> @_invoice.ReceiverTaxRegime</MudText>
+                        <MudText><strong>@L["CfdiUse"]:</strong> @_invoice.ReceiverCfdiUse</MudText>
+                        <MudText><strong>@L["PostalCode"]:</strong> @_invoice.ReceiverPostalCode</MudText>
+                    </MudStack>
+                </MudPaper>
+            </MudItem>
+
+            <!-- Items Table -->
+            <MudItem xs="12">
+                <MudPaper Elevation="1" Class="pa-4">
+                    <MudText Typo="Typo.subtitle1" Class="mb-3 fw-bold">@L["Items"]</MudText>
+                    <MudTable Items="_invoice.Items" Dense="true" Breakpoint="Breakpoint.Sm">
+                        <HeaderContent>
+                            <MudTh>#</MudTh>
+                            <MudTh>@L["ProductName"]</MudTh>
+                            <MudTh>Clave SAT</MudTh>
+                            <MudTh Style="text-align:right">@L["Quantity"]</MudTh>
+                            <MudTh Style="text-align:right">@L["UnitPrice"]</MudTh>
+                            <MudTh Style="text-align:right">IVA</MudTh>
+                            <MudTh Style="text-align:right">@L["Amount"]</MudTh>
+                        </HeaderContent>
+                        <RowTemplate>
+                            <MudTd>@context.ItemNumber</MudTd>
+                            <MudTd>@context.Description</MudTd>
+                            <MudTd><MudText Typo="Typo.caption" Color="Color.Secondary">@context.ProductKey</MudText></MudTd>
+                            <MudTd Style="text-align:right">@context.Quantity</MudTd>
+                            <MudTd Style="text-align:right">@context.UnitValue.ToString("C", new CultureInfo("es-MX"))</MudTd>
+                            <MudTd Style="text-align:right">@context.TaxAmount.ToString("C", new CultureInfo("es-MX"))</MudTd>
+                            <MudTd Style="text-align:right"><strong>@context.Amount.ToString("C", new CultureInfo("es-MX"))</strong></MudTd>
+                        </RowTemplate>
+                    </MudTable>
+                </MudPaper>
+            </MudItem>
+
+            <!-- Totals -->
+            <MudItem xs="12" md="4" Class="ml-auto">
+                <MudPaper Elevation="1" Class="pa-4">
+                    <MudStack Spacing="1">
+                        <MudStack Row="true" Justify="Justify.SpaceBetween">
+                            <MudText>@L["Subtotal"]:</MudText>
+                            <MudText>@_invoice.Subtotal.ToString("C", new CultureInfo("es-MX"))</MudText>
+                        </MudStack>
+                        @if (_invoice.Discount > 0)
+                        {
+                            <MudStack Row="true" Justify="Justify.SpaceBetween">
+                                <MudText>@L["Discount"]:</MudText>
+                                <MudText Color="Color.Error">-@_invoice.Discount.ToString("C", new CultureInfo("es-MX"))</MudText>
+                            </MudStack>
+                        }
+                        <MudDivider />
+                        <MudStack Row="true" Justify="Justify.SpaceBetween">
+                            <MudText Typo="Typo.h6"><strong>@L["Total"]:</strong></MudText>
+                            <MudText Typo="Typo.h6"><strong>@_invoice.Total.ToString("C", new CultureInfo("es-MX"))</strong></MudText>
+                        </MudStack>
+                    </MudStack>
+                </MudPaper>
+            </MudItem>
+
+            <!-- Stamp info -->
+            @if (_invoice.StampDate.HasValue)
+            {
+                <MudItem xs="12">
+                    <MudPaper Elevation="1" Class="pa-4">
+                        <MudText Typo="Typo.subtitle1" Class="mb-2 fw-bold">@L["StampDate"]</MudText>
+                        <MudText Typo="Typo.body2">
+                            @_invoice.StampDate.Value.ToString("dd/MM/yyyy HH:mm", new CultureInfo("es-MX"))
+                        </MudText>
+                        @if (_invoice.SatCertificateNumber is not null)
+                        {
+                            <MudText Typo="Typo.caption" Color="Color.Secondary">
+                                Certificado SAT: @_invoice.SatCertificateNumber
+                            </MudText>
+                        }
+                    </MudPaper>
+                </MudItem>
+            }
+
+            @if (_invoice.CancellationDate.HasValue)
+            {
+                <MudItem xs="12">
+                    <MudAlert Severity="Severity.Error">
+                        @L["InvoiceCancelled"] — @_invoice.CancellationDate.Value.ToString("dd/MM/yyyy", new CultureInfo("es-MX"))
+                        (@L["CancellationReason"]: @_invoice.CancellationReason)
+                    </MudAlert>
+                </MudItem>
+            }
+        </MudGrid>
+    }
+</MudContainer>
+
+@code {
+    [Parameter]
+    public Guid Id { get; set; }
+
+    private InvoiceModel? _invoice;
+    private bool _loading = true;
+    private bool _actionLoading;
+    private string? _error;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadInvoice();
+    }
+
+    private async Task LoadInvoice()
+    {
+        _loading = true;
+        _error = null;
+
+        var result = await CfdiService.GetInvoiceByIdAsync(Id);
+
+        if (result.IsSuccess && result.Value is not null)
+        {
+            _invoice = result.Value;
+        }
+        else
+        {
+            _error = result.Error ?? L["ErrorLoading"];
+        }
+
+        _loading = false;
+    }
+
+    private async Task StampInvoice()
+    {
+        _actionLoading = true;
+        var result = await CfdiService.StampInvoiceAsync(Id);
+
+        if (result.IsSuccess)
+        {
+            Snackbar.Add(L["InvoiceStamped"], Severity.Success);
+            await LoadInvoice();
+        }
+        else
+        {
+            Snackbar.Add(result.Error ?? L["InvoiceStampError"], Severity.Error);
+        }
+
+        _actionLoading = false;
+    }
+
+    private async Task DownloadXml()
+    {
+        _actionLoading = true;
+        var result = await CfdiService.DownloadXmlAsync(Id);
+
+        if (result.IsSuccess && result.Value is not null)
+        {
+            var base64 = Convert.ToBase64String(result.Value);
+            await JS.InvokeVoidAsync("downloadFile", base64,
+                $"CFDI_{_invoice!.Serie}_{_invoice.Folio}.xml", "application/xml");
+        }
+        else
+        {
+            Snackbar.Add(result.Error ?? L["ErrorLoading"], Severity.Error);
+        }
+
+        _actionLoading = false;
+    }
+
+    private async Task DownloadPdf()
+    {
+        _actionLoading = true;
+        var result = await CfdiService.DownloadPdfAsync(Id);
+
+        if (result.IsSuccess && result.Value is not null)
+        {
+            var base64 = Convert.ToBase64String(result.Value);
+            await JS.InvokeVoidAsync("downloadFile", base64,
+                $"Factura_{_invoice!.Serie}_{_invoice.Folio}.pdf", "application/pdf");
+        }
+        else
+        {
+            Snackbar.Add(result.Error ?? L["ErrorLoading"], Severity.Error);
+        }
+
+        _actionLoading = false;
+    }
+
+    private async Task OpenCancelDialog()
+    {
+        var options = new DialogOptions
+        {
+            CloseButton = true,
+            MaxWidth = MaxWidth.Small,
+            FullWidth = true
+        };
+
+        var dialog = await DialogService.ShowAsync<CancelInvoiceDialog>(
+            L["CancelInvoice"], new DialogParameters(), options);
+
+        var result = await dialog.Result;
+        if (result is { Canceled: false, Data: string reason })
+        {
+            _actionLoading = true;
+            var cancelResult = await CfdiService.CancelInvoiceAsync(Id, reason);
+
+            if (cancelResult.IsSuccess)
+            {
+                Snackbar.Add(L["InvoiceCancelled"], Severity.Success);
+                await LoadInvoice();
+            }
+            else
+            {
+                Snackbar.Add(cancelResult.Error ?? L["InvoiceCancelError"], Severity.Error);
+            }
+
+            _actionLoading = false;
+        }
+    }
+
+    private bool IsWithin72Hours()
+    {
+        if (_invoice?.StampDate is null)
+        {
+            return false;
+        }
+
+        return (DateTime.UtcNow - _invoice.StampDate.Value).TotalHours <= 72;
+    }
+
+    private Color GetStatusColor(string status) => status switch
+    {
+        "Stamped" => Color.Success,
+        "Cancelled" => Color.Error,
+        _ => Color.Default
+    };
+
+    private string GetStatusLabel(string status) => status switch
+    {
+        "Stamped" => L["InvoiceStatusStamped"],
+        "Cancelled" => L["InvoiceStatusCancelled"],
+        _ => L["InvoiceStatusDraft"]
+    };
+}

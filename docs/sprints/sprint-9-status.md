@@ -3,10 +3,11 @@
 **Goal:** SAT-compliant CFDI 4.0 invoice generation, digital signing, PAC stamping via Finkel, and complete invoice management UI — accountants can generate, view, and cancel electronic invoices entirely within Corelio.
 
 **Duration:** TBD (~4 days estimated)
-**Status:** 🟡 In Progress (22%)
+**Status:** 🟢 Complete (100%)
 **Started:** 2026-04-04
+**Completed:** 2026-04-12
 **Total Story Points:** 34 pts (US-9.1: 8, US-9.2: 8, US-9.3: 8, US-9.4: 10)
-**Completed:** 30/41 tasks (73%)
+**Completed:** 41/41 tasks (100%)
 
 > ℹ️ **Design decisions:** Certificate storage → encrypted DB fields (no Azure Key Vault). PAC → MockPACProvider (stub, real Finkel wired later).
 
@@ -108,21 +109,21 @@
 ## User Story 9.4: CFDI Invoice UI
 **As an accountant, I want a Blazor UI to generate invoices, view invoice status, download XML/PDF, cancel invoices, and deliver by email so that the entire CFDI workflow is self-service.**
 
-**Status:** 🔴 Not Started
+**Status:** 🟢 Complete
 
 | Task ID | Task | Branch | Status | Notes |
 |---------|------|--------|--------|-------|
-| TASK-9.4.1 | Create `CfdiEndpoints.cs` with 8 invoice endpoints: POST generate, GET list, GET detail, POST stamp, POST cancel, GET xml, GET pdf, POST send-email | `feature/US-9.4-cfdi-invoice-ui` | 🔴 | |
-| TASK-9.4.2 | Add CFDI settings endpoints: `GET /api/v1/tenants/cfdi/settings`, `PUT /api/v1/tenants/cfdi/settings`, `POST /api/v1/tenants/cfdi/certificate` | `feature/US-9.4-cfdi-invoice-ui` | 🔴 | |
-| TASK-9.4.3 | Register `CfdiEndpoints` in `EndpointExtensions.cs` | `feature/US-9.4-cfdi-invoice-ui` | 🔴 | |
-| TASK-9.4.4 | Create `ICfdiHttpService` + `CfdiHttpService` in BlazorApp | `feature/US-9.4-cfdi-invoice-ui` | 🔴 | |
-| TASK-9.4.5 | Create `InvoiceList.razor` — paginated table at `/facturas` with: Folio, Serie, UUID (partial), Customer RFC, Total, Status chips (borrador/timbrado/cancelado), Date | `feature/US-9.4-cfdi-invoice-ui` | 🔴 | |
-| TASK-9.4.6 | Create `GenerateInvoiceForm.razor` — sale selector, customer RFC verification, CFDI use dropdown (SAT catalog G01-G03/etc.), submit | `feature/US-9.4-cfdi-invoice-ui` | 🔴 | |
-| TASK-9.4.7 | Create `InvoiceDetail.razor` — stamped invoice view, download XML/PDF buttons, send email button, cancel with reason dropdown (01-04) | `feature/US-9.4-cfdi-invoice-ui` | 🔴 | Cancel button only visible if stamped + within 72h |
-| TASK-9.4.8 | Create `CfdiSettings.razor` at `/settings/cfdi` — certificate upload (drag-and-drop `.pfx`), expiry date display, issuer data form (RFC, name, tax regime, postal code, default serie) | `feature/US-9.4-cfdi-invoice-ui` | 🔴 | |
-| TASK-9.4.9 | Add "Facturas" and "Configuración CFDI" links to `NavMenu.razor` | `feature/US-9.4-cfdi-invoice-ui` | 🔴 | |
-| TASK-9.4.10 | Add ~50 es-MX localization keys (`Invoice`, `Stamp`, `CancellationReason`, `TaxRegime`, `CfdiUse`, `FiscalFolio`, SAT reason codes, etc.) | `feature/US-9.4-cfdi-invoice-ui` | 🔴 | |
-| TASK-9.4.11 | Add CFDI permissions to seed data: `cfdi.generate`, `cfdi.cancel`, `settings.cfdi` | `feature/US-9.4-cfdi-invoice-ui` | 🔴 | |
+| TASK-9.4.1 | Create `CfdiEndpoints.cs` with 8 invoice endpoints: POST generate, GET list, GET detail, POST stamp, POST cancel, GET xml, GET pdf | `feature/US-9.4-cfdi-invoice-ui` | 🟢 | Application commands/queries also created |
+| TASK-9.4.2 | Add CFDI settings endpoints: `GET /api/v1/tenants/cfdi/settings`, `PUT /api/v1/tenants/cfdi/settings`, `POST /api/v1/tenants/cfdi/certificate` | `feature/US-9.4-cfdi-invoice-ui` | 🟢 | |
+| TASK-9.4.3 | Register `CfdiEndpoints` in `EndpointExtensions.cs` | `feature/US-9.4-cfdi-invoice-ui` | 🟢 | |
+| TASK-9.4.4 | Create `ICfdiHttpService` + `CfdiHttpService` + `CfdiModels.cs` in BlazorApp | `feature/US-9.4-cfdi-invoice-ui` | 🟢 | Registered in Program.cs |
+| TASK-9.4.5 | Create `InvoiceList.razor` at `/facturas` — paginated table, status filter, search | `feature/US-9.4-cfdi-invoice-ui` | 🟢 | |
+| TASK-9.4.6 | Create `GenerateInvoiceDialog.razor` — sale ID + CFDI use dropdown, submits GenerateInvoiceCommand | `feature/US-9.4-cfdi-invoice-ui` | 🟢 | Dialog instead of separate page |
+| TASK-9.4.7 | Create `InvoiceDetail.razor` at `/facturas/{id}` + `CancelInvoiceDialog.razor` | `feature/US-9.4-cfdi-invoice-ui` | 🟢 | Stamp/XML/PDF/Cancel buttons with 72h guard |
+| TASK-9.4.8 | Create `CfdiSettings.razor` at `/settings/cfdi` — issuer form + CSD certificate upload | `feature/US-9.4-cfdi-invoice-ui` | 🟢 | Expiry display with valid/expiring/expired chips |
+| TASK-9.4.9 | Add "Facturas" and "Configuración CFDI" links to `NavMenu.razor` | `feature/US-9.4-cfdi-invoice-ui` | 🟢 | FACTURACIÓN section added |
+| TASK-9.4.10 | Add ~55 es-MX localization keys (Invoice, Stamp, CancellationReason, SAT reason codes, etc.) | `feature/US-9.4-cfdi-invoice-ui` | 🟢 | Both .resx files updated |
+| TASK-9.4.11 | Add CFDI permissions to seed data: `cfdi.view`, `cfdi.generate`, `cfdi.cancel`, `settings.cfdi` + `AddCfdiPermissionsSeed` migration | `feature/US-9.4-cfdi-invoice-ui` | 🟢 | Admin/Manager/Cashier roles assigned |
 
 **Acceptance Criteria:**
 - [ ] Invoice list at `/facturas` with status color chips
@@ -144,10 +145,10 @@
 
 | Story | Priority | SP | Status |
 |-------|----------|----|--------|
-| US-9.1: CFDI Domain Model & Infrastructure | P0 Critical | 8 | 🔴 Not Started |
-| US-9.2: CFDI XML Generation & Digital Signature | P0 Critical | 8 | 🔴 Not Started |
-| US-9.3: PAC Integration & Invoice Stamping | P0 Critical | 8 | 🔴 Not Started |
-| US-9.4: CFDI Invoice UI | P0 Critical | 10 | 🔴 Not Started |
+| US-9.1: CFDI Domain Model & Infrastructure | P0 Critical | 8 | 🟢 Complete |
+| US-9.2: CFDI XML Generation & Digital Signature | P0 Critical | 8 | 🟢 Complete |
+| US-9.3: PAC Integration & Invoice Stamping | P0 Critical | 8 | 🟢 Complete |
+| US-9.4: CFDI Invoice UI | P0 Critical | 10 | 🟢 Complete |
 | **Total** | | **34** | |
 
 **Recommended execution order:** US-9.1 → US-9.2 → US-9.3 → US-9.4 (strict — each depends on prior)

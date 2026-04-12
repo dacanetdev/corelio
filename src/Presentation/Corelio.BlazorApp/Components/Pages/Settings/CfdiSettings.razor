@@ -1,0 +1,309 @@
+@page "/settings/cfdi"
+@using Corelio.BlazorApp.Models.Cfdi
+@using Corelio.BlazorApp.Resources
+@using Corelio.BlazorApp.Services.Cfdi
+@using Microsoft.AspNetCore.Components.Forms
+@using Microsoft.Extensions.Localization
+@using MudBlazor
+@using System.Globalization
+@inject ICfdiHttpService CfdiService
+@inject IStringLocalizer<SharedResource> L
+@inject ISnackbar Snackbar
+
+<PageTitle>@L["CfdiSettings"] - Corelio</PageTitle>
+
+<MudContainer MaxWidth="MaxWidth.Medium" Class="mt-4">
+    <MudStack Row="true" AlignItems="AlignItems.Center" Class="mb-4">
+        <MudIcon Icon="@Icons.Material.Rounded.Receipt" Color="Color.Primary" />
+        <div>
+            <MudText Typo="Typo.h5" GutterBottom="false">@L["CfdiSettings"]</MudText>
+            <MudText Typo="Typo.body2" Color="Color.Secondary">@L["CfdiSettingsDescription"]</MudText>
+        </div>
+    </MudStack>
+
+    @if (_loading)
+    {
+        <MudProgressLinear Indeterminate="true" Color="Color.Primary" Class="mb-4" />
+    }
+    else if (_loadError is not null)
+    {
+        <MudAlert Severity="Severity.Error" Class="mb-4">@_loadError</MudAlert>
+    }
+    else
+    {
+        <!-- Issuer Settings -->
+        <MudPaper Elevation="1" Class="pa-4 mb-4">
+            <MudText Typo="Typo.subtitle1" Class="mb-3 fw-bold">@L["IssuerData"]</MudText>
+
+            <MudGrid>
+                <MudItem xs="12" md="6">
+                    <MudTextField @bind-Value="_settings.IssuerRfc"
+                                  Label="@L["IssuerRfc"]"
+                                  Placeholder="AAA000000AAA"
+                                  MaxLength="13"
+                                  Margin="Margin.Dense" />
+                </MudItem>
+                <MudItem xs="12" md="6">
+                    <MudTextField @bind-Value="_settings.IssuerPostalCode"
+                                  Label="@L["PostalCode"]"
+                                  Placeholder="06600"
+                                  MaxLength="5"
+                                  Margin="Margin.Dense" />
+                </MudItem>
+                <MudItem xs="12">
+                    <MudTextField @bind-Value="_settings.IssuerName"
+                                  Label="@L["IssuerName"]"
+                                  Placeholder="Razón Social del Emisor"
+                                  Margin="Margin.Dense" />
+                </MudItem>
+                <MudItem xs="12" md="8">
+                    <MudSelect T="string" @bind-Value="_settings.IssuerTaxRegime"
+                               Label="@L["TaxRegime"]"
+                               Margin="Margin.Dense">
+                        <MudSelectItem T="string" Value="@("601")">601 - General de Ley Personas Morales</MudSelectItem>
+                        <MudSelectItem T="string" Value="@("603")">603 - Personas Morales con Fines no Lucrativos</MudSelectItem>
+                        <MudSelectItem T="string" Value="@("605")">605 - Sueldos y Salarios e Ingresos Asimilados a Salarios</MudSelectItem>
+                        <MudSelectItem T="string" Value="@("606")">606 - Arrendamiento</MudSelectItem>
+                        <MudSelectItem T="string" Value="@("608")">608 - Demás ingresos</MudSelectItem>
+                        <MudSelectItem T="string" Value="@("612")">612 - Personas Físicas con Actividades Empresariales y Profesionales</MudSelectItem>
+                        <MudSelectItem T="string" Value="@("616")">616 - Sin obligaciones fiscales</MudSelectItem>
+                        <MudSelectItem T="string" Value="@("621")">621 - Incorporación Fiscal</MudSelectItem>
+                        <MudSelectItem T="string" Value="@("625")">625 - Régimen de las Actividades Empresariales con ingresos a través de Plataformas Tecnológicas</MudSelectItem>
+                        <MudSelectItem T="string" Value="@("626")">626 - Régimen Simplificado de Confianza</MudSelectItem>
+                    </MudSelect>
+                </MudItem>
+                <MudItem xs="12" md="4">
+                    <MudTextField @bind-Value="_settings.CfdiSeries"
+                                  Label="@L["CfdiSeries"]"
+                                  Placeholder="A"
+                                  MaxLength="25"
+                                  Margin="Margin.Dense" />
+                </MudItem>
+            </MudGrid>
+
+            <MudStack Row="true" Justify="Justify.FlexEnd" Class="mt-4">
+                <MudButton Variant="Variant.Filled"
+                           Color="Color.Primary"
+                           StartIcon="@Icons.Material.Rounded.Save"
+                           OnClick="SaveSettings"
+                           Disabled="_savingSettings">
+                    @if (_savingSettings)
+                    {
+                        <MudProgressCircular Size="Size.Small" Indeterminate="true" Class="mr-2" />
+                    }
+                    @L["Save"]
+                </MudButton>
+            </MudStack>
+        </MudPaper>
+
+        <!-- Certificate Section -->
+        <MudPaper Elevation="1" Class="pa-4">
+            <MudText Typo="Typo.subtitle1" Class="mb-3 fw-bold">@L["CertificateSection"]</MudText>
+
+            @if (_settings.HasCertificate && _settings.CfdiCertificateExpiresAt.HasValue)
+            {
+                <MudAlert Severity="@GetCertificateAlertSeverity()" Class="mb-3">
+                    <MudStack Row="true" AlignItems="AlignItems.Center" Justify="Justify.SpaceBetween">
+                        <span>@L["CertificateExpiry"]: <strong>@_settings.CfdiCertificateExpiresAt.Value.ToString("dd/MM/yyyy", new CultureInfo("es-MX"))</strong></span>
+                        <MudChip T="string" Size="Size.Small" Color="@GetCertificateChipColor()">
+                            @GetCertificateStatusLabel()
+                        </MudChip>
+                    </MudStack>
+                </MudAlert>
+            }
+            else if (!_settings.HasCertificate)
+            {
+                <MudAlert Severity="Severity.Warning" Class="mb-3">@L["NoCertificate"]</MudAlert>
+            }
+
+            <MudText Typo="Typo.body2" Color="Color.Secondary" Class="mb-3">
+                Sube un archivo .pfx (PKCS#12) con tu Certificado de Sello Digital.
+            </MudText>
+
+            <MudGrid>
+                <MudItem xs="12">
+                    <InputFile id="certFile" OnChange="OnFileSelected" accept=".pfx" style="display:none" />
+                    <MudStack Row="true" AlignItems="AlignItems.Center" Spacing="2">
+                        <MudButton Variant="Variant.Outlined"
+                                   StartIcon="@Icons.Material.Rounded.UploadFile"
+                                   OnClick="TriggerFileInput">
+                            @L["CertificateFile"]
+                        </MudButton>
+                        @if (_selectedFileName is not null)
+                        {
+                            <MudText Typo="Typo.body2" Color="Color.Primary">@_selectedFileName</MudText>
+                        }
+                    </MudStack>
+                </MudItem>
+                <MudItem xs="12" md="6">
+                    <MudTextField @bind-Value="_certPassword"
+                                  Label="@L["CertificatePassword"]"
+                                  InputType="InputType.Password"
+                                  Margin="Margin.Dense" />
+                </MudItem>
+            </MudGrid>
+
+            <MudStack Row="true" Justify="Justify.FlexEnd" Class="mt-4">
+                <MudButton Variant="Variant.Filled"
+                           Color="Color.Primary"
+                           StartIcon="@Icons.Material.Rounded.CloudUpload"
+                           OnClick="UploadCertificate"
+                           Disabled="_uploadingCert || _selectedFile is null">
+                    @if (_uploadingCert)
+                    {
+                        <MudProgressCircular Size="Size.Small" Indeterminate="true" Class="mr-2" />
+                    }
+                    @L["CertificateFile"]
+                </MudButton>
+            </MudStack>
+        </MudPaper>
+    }
+</MudContainer>
+
+@code {
+    private CfdiSettingsModel _settings = new();
+    private bool _loading = true;
+    private string? _loadError;
+    private bool _savingSettings;
+    private bool _uploadingCert;
+    private IBrowserFile? _selectedFile;
+    private string? _selectedFileName;
+    private string _certPassword = string.Empty;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadSettings();
+    }
+
+    private async Task LoadSettings()
+    {
+        _loading = true;
+        _loadError = null;
+
+        var result = await CfdiService.GetSettingsAsync();
+
+        if (result.IsSuccess && result.Value is not null)
+        {
+            var s = result.Value;
+            _settings = new CfdiSettingsModel
+            {
+                IssuerRfc = s.IssuerRfc,
+                IssuerName = s.IssuerName,
+                IssuerTaxRegime = s.IssuerTaxRegime,
+                IssuerPostalCode = s.IssuerPostalCode,
+                CfdiSeries = s.CfdiSeries,
+                CfdiNextFolio = s.CfdiNextFolio,
+                CfdiCertificateExpiresAt = s.CfdiCertificateExpiresAt,
+                HasCertificate = s.HasCertificate
+            };
+        }
+        else
+        {
+            _loadError = result.Error ?? L["ErrorLoading"];
+        }
+
+        _loading = false;
+    }
+
+    private async Task SaveSettings()
+    {
+        _savingSettings = true;
+
+        var request = new UpdateCfdiSettingsRequest
+        {
+            IssuerRfc = _settings.IssuerRfc ?? string.Empty,
+            IssuerName = _settings.IssuerName ?? string.Empty,
+            IssuerTaxRegime = _settings.IssuerTaxRegime ?? string.Empty,
+            IssuerPostalCode = _settings.IssuerPostalCode ?? string.Empty,
+            CfdiSeries = _settings.CfdiSeries
+        };
+
+        var result = await CfdiService.UpdateSettingsAsync(request);
+
+        if (result.IsSuccess)
+        {
+            Snackbar.Add(L["SettingsSaved"], Severity.Success);
+        }
+        else
+        {
+            Snackbar.Add(result.Error ?? L["SettingsSaveError"], Severity.Error);
+        }
+
+        _savingSettings = false;
+    }
+
+    private void OnFileSelected(InputFileChangeEventArgs e)
+    {
+        _selectedFile = e.File;
+        _selectedFileName = e.File.Name;
+    }
+
+    private async Task TriggerFileInput()
+    {
+        await JS.InvokeVoidAsync("eval", "document.getElementById('certFile').click()");
+    }
+
+    [Inject]
+    private IJSRuntime JS { get; set; } = null!;
+
+    private async Task UploadCertificate()
+    {
+        if (_selectedFile is null)
+        {
+            return;
+        }
+
+        _uploadingCert = true;
+
+        await using var stream = _selectedFile.OpenReadStream(maxAllowedSize: 10 * 1024 * 1024);
+        var result = await CfdiService.UploadCertificateAsync(stream, _selectedFile.Name, _certPassword);
+
+        if (result.IsSuccess)
+        {
+            Snackbar.Add(L["CertificateUploaded"], Severity.Success);
+            _selectedFile = null;
+            _selectedFileName = null;
+            _certPassword = string.Empty;
+            await LoadSettings();
+        }
+        else
+        {
+            Snackbar.Add(result.Error ?? L["CertificateUploadError"], Severity.Error);
+        }
+
+        _uploadingCert = false;
+    }
+
+    private Severity GetCertificateAlertSeverity()
+    {
+        if (_settings.CfdiCertificateExpiresAt is null)
+        {
+            return Severity.Info;
+        }
+
+        var daysLeft = (_settings.CfdiCertificateExpiresAt.Value - DateTime.UtcNow).TotalDays;
+        return daysLeft <= 0 ? Severity.Error : daysLeft <= 30 ? Severity.Warning : Severity.Success;
+    }
+
+    private Color GetCertificateChipColor()
+    {
+        if (_settings.CfdiCertificateExpiresAt is null)
+        {
+            return Color.Default;
+        }
+
+        var daysLeft = (_settings.CfdiCertificateExpiresAt.Value - DateTime.UtcNow).TotalDays;
+        return daysLeft <= 0 ? Color.Error : daysLeft <= 30 ? Color.Warning : Color.Success;
+    }
+
+    private string GetCertificateStatusLabel()
+    {
+        if (_settings.CfdiCertificateExpiresAt is null)
+        {
+            return L["NoCertificate"];
+        }
+
+        var daysLeft = (_settings.CfdiCertificateExpiresAt.Value - DateTime.UtcNow).TotalDays;
+        return daysLeft <= 0 ? L["CertificateExpired"] : daysLeft <= 30 ? L["CertificateExpiringSoon"] : L["CertificateValid"];
+    }
+}

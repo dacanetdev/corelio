@@ -1,0 +1,234 @@
+@page "/facturas"
+@using Corelio.BlazorApp.Components.Dialogs
+@using Corelio.BlazorApp.Models.Cfdi
+@using Corelio.BlazorApp.Resources
+@using Corelio.BlazorApp.Services.Cfdi
+@using Microsoft.Extensions.Localization
+@using MudBlazor
+@using System.Globalization
+@inject ICfdiHttpService CfdiService
+@inject IStringLocalizer<SharedResource> L
+@inject ISnackbar Snackbar
+@inject NavigationManager Nav
+@inject IDialogService DialogService
+
+<PageTitle>@L["Invoices"] - Corelio</PageTitle>
+
+<MudContainer MaxWidth="MaxWidth.ExtraLarge" Class="mt-4">
+    <MudStack Row="true" AlignItems="AlignItems.Center" Justify="Justify.SpaceBetween" Class="mb-4">
+        <div>
+            <MudText Typo="Typo.h5" GutterBottom="false">@L["InvoiceList"]</MudText>
+            <MudText Typo="Typo.body2" Color="Color.Secondary">@L["InvoiceListDescription"]</MudText>
+        </div>
+        <MudButton Variant="Variant.Filled"
+                   Color="Color.Primary"
+                   StartIcon="@Icons.Material.Rounded.Add"
+                   OnClick="OpenGenerateDialog">
+            @L["NewInvoice"]
+        </MudButton>
+    </MudStack>
+
+    <MudPaper Elevation="1" Class="pa-4 mb-4">
+        <MudGrid>
+            <MudItem xs="12" md="5">
+                <MudTextField @bind-Value="_searchTerm"
+                              Placeholder="@L["SearchSales"]"
+                              Adornment="Adornment.Start"
+                              AdornmentIcon="@Icons.Material.Rounded.Search"
+                              Immediate="true"
+                              DebounceInterval="300"
+                              OnDebounceIntervalElapsed="OnSearchChanged"
+                              Class="mb-0" />
+            </MudItem>
+            <MudItem xs="12" md="4">
+                <MudSelect T="string" Value="_selectedStatus" ValueChanged="OnStatusChanged"
+                           Label="@L["Status"]" Clearable="true">
+                    <MudSelectItem T="string" Value="@("Draft")">@L["InvoiceStatusDraft"]</MudSelectItem>
+                    <MudSelectItem T="string" Value="@("Stamped")">@L["InvoiceStatusStamped"]</MudSelectItem>
+                    <MudSelectItem T="string" Value="@("Cancelled")">@L["InvoiceStatusCancelled"]</MudSelectItem>
+                </MudSelect>
+            </MudItem>
+            <MudItem xs="12" md="3" Class="d-flex align-center">
+                <MudIconButton Icon="@Icons.Material.Rounded.FilterAltOff"
+                               Variant="Variant.Outlined"
+                               OnClick="ClearFilters" />
+            </MudItem>
+        </MudGrid>
+    </MudPaper>
+
+    @if (_loading)
+    {
+        <MudProgressLinear Indeterminate="true" Color="Color.Primary" Class="mb-4" />
+    }
+    else if (_error is not null)
+    {
+        <MudAlert Severity="Severity.Error" Class="mb-4">@_error</MudAlert>
+    }
+    else if (_invoices.Count == 0)
+    {
+        <MudPaper Elevation="0" Class="pa-8 text-center">
+            <MudIcon Icon="@Icons.Material.Rounded.ReceiptLong" Color="Color.Secondary" Size="Size.Large" />
+            <MudText Typo="Typo.h6" Class="mt-2">@L["NoInvoicesFound"]</MudText>
+            <MudText Color="Color.Secondary">@L["NoInvoicesDescription"]</MudText>
+        </MudPaper>
+    }
+    else
+    {
+        <MudTable Items="_invoices" Hover="true" Breakpoint="Breakpoint.Sm"
+                  Dense="true" Striped="true" OnRowClick="OnRowClick" T="InvoiceListModel">
+            <HeaderContent>
+                <MudTh>@L["Folio"]</MudTh>
+                <MudTh>@L["FiscalFolio"]</MudTh>
+                <MudTh>RFC</MudTh>
+                <MudTh>@L["ReceiverName"]</MudTh>
+                <MudTh Style="text-align:right">@L["Total"]</MudTh>
+                <MudTh>@L["Status"]</MudTh>
+                <MudTh>@L["Date"]</MudTh>
+            </HeaderContent>
+            <RowTemplate>
+                <MudTd DataLabel="@L["Folio"]">
+                    <MudText Typo="Typo.body2" Class="fw-medium">@context.Serie-@context.Folio</MudText>
+                </MudTd>
+                <MudTd DataLabel="@L["FiscalFolio"]">
+                    <MudText Typo="Typo.caption" Color="Color.Secondary">
+                        @(context.Uuid is not null ? context.Uuid[..8] + "..." : "—")
+                    </MudText>
+                </MudTd>
+                <MudTd DataLabel="RFC">
+                    <MudText Typo="Typo.body2">@context.ReceiverRfc</MudText>
+                </MudTd>
+                <MudTd DataLabel="@L["ReceiverName"]">
+                    <MudText Typo="Typo.body2">@context.ReceiverName</MudText>
+                </MudTd>
+                <MudTd DataLabel="@L["Total"]" Style="text-align:right">
+                    <strong>@context.Total.ToString("C", new CultureInfo("es-MX"))</strong>
+                </MudTd>
+                <MudTd DataLabel="@L["Status"]">
+                    <MudChip T="string" Size="Size.Small" Color="@GetStatusColor(context.Status)">
+                        @GetStatusLabel(context.Status)
+                    </MudChip>
+                </MudTd>
+                <MudTd DataLabel="@L["Date"]">
+                    <MudText Typo="Typo.body2">
+                        @context.CreatedAt.ToString("dd/MM/yyyy", new CultureInfo("es-MX"))
+                    </MudText>
+                </MudTd>
+            </RowTemplate>
+        </MudTable>
+
+        <MudStack Row="true" AlignItems="AlignItems.Center" Justify="Justify.SpaceBetween" Class="mt-4">
+            <MudText Typo="Typo.body2" Color="Color.Secondary">
+                @L["ShowingResults"] @((_currentPage - 1) * _pageSize + 1)–@Math.Min(_currentPage * _pageSize, _totalCount) @L["Of"] @_totalCount
+            </MudText>
+            <MudPagination Count="_totalPages" Selected="_currentPage"
+                           SelectedChanged="OnPageChanged" />
+        </MudStack>
+    }
+</MudContainer>
+
+@code {
+    private List<InvoiceListModel> _invoices = [];
+    private bool _loading = true;
+    private string? _error;
+    private string _searchTerm = string.Empty;
+    private string? _selectedStatus;
+    private int _currentPage = 1;
+    private int _pageSize = 20;
+    private int _totalCount;
+    private int _totalPages = 1;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadInvoices();
+    }
+
+    private async Task LoadInvoices()
+    {
+        _loading = true;
+        _error = null;
+
+        var result = await CfdiService.GetInvoicesAsync(
+            _currentPage, _pageSize, _selectedStatus, _searchTerm);
+
+        if (result.IsSuccess && result.Value is not null)
+        {
+            _invoices = result.Value.Items;
+            _totalCount = result.Value.TotalCount;
+            _totalPages = result.Value.TotalPages;
+        }
+        else
+        {
+            _error = result.Error ?? L["ErrorLoading"];
+        }
+
+        _loading = false;
+    }
+
+    private async Task OnSearchChanged()
+    {
+        _currentPage = 1;
+        await LoadInvoices();
+    }
+
+    private async Task OnStatusChanged(string? value)
+    {
+        _selectedStatus = value;
+        _currentPage = 1;
+        await LoadInvoices();
+    }
+
+    private async Task ClearFilters()
+    {
+        _searchTerm = string.Empty;
+        _selectedStatus = null;
+        _currentPage = 1;
+        await LoadInvoices();
+    }
+
+    private async Task OnPageChanged(int page)
+    {
+        _currentPage = page;
+        await LoadInvoices();
+    }
+
+    private void OnRowClick(TableRowClickEventArgs<InvoiceListModel> args)
+    {
+        if (args.Item is not null)
+        {
+            Nav.NavigateTo($"/facturas/{args.Item.Id}");
+        }
+    }
+
+    private async Task OpenGenerateDialog()
+    {
+        var options = new DialogOptions
+        {
+            CloseButton = true,
+            MaxWidth = MaxWidth.Small,
+            FullWidth = true
+        };
+
+        var dialog = await DialogService.ShowAsync<GenerateInvoiceDialog>(
+            L["GenerateInvoice"], new DialogParameters(), options);
+
+        var result = await dialog.Result;
+        if (result is { Canceled: false, Data: Guid newId })
+        {
+            Nav.NavigateTo($"/facturas/{newId}");
+        }
+    }
+
+    private Color GetStatusColor(string status) => status switch
+    {
+        "Stamped" => Color.Success,
+        "Cancelled" => Color.Error,
+        _ => Color.Default
+    };
+
+    private string GetStatusLabel(string status) => status switch
+    {
+        "Stamped" => L["InvoiceStatusStamped"],
+        "Cancelled" => L["InvoiceStatusCancelled"],
+        _ => L["InvoiceStatusDraft"]
+    };
+}

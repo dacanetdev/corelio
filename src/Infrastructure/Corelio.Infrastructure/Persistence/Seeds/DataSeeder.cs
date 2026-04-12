@@ -68,6 +68,12 @@ public static class DataSeeder
             new() { Id = Guid.Parse("a8888888-8888-8888-8888-888888888882"), Code = "customers.create", Name = "Create Customers", Module = PermissionModule.Customers, Description = "Create new customers", CreatedAt = SeedDate },
             new() { Id = Guid.Parse("a8888888-8888-8888-8888-888888888883"), Code = "customers.update", Name = "Update Customers", Module = PermissionModule.Customers, Description = "Edit customer details", CreatedAt = SeedDate },
             new() { Id = Guid.Parse("a8888888-8888-8888-8888-888888888884"), Code = "customers.delete", Name = "Delete Customers", Module = PermissionModule.Customers, Description = "Soft-delete customers", IsDangerous = true, CreatedAt = SeedDate },
+
+            // CFDI Module
+            new() { Id = Guid.Parse("a9999999-9999-9999-9999-999999999991"), Code = "cfdi.view", Name = "View Invoices", Module = PermissionModule.Cfdi, Description = "View CFDI invoice list and details", CreatedAt = SeedDate },
+            new() { Id = Guid.Parse("a9999999-9999-9999-9999-999999999992"), Code = "cfdi.generate", Name = "Generate Invoices", Module = PermissionModule.Cfdi, Description = "Generate and stamp CFDI invoices", CreatedAt = SeedDate },
+            new() { Id = Guid.Parse("a9999999-9999-9999-9999-999999999993"), Code = "cfdi.cancel", Name = "Cancel Invoices", Module = PermissionModule.Cfdi, Description = "Cancel stamped CFDI invoices", IsDangerous = true, CreatedAt = SeedDate },
+            new() { Id = Guid.Parse("a9999999-9999-9999-9999-999999999994"), Code = "settings.cfdi", Name = "CFDI Settings", Module = PermissionModule.Settings, Description = "Configure CFDI issuer data and upload CSD certificates", CreatedAt = SeedDate },
         };
 
         modelBuilder.Entity<Permission>().HasData(permissions);
@@ -201,6 +207,10 @@ public static class DataSeeder
             Guid.Parse("a8888888-8888-8888-8888-888888888882"), // customers.create
             Guid.Parse("a8888888-8888-8888-8888-888888888883"), // customers.update
             Guid.Parse("a8888888-8888-8888-8888-888888888884"), // customers.delete
+            Guid.Parse("a9999999-9999-9999-9999-999999999991"), // cfdi.view
+            Guid.Parse("a9999999-9999-9999-9999-999999999992"), // cfdi.generate
+            Guid.Parse("a9999999-9999-9999-9999-999999999993"), // cfdi.cancel
+            Guid.Parse("a9999999-9999-9999-9999-999999999994"), // settings.cfdi
         };
 
         foreach (var permissionId in allPermissionIds)
@@ -235,6 +245,10 @@ public static class DataSeeder
             Guid.Parse("a8888888-8888-8888-8888-888888888881"), // customers.view
             Guid.Parse("a8888888-8888-8888-8888-888888888882"), // customers.create
             Guid.Parse("a8888888-8888-8888-8888-888888888883"), // customers.update
+            Guid.Parse("a9999999-9999-9999-9999-999999999991"), // cfdi.view
+            Guid.Parse("a9999999-9999-9999-9999-999999999992"), // cfdi.generate
+            Guid.Parse("a9999999-9999-9999-9999-999999999993"), // cfdi.cancel
+            Guid.Parse("a9999999-9999-9999-9999-999999999994"), // settings.cfdi
         };
 
         foreach (var permissionId in managerPermissionIds)
@@ -255,6 +269,7 @@ public static class DataSeeder
             Guid.Parse("a3333333-3333-3333-3333-333333333332"), // sales.create
             Guid.Parse("a4444444-4444-4444-4444-444444444441"), // inventory.view
             Guid.Parse("a8888888-8888-8888-8888-888888888881"), // customers.view
+            Guid.Parse("a9999999-9999-9999-9999-999999999991"), // cfdi.view
         };
 
         foreach (var permissionId in cashierPermissionIds)
