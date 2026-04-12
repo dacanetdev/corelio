@@ -1,0 +1,58 @@
+@using Corelio.BlazorApp.Resources
+@using Microsoft.Extensions.Localization
+@using MudBlazor
+@inject IStringLocalizer<SharedResource> L
+
+<MudDialog>
+    <TitleContent>
+        <MudText Typo="Typo.h6" Color="Color.Error">
+            <MudIcon Icon="@Icons.Material.Rounded.Cancel" Class="mr-2" />
+            @L["CancelInvoice"]
+        </MudText>
+    </TitleContent>
+    <DialogContent>
+        <MudStack Spacing="3">
+            <MudText>@L["CancelInvoiceConfirm"]</MudText>
+
+            <MudSelect T="string" @bind-Value="_reason"
+                       Label="@L["CancellationReason"]"
+                       Required="true"
+                       Error="@_reasonError"
+                       ErrorText="@L["Required"]">
+                <MudSelectItem T="string" Value="@("01")">@L["CancellationReason01"]</MudSelectItem>
+                <MudSelectItem T="string" Value="@("02")">@L["CancellationReason02"]</MudSelectItem>
+                <MudSelectItem T="string" Value="@("03")">@L["CancellationReason03"]</MudSelectItem>
+                <MudSelectItem T="string" Value="@("04")">@L["CancellationReason04"]</MudSelectItem>
+            </MudSelect>
+        </MudStack>
+    </DialogContent>
+    <DialogActions>
+        <MudButton OnClick="Cancel">@L["Cancel"]</MudButton>
+        <MudButton Color="Color.Error"
+                   Variant="Variant.Filled"
+                   OnClick="Confirm">
+            @L["CancelInvoice"]
+        </MudButton>
+    </DialogActions>
+</MudDialog>
+
+@code {
+    [CascadingParameter]
+    private MudDialogInstance MudDialog { get; set; } = null!;
+
+    private string _reason = string.Empty;
+    private bool _reasonError;
+
+    private void Confirm()
+    {
+        _reasonError = string.IsNullOrWhiteSpace(_reason);
+        if (_reasonError)
+        {
+            return;
+        }
+
+        MudDialog.Close(DialogResult.Ok(_reason));
+    }
+
+    private void Cancel() => MudDialog.Cancel();
+}

@@ -391,4 +391,199 @@
   <data name="GeneratingTicket" xml:space="preserve">
     <value>Generating ticket...</value>
   </data>
+  <data name="Invoices" xml:space="preserve">
+    <value>Invoices</value>
+  </data>
+  <data name="InvoiceList" xml:space="preserve">
+    <value>Invoice List</value>
+  </data>
+  <data name="InvoiceListDescription" xml:space="preserve">
+    <value>Manage CFDI 4.0 electronic invoices</value>
+  </data>
+  <data name="NewInvoice" xml:space="preserve">
+    <value>New Invoice</value>
+  </data>
+  <data name="InvoiceDetail" xml:space="preserve">
+    <value>Invoice Detail</value>
+  </data>
+  <data name="FiscalFolio" xml:space="preserve">
+    <value>Fiscal Folio (UUID)</value>
+  </data>
+  <data name="Folio" xml:space="preserve">
+    <value>Folio</value>
+  </data>
+  <data name="Serie" xml:space="preserve">
+    <value>Serie</value>
+  </data>
+  <data name="StampInvoice" xml:space="preserve">
+    <value>Stamp Invoice</value>
+  </data>
+  <data name="InvoiceStamped" xml:space="preserve">
+    <value>Invoice stamped successfully</value>
+  </data>
+  <data name="InvoiceStampError" xml:space="preserve">
+    <value>Error stamping invoice</value>
+  </data>
+  <data name="DownloadXml" xml:space="preserve">
+    <value>Download XML</value>
+  </data>
+  <data name="DownloadPdf" xml:space="preserve">
+    <value>Download PDF</value>
+  </data>
+  <data name="CancelInvoice" xml:space="preserve">
+    <value>Cancel Invoice</value>
+  </data>
+  <data name="CancellationReason" xml:space="preserve">
+    <value>Cancellation Reason</value>
+  </data>
+  <data name="CancelInvoiceConfirm" xml:space="preserve">
+    <value>Are you sure you want to cancel this invoice? This action cannot be undone.</value>
+  </data>
+  <data name="InvoiceCancelled" xml:space="preserve">
+    <value>Invoice cancelled successfully</value>
+  </data>
+  <data name="InvoiceCancelError" xml:space="preserve">
+    <value>Error cancelling invoice</value>
+  </data>
+  <data name="CancellationReason01" xml:space="preserve">
+    <value>01 - Invoice issued with errors with relation</value>
+  </data>
+  <data name="CancellationReason02" xml:space="preserve">
+    <value>02 - Invoice issued with errors without relation</value>
+  </data>
+  <data name="CancellationReason03" xml:space="preserve">
+    <value>03 - Operation not carried out</value>
+  </data>
+  <data name="CancellationReason04" xml:space="preserve">
+    <value>04 - Nominative operation related to global invoice</value>
+  </data>
+  <data name="GenerateInvoice" xml:space="preserve">
+    <value>Generate Invoice</value>
+  </data>
+  <data name="SaleIdLabel" xml:space="preserve">
+    <value>Sale ID</value>
+  </data>
+  <data name="SaleIdHelper" xml:space="preserve">
+    <value>Enter the completed sale identifier</value>
+  </data>
+  <data name="InvalidSaleId" xml:space="preserve">
+    <value>The sale ID format is invalid</value>
+  </data>
+  <data name="CfdiUseG01" xml:space="preserve">
+    <value>G01 - Acquisition of goods</value>
+  </data>
+  <data name="CfdiUseG03" xml:space="preserve">
+    <value>G03 - General expenses</value>
+  </data>
+  <data name="CfdiUseI01" xml:space="preserve">
+    <value>I01 - Constructions</value>
+  </data>
+  <data name="CfdiUseS01" xml:space="preserve">
+    <value>S01 - No tax effects</value>
+  </data>
+  <data name="CfdiUseCP01" xml:space="preserve">
+    <value>CP01 - Payments</value>
+  </data>
+  <data name="InvoiceGenerated" xml:space="preserve">
+    <value>Invoice generated successfully</value>
+  </data>
+  <data name="InvoiceGenerateError" xml:space="preserve">
+    <value>Error generating invoice</value>
+  </data>
+  <data name="InvoiceStatusDraft" xml:space="preserve">
+    <value>Draft</value>
+  </data>
+  <data name="InvoiceStatusStamped" xml:space="preserve">
+    <value>Stamped</value>
+  </data>
+  <data name="InvoiceStatusCancelled" xml:space="preserve">
+    <value>Cancelled</value>
+  </data>
+  <data name="IssuerData" xml:space="preserve">
+    <value>Issuer Data</value>
+  </data>
+  <data name="ReceiverData" xml:space="preserve">
+    <value>Receiver Data</value>
+  </data>
+  <data name="IssuerRfc" xml:space="preserve">
+    <value>Issuer RFC</value>
+  </data>
+  <data name="IssuerName" xml:space="preserve">
+    <value>Issuer Name / Legal Name</value>
+  </data>
+  <data name="TaxRegime" xml:space="preserve">
+    <value>Tax Regime</value>
+  </data>
+  <data name="PostalCode" xml:space="preserve">
+    <value>Postal Code</value>
+  </data>
+  <data name="CfdiSeries" xml:space="preserve">
+    <value>CFDI Series</value>
+  </data>
+  <data name="CfdiSettings" xml:space="preserve">
+    <value>CFDI Settings</value>
+  </data>
+  <data name="CfdiSettingsDescription" xml:space="preserve">
+    <value>Configure the issuer and Digital Seal Certificate (CSD)</value>
+  </data>
+  <data name="CertificateSection" xml:space="preserve">
+    <value>Digital Seal Certificate (CSD)</value>
+  </data>
+  <data name="CertificateFile" xml:space="preserve">
+    <value>Upload Certificate (.pfx)</value>
+  </data>
+  <data name="CertificatePassword" xml:space="preserve">
+    <value>Certificate Password</value>
+  </data>
+  <data name="CertificateExpiry" xml:space="preserve">
+    <value>Certificate Expiry</value>
+  </data>
+  <data name="CertificateUploaded" xml:space="preserve">
+    <value>Certificate uploaded successfully</value>
+  </data>
+  <data name="CertificateUploadError" xml:space="preserve">
+    <value>Error uploading certificate</value>
+  </data>
+  <data name="NoCertificate" xml:space="preserve">
+    <value>No certificate loaded</value>
+  </data>
+  <data name="CertificateValid" xml:space="preserve">
+    <value>Valid</value>
+  </data>
+  <data name="CertificateExpiringSoon" xml:space="preserve">
+    <value>Expiring Soon</value>
+  </data>
+  <data name="CertificateExpired" xml:space="preserve">
+    <value>Expired</value>
+  </data>
+  <data name="SettingsSaved" xml:space="preserve">
+    <value>Settings saved</value>
+  </data>
+  <data name="SettingsSaveError" xml:space="preserve">
+    <value>Error saving settings</value>
+  </data>
+  <data name="NoInvoicesFound" xml:space="preserve">
+    <value>No invoices found</value>
+  </data>
+  <data name="NoInvoicesDescription" xml:space="preserve">
+    <value>Generate your first electronic invoice from a completed sale</value>
+  </data>
+  <data name="BackToInvoices" xml:space="preserve">
+    <value>Back to Invoices</value>
+  </data>
+  <data name="StampDate" xml:space="preserve">
+    <value>Stamp Date</value>
+  </data>
+  <data name="ReceiverName" xml:space="preserve">
+    <value>Receiver Name</value>
+  </data>
+  <data name="CancelledWithin72h" xml:space="preserve">
+    <value>Invoices can only be cancelled within 72 hours of stamping</value>
+  </data>
+  <data name="ErrorLoading" xml:space="preserve">
+    <value>Error loading data</value>
+  </data>
+  <data name="StampInvoiceConfirm" xml:space="preserve">
+    <value>Do you want to stamp this invoice with the PAC?</value>
+  </data>
 </root>

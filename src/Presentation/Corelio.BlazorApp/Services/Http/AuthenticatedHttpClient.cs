@@ -56,6 +56,18 @@ public class AuthenticatedHttpClient(HttpClient httpClient, ITokenService tokenS
     }
 
     /// <summary>
+    /// Sends a POST request with HttpContent (e.g., multipart form data) and automatic authorization header.
+    /// </summary>
+    public async Task<HttpResponseMessage> PostAsync(
+        string requestUri,
+        HttpContent content,
+        CancellationToken cancellationToken = default)
+    {
+        await AddAuthorizationHeaderAsync();
+        return await httpClient.PostAsync(requestUri, content, cancellationToken);
+    }
+
+    /// <summary>
     /// Sends a PUT request with automatic authorization header.
     /// </summary>
     public async Task<HttpResponseMessage> PutAsJsonAsync<TRequest>(

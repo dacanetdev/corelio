@@ -1397,4 +1397,195 @@
   <data name="QuoteSaveError" xml:space="preserve">
     <value>Error al guardar la cotización</value>
   </data>
+
+  <!-- CFDI / Facturas -->
+  <data name="Invoices" xml:space="preserve">
+    <value>Facturas</value>
+  </data>
+  <data name="InvoiceList" xml:space="preserve">
+    <value>Lista de Facturas</value>
+  </data>
+  <data name="InvoiceListDescription" xml:space="preserve">
+    <value>Gestión de facturas electrónicas CFDI 4.0</value>
+  </data>
+  <data name="NewInvoice" xml:space="preserve">
+    <value>Nueva Factura</value>
+  </data>
+  <data name="InvoiceDetail" xml:space="preserve">
+    <value>Detalle de Factura</value>
+  </data>
+  <data name="FiscalFolio" xml:space="preserve">
+    <value>Folio Fiscal (UUID)</value>
+  </data>
+  <data name="Serie" xml:space="preserve">
+    <value>Serie</value>
+  </data>
+  <data name="StampInvoice" xml:space="preserve">
+    <value>Timbrar Factura</value>
+  </data>
+  <data name="StampInvoiceConfirm" xml:space="preserve">
+    <value>¿Deseas timbrar esta factura con el PAC?</value>
+  </data>
+  <data name="InvoiceStamped" xml:space="preserve">
+    <value>Factura timbrada exitosamente</value>
+  </data>
+  <data name="InvoiceStampError" xml:space="preserve">
+    <value>Error al timbrar la factura</value>
+  </data>
+  <data name="DownloadXml" xml:space="preserve">
+    <value>Descargar XML</value>
+  </data>
+  <data name="DownloadPdf" xml:space="preserve">
+    <value>Descargar PDF</value>
+  </data>
+  <data name="CancelInvoice" xml:space="preserve">
+    <value>Cancelar Factura</value>
+  </data>
+  <data name="CancellationReason" xml:space="preserve">
+    <value>Motivo de Cancelación</value>
+  </data>
+  <data name="CancelInvoiceConfirm" xml:space="preserve">
+    <value>¿Confirmas la cancelación de esta factura? Esta acción no se puede deshacer.</value>
+  </data>
+  <data name="InvoiceCancelled" xml:space="preserve">
+    <value>Factura cancelada exitosamente</value>
+  </data>
+  <data name="InvoiceCancelError" xml:space="preserve">
+    <value>Error al cancelar la factura</value>
+  </data>
+  <data name="CancellationReason01" xml:space="preserve">
+    <value>01 - Comprobante emitido con errores con relación</value>
+  </data>
+  <data name="CancellationReason02" xml:space="preserve">
+    <value>02 - Comprobante emitido con errores sin relación</value>
+  </data>
+  <data name="CancellationReason03" xml:space="preserve">
+    <value>03 - No se llevó a cabo la operación</value>
+  </data>
+  <data name="CancellationReason04" xml:space="preserve">
+    <value>04 - Operación nominativa relacionada en factura global</value>
+  </data>
+  <data name="GenerateInvoice" xml:space="preserve">
+    <value>Generar Factura</value>
+  </data>
+  <data name="SaleIdLabel" xml:space="preserve">
+    <value>ID de Venta</value>
+  </data>
+  <data name="SaleIdHelper" xml:space="preserve">
+    <value>Ingresa el identificador de la venta completada</value>
+  </data>
+  <data name="InvalidSaleId" xml:space="preserve">
+    <value>El ID de venta no tiene un formato válido</value>
+  </data>
+  <data name="CfdiUseG01" xml:space="preserve">
+    <value>G01 - Adquisición de mercancias</value>
+  </data>
+  <data name="CfdiUseG03" xml:space="preserve">
+    <value>G03 - Gastos en general</value>
+  </data>
+  <data name="CfdiUseI01" xml:space="preserve">
+    <value>I01 - Construcciones</value>
+  </data>
+  <data name="CfdiUseS01" xml:space="preserve">
+    <value>S01 - Sin efectos fiscales</value>
+  </data>
+  <data name="CfdiUseCP01" xml:space="preserve">
+    <value>CP01 - Pagos</value>
+  </data>
+  <data name="InvoiceGenerated" xml:space="preserve">
+    <value>Factura generada exitosamente</value>
+  </data>
+  <data name="InvoiceGenerateError" xml:space="preserve">
+    <value>Error al generar la factura</value>
+  </data>
+  <data name="InvoiceStatusDraft" xml:space="preserve">
+    <value>Borrador</value>
+  </data>
+  <data name="InvoiceStatusStamped" xml:space="preserve">
+    <value>Timbrada</value>
+  </data>
+  <data name="InvoiceStatusCancelled" xml:space="preserve">
+    <value>Cancelada</value>
+  </data>
+  <data name="IssuerData" xml:space="preserve">
+    <value>Datos del Emisor</value>
+  </data>
+  <data name="ReceiverData" xml:space="preserve">
+    <value>Datos del Receptor</value>
+  </data>
+  <data name="IssuerRfc" xml:space="preserve">
+    <value>RFC del Emisor</value>
+  </data>
+  <data name="IssuerName" xml:space="preserve">
+    <value>Nombre / Razón Social del Emisor</value>
+  </data>
+  <data name="PostalCode" xml:space="preserve">
+    <value>Código Postal</value>
+  </data>
+  <data name="CfdiSeries" xml:space="preserve">
+    <value>Serie CFDI</value>
+  </data>
+  <data name="CfdiSettings" xml:space="preserve">
+    <value>Configuración CFDI</value>
+  </data>
+  <data name="CfdiSettingsDescription" xml:space="preserve">
+    <value>Configure el emisor y el Certificado de Sello Digital (CSD)</value>
+  </data>
+  <data name="CertificateSection" xml:space="preserve">
+    <value>Certificado de Sello Digital (CSD)</value>
+  </data>
+  <data name="CertificateFile" xml:space="preserve">
+    <value>Subir Certificado (.pfx)</value>
+  </data>
+  <data name="CertificatePassword" xml:space="preserve">
+    <value>Contraseña del Certificado</value>
+  </data>
+  <data name="CertificateExpiry" xml:space="preserve">
+    <value>Vigencia del Certificado</value>
+  </data>
+  <data name="CertificateUploaded" xml:space="preserve">
+    <value>Certificado cargado exitosamente</value>
+  </data>
+  <data name="CertificateUploadError" xml:space="preserve">
+    <value>Error al cargar el certificado</value>
+  </data>
+  <data name="NoCertificate" xml:space="preserve">
+    <value>No hay certificado cargado</value>
+  </data>
+  <data name="CertificateValid" xml:space="preserve">
+    <value>Vigente</value>
+  </data>
+  <data name="CertificateExpiringSoon" xml:space="preserve">
+    <value>Por vencer</value>
+  </data>
+  <data name="CertificateExpired" xml:space="preserve">
+    <value>Vencido</value>
+  </data>
+  <data name="SettingsSaved" xml:space="preserve">
+    <value>Configuración guardada</value>
+  </data>
+  <data name="SettingsSaveError" xml:space="preserve">
+    <value>Error al guardar la configuración</value>
+  </data>
+  <data name="NoInvoicesFound" xml:space="preserve">
+    <value>No se encontraron facturas</value>
+  </data>
+  <data name="NoInvoicesDescription" xml:space="preserve">
+    <value>Genera tu primera factura electrónica desde una venta completada</value>
+  </data>
+  <data name="BackToInvoices" xml:space="preserve">
+    <value>Volver a Facturas</value>
+  </data>
+  <data name="StampDate" xml:space="preserve">
+    <value>Fecha de Timbrado</value>
+  </data>
+  <data name="ReceiverName" xml:space="preserve">
+    <value>Nombre del Receptor</value>
+  </data>
+  <data name="CancelledWithin72h" xml:space="preserve">
+    <value>Solo se pueden cancelar facturas dentro de las 72 horas siguientes al timbrado</value>
+  </data>
+  <data name="ErrorLoading" xml:space="preserve">
+    <value>Error al cargar los datos</value>
+  </data>
 </root>

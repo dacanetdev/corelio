@@ -1,0 +1,107 @@
+@using Corelio.BlazorApp.Models.Cfdi
+@using Corelio.BlazorApp.Resources
+@using Corelio.BlazorApp.Services.Cfdi
+@using Microsoft.Extensions.Localization
+@using MudBlazor
+@inject ICfdiHttpService CfdiService
+@inject IStringLocalizer<SharedResource> L
+@inject ISnackbar Snackbar
+
+<MudDialog>
+    <TitleContent>
+        <MudText Typo="Typo.h6">
+            <MudIcon Icon="@Icons.Material.Rounded.ReceiptLong" Class="mr-2" />
+            @L["GenerateInvoice"]
+        </MudText>
+    </TitleContent>
+    <DialogContent>
+        <MudStack Spacing="3">
+            <MudTextField @bind-Value="_saleId"
+                          Label="@L["SaleIdLabel"]"
+                          Placeholder="xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
+                          HelperText="@L["SaleIdHelper"]"
+                          Required="true"
+                          Error="@_saleIdError"
+                          ErrorText="@L["Required"]" />
+
+            <MudSelect T="string" @bind-Value="_cfdiUse"
+                       Label="@L["CfdiUse"]"
+                       Required="true">
+                <MudSelectItem T="string" Value="@("G01")">@L["CfdiUseG01"]</MudSelectItem>
+                <MudSelectItem T="string" Value="@("G03")">@L["CfdiUseG03"]</MudSelectItem>
+                <MudSelectItem T="string" Value="@("I01")">@L["CfdiUseI01"]</MudSelectItem>
+                <MudSelectItem T="string" Value="@("S01")">@L["CfdiUseS01"]</MudSelectItem>
+                <MudSelectItem T="string" Value="@("CP01")">@L["CfdiUseCP01"]</MudSelectItem>
+            </MudSelect>
+
+            @if (_error is not null)
+            {
+                <MudAlert Severity="Severity.Error">@_error</MudAlert>
+            }
+        </MudStack>
+    </DialogContent>
+    <DialogActions>
+        <MudButton OnClick="Cancel" Disabled="_submitting">@L["Cancel"]</MudButton>
+        <MudButton Color="Color.Primary"
+                   Variant="Variant.Filled"
+                   OnClick="Submit"
+                   Disabled="_submitting">
+            @if (_submitting)
+            {
+                <MudProgressCircular Size="Size.Small" Indeterminate="true" Class="mr-2" />
+            }
+            @L["GenerateInvoice"]
+        </MudButton>
+    </DialogActions>
+</MudDialog>
+
+@code {
+    [CascadingParameter]
+    private MudDialogInstance MudDialog { get; set; } = null!;
+
+    private string _saleId = string.Empty;
+    private string _cfdiUse = "G03";
+    private bool _saleIdError;
+    private bool _submitting;
+    private string? _error;
+
+    private async Task Submit()
+    {
+        _saleIdError = string.IsNullOrWhiteSpace(_saleId);
+        if (_saleIdError)
+        {
+            return;
+        }
+
+        if (!Guid.TryParse(_saleId, out var saleGuid))
+        {
+            _saleIdError = true;
+            _error = L["InvalidSaleId"];
+            return;
+        }
+
+        _submitting = true;
+        _error = null;
+
+        var request = new GenerateInvoiceRequest
+        {
+            SaleId = saleGuid,
+            ReceiverCfdiUse = _cfdiUse
+        };
+
+        var result = await CfdiService.GenerateInvoiceAsync(request);
+
+        if (result.IsSuccess)
+        {
+            Snackbar.Add(L["InvoiceGenerated"], Severity.Success);
+            MudDialog.Close(DialogResult.Ok(result.Value));
+        }
+        else
+        {
+            _error = result.Error ?? L["InvoiceGenerateError"];
+            _submitting = false;
+        }
+    }
+
+    private void Cancel() => MudDialog.Cancel();
+}
