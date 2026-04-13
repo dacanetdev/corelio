@@ -16,6 +16,7 @@ public class CreateProductCommandHandlerTests
     private readonly Mock<IProductCategoryRepository> _categoryRepositoryMock;
     private readonly Mock<IUnitOfWork> _unitOfWorkMock;
     private readonly Mock<ITenantService> _tenantServiceMock;
+    private readonly Mock<IProductSearchCacheService> _searchCacheMock;
     private readonly CreateProductCommandHandler _handler;
     private readonly Guid _tenantId = Guid.NewGuid();
 
@@ -25,12 +26,14 @@ public class CreateProductCommandHandlerTests
         _categoryRepositoryMock = new Mock<IProductCategoryRepository>();
         _unitOfWorkMock = new Mock<IUnitOfWork>();
         _tenantServiceMock = new Mock<ITenantService>();
+        _searchCacheMock = new Mock<IProductSearchCacheService>();
 
         _handler = new CreateProductCommandHandler(
             _productRepositoryMock.Object,
             _categoryRepositoryMock.Object,
             _unitOfWorkMock.Object,
-            _tenantServiceMock.Object);
+            _tenantServiceMock.Object,
+            _searchCacheMock.Object);
     }
 
     [Fact]

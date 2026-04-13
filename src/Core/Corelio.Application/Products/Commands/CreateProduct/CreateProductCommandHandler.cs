@@ -13,7 +13,8 @@ public class CreateProductCommandHandler(
     IProductRepository productRepository,
     IProductCategoryRepository categoryRepository,
     IUnitOfWork unitOfWork,
-    ITenantService tenantService) : IRequestHandler<CreateProductCommand, Result<Guid>>
+    ITenantService tenantService,
+    IProductSearchCacheService searchCache) : IRequestHandler<CreateProductCommand, Result<Guid>>
 {
     public async Task<Result<Guid>> Handle(
         CreateProductCommand request,
@@ -102,6 +103,8 @@ public class CreateProductCommandHandler(
 
         productRepository.Add(product);
         await unitOfWork.SaveChangesAsync(cancellationToken);
+
+        await searchCache.InvalidateAsync(tenantId.Value, cancellationToken);
 
         return Result<Guid>.Success(product.Id);
     }

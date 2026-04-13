@@ -72,6 +72,7 @@ public static class DependencyInjection
         services.AddScoped<IInventoryRepository, InventoryRepository>();
         services.AddScoped<IInvoiceRepository, InvoiceRepository>();
         services.AddScoped<IPosSearchService, PosSearchService>();
+        services.AddScoped<IProductSearchCacheService, ProductSearchCacheService>();
         services.AddScoped<IUnitOfWork, UnitOfWork>();
 
         // Register document generation services
@@ -173,6 +174,7 @@ public static class DependencyInjection
         builder.Services.AddScoped<IInventoryRepository, InventoryRepository>();
         builder.Services.AddScoped<IInvoiceRepository, InvoiceRepository>();
         builder.Services.AddScoped<IPosSearchService, PosSearchService>();
+        builder.Services.AddScoped<IProductSearchCacheService, ProductSearchCacheService>();
         builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 
         // Register document generation services
