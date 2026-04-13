@@ -82,6 +82,7 @@ public class ProductRepository(ApplicationDbContext context) : IProductRepositor
     {
         var query = context.Products
             .Include(p => p.Category)
+            .AsNoTracking()
             .AsQueryable();
 
         // Apply filters
@@ -126,6 +127,7 @@ public class ProductRepository(ApplicationDbContext context) : IProductRepositor
 
         return await context.Products
             .Include(p => p.Category)
+            .AsNoTracking()
             .Where(p => p.IsActive &&
                 (p.Barcode != null && p.Barcode.ToLower(CultureInfo.InvariantCulture) == lowerQuery ||
                  p.Sku.ToLower(CultureInfo.InvariantCulture) == lowerQuery ||

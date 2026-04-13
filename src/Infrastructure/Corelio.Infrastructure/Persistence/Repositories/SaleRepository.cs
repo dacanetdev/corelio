@@ -34,6 +34,7 @@ public class SaleRepository(ApplicationDbContext context) : ISaleRepository
         var query = context.Sales
             .Include(s => s.Customer)
             .Include(s => s.Items)
+            .AsNoTracking()
             .AsQueryable();
 
         if (type.HasValue)
