@@ -9,6 +9,13 @@ namespace Corelio.Infrastructure.Persistence.Repositories;
 /// </summary>
 public class InventoryRepository(ApplicationDbContext context) : IInventoryRepository
 {
+    // Compiled query for the default warehouse lookup — called on every POS search,
+    // so pre-compiling the LINQ expression avoids repeated translation overhead.
+    private static readonly Func<ApplicationDbContext, IAsyncEnumerable<Warehouse>> GetDefaultWarehouseQuery =
+        EF.CompileAsyncQuery((ApplicationDbContext ctx) =>
+            ctx.Warehouses.Where(w => w.IsDefault));
+
+
     public async Task<InventoryItem?> GetByProductAndWarehouseAsync(
         Guid productId, Guid warehouseId, CancellationToken cancellationToken = default)
     {
@@ -28,8 +35,12 @@ public class InventoryRepository(ApplicationDbContext context) : IInventoryRepos
 
     public async Task<Warehouse?> GetDefaultWarehouseAsync(CancellationToken cancellationToken = default)
     {
-        return await context.Warehouses
-            .FirstOrDefaultAsync(w => w.IsDefault, cancellationToken);
+        await foreach (var warehouse in GetDefaultWarehouseQuery(context).WithCancellation(cancellationToken))
+        {
+            return warehouse;
+        }
+
+        return null;
     }
 
     public async Task<InventoryItem?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default)
