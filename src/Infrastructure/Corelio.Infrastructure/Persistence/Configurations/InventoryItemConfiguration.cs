@@ -62,6 +62,10 @@ public class InventoryItemConfiguration : IEntityTypeConfiguration<InventoryItem
             .IsUnique()
             .HasDatabaseName("ix_inventory_items_tenant_product_warehouse");
 
+        // Index for warehouse-scoped lookups (POS search stock query, inventory list by warehouse)
+        builder.HasIndex(i => i.WarehouseId)
+            .HasDatabaseName("ix_inventory_items_warehouse_id");
+
         // Relationships
         builder.HasOne(i => i.Product)
             .WithMany()

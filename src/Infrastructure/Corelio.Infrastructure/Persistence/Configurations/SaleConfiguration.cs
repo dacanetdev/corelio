@@ -98,6 +98,10 @@ public class SaleConfiguration : IEntityTypeConfiguration<Sale>
         builder.HasIndex(s => s.CreatedAt)
             .HasDatabaseName("ix_sales_created_at");
 
+        // Composite index for tenant-scoped date-range queries (sales history with dateFrom/dateTo filters)
+        builder.HasIndex(s => new { s.TenantId, s.CreatedAt })
+            .HasDatabaseName("ix_sales_tenant_created_at");
+
         // Relationships
         builder.HasOne(s => s.Customer)
             .WithMany()
