@@ -9,8 +9,12 @@ namespace Corelio.Infrastructure.Services;
 /// High-performance POS product search using EF Core queries.
 /// Searches by SKU (exact), Barcode (exact), or Name (partial match).
 /// Uses PostgreSQL ILIKE for case-insensitive matching.
+/// Results are cached in Redis for 5 minutes per tenant and search term.
 /// </summary>
-public class PosSearchService(ApplicationDbContext context) : IPosSearchService
+public class PosSearchService(
+    ApplicationDbContext context,
+    ITenantService tenantService,
+    IProductSearchCacheService searchCache) : IPosSearchService
 {
     public async Task<IEnumerable<PosProductDto>> SearchProductsAsync(
         string term,
@@ -20,6 +24,17 @@ public class PosSearchService(ApplicationDbContext context) : IPosSearchService
         if (string.IsNullOrWhiteSpace(term))
         {
             return [];
+        }
+
+        // Attempt cache read (skipped if tenant cannot be resolved)
+        var tenantId = tenantService.GetCurrentTenantId();
+        if (tenantId.HasValue)
+        {
+            var cached = await searchCache.GetAsync(tenantId.Value, term, cancellationToken);
+            if (cached is not null)
+            {
+                return cached;
+            }
         }
 
         var pattern = $"%{term}%";
@@ -56,7 +71,7 @@ public class PosSearchService(ApplicationDbContext context) : IPosSearchService
                 .ToDictionaryAsync(i => i.ProductId, i => i.Quantity, cancellationToken);
         }
 
-        return products.Select(p => new PosProductDto(
+        var results = products.Select(p => new PosProductDto(
             p.Id,
             p.Sku,
             p.Name,
@@ -66,5 +81,13 @@ public class PosSearchService(ApplicationDbContext context) : IPosSearchService
             p.UnitOfMeasure,
             p.IvaEnabled,
             p.TaxRate));
+
+        // Populate cache for subsequent requests
+        if (tenantId.HasValue)
+        {
+            await searchCache.SetAsync(tenantId.Value, term, results, cancellationToken);
+        }
+
+        return results;
     }
 }

@@ -1,3 +1,4 @@
+using Corelio.Application.Common.Interfaces;
 using Corelio.Application.Common.Models;
 using Corelio.Domain.Repositories;
 using Corelio.SharedKernel.Messaging;
@@ -10,7 +11,9 @@ namespace Corelio.Application.Products.Commands.UpdateProduct;
 public class UpdateProductCommandHandler(
     IProductRepository productRepository,
     IProductCategoryRepository categoryRepository,
-    IUnitOfWork unitOfWork) : IRequestHandler<UpdateProductCommand, Result<bool>>
+    IUnitOfWork unitOfWork,
+    ITenantService tenantService,
+    IProductSearchCacheService searchCache) : IRequestHandler<UpdateProductCommand, Result<bool>>
 {
     public async Task<Result<bool>> Handle(
         UpdateProductCommand request,
@@ -95,6 +98,12 @@ public class UpdateProductCommandHandler(
 
         productRepository.Update(product);
         await unitOfWork.SaveChangesAsync(cancellationToken);
+
+        var tenantId = tenantService.GetCurrentTenantId();
+        if (tenantId.HasValue)
+        {
+            await searchCache.InvalidateAsync(tenantId.Value, cancellationToken);
+        }
 
         return Result<bool>.Success(true);
     }

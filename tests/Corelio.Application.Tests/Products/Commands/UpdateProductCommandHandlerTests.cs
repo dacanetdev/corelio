@@ -1,3 +1,4 @@
+using Corelio.Application.Common.Interfaces;
 using Corelio.Application.Common.Models;
 using Corelio.Application.Products.Commands.UpdateProduct;
 using Corelio.Domain.Entities;
@@ -14,6 +15,8 @@ public class UpdateProductCommandHandlerTests
     private readonly Mock<IProductRepository> _productRepositoryMock;
     private readonly Mock<IProductCategoryRepository> _categoryRepositoryMock;
     private readonly Mock<IUnitOfWork> _unitOfWorkMock;
+    private readonly Mock<ITenantService> _tenantServiceMock;
+    private readonly Mock<IProductSearchCacheService> _searchCacheMock;
     private readonly UpdateProductCommandHandler _handler;
     private readonly Guid _tenantId = Guid.NewGuid();
     private readonly Guid _productId = Guid.NewGuid();
@@ -23,11 +26,16 @@ public class UpdateProductCommandHandlerTests
         _productRepositoryMock = new Mock<IProductRepository>();
         _categoryRepositoryMock = new Mock<IProductCategoryRepository>();
         _unitOfWorkMock = new Mock<IUnitOfWork>();
+        _tenantServiceMock = new Mock<ITenantService>();
+        _searchCacheMock = new Mock<IProductSearchCacheService>();
+        _tenantServiceMock.Setup(x => x.GetCurrentTenantId()).Returns(Guid.NewGuid());
 
         _handler = new UpdateProductCommandHandler(
             _productRepositoryMock.Object,
             _categoryRepositoryMock.Object,
-            _unitOfWorkMock.Object);
+            _unitOfWorkMock.Object,
+            _tenantServiceMock.Object,
+            _searchCacheMock.Object);
     }
 
     [Fact]
