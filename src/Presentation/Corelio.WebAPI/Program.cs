@@ -3,6 +3,7 @@ using System.Text.Json.Serialization;
 using Corelio.Application;
 using Corelio.Infrastructure;
 using Corelio.Infrastructure.MultiTenancy;
+using Corelio.Infrastructure.Persistence.Seeds;
 using Corelio.ServiceDefaults;
 using Corelio.WebAPI.Endpoints;
 using Corelio.WebAPI.Extensions;
@@ -62,6 +63,16 @@ if (app.Environment.IsDevelopment())
         app.Logger.LogError(ex, "An error occurred while migrating the database");
         throw;
     }
+}
+
+// Seed UAT demo data when --seed-uat argument is passed
+// Usage: dotnet run --project src/Presentation/Corelio.WebAPI -- --seed-uat
+if (args.Contains("--seed-uat"))
+{
+    using var seedScope = app.Services.CreateScope();
+    var seeder = seedScope.ServiceProvider.GetRequiredService<UatDataSeeder>();
+    await seeder.SeedAsync();
+    app.Logger.LogInformation("UAT data seeding complete");
 }
 
 // Map Aspire health check endpoints FIRST (before authentication middleware)

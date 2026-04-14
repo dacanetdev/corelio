@@ -11,6 +11,7 @@ using Corelio.Infrastructure.MultiTenancy;
 using Corelio.Infrastructure.Persistence;
 using Corelio.Infrastructure.Persistence.Interceptors;
 using Corelio.Infrastructure.Persistence.Repositories;
+using Corelio.Infrastructure.Persistence.Seeds;
 using Corelio.Infrastructure.Services;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -84,6 +85,9 @@ public static class DependencyInjection
         services.AddScoped<IPACProvider, MockPACProvider>();
         services.AddScoped<ICFDIService, CfdiService>();
         services.AddScoped<IInvoicePdfService, InvoicePdfService>();
+
+        // Register UAT data seeder (invoked via --seed-uat startup argument)
+        services.AddScoped<UatDataSeeder>();
 
         // Register distributed cache (for tenant caching)
         // Note: For non-Aspire deployments, configure Redis connection string in appsettings.json
@@ -186,6 +190,9 @@ public static class DependencyInjection
         builder.Services.AddScoped<IPACProvider, MockPACProvider>();
         builder.Services.AddScoped<ICFDIService, CfdiService>();
         builder.Services.AddScoped<IInvoicePdfService, InvoicePdfService>();
+
+        // Register UAT data seeder (invoked via --seed-uat startup argument)
+        builder.Services.AddScoped<UatDataSeeder>();
 
         // Register interceptors (injected into ApplicationDbContext via constructor)
         builder.Services.AddScoped<TenantInterceptor>();
