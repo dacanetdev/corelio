@@ -3,10 +3,10 @@
 **Goal:** Achieve production readiness — complete test coverage, UAT sign-off, production infrastructure provisioned, MVP deployed, and first pilot tenant operational.
 
 **Duration:** TBD (~4-5 days estimated)
-**Status:** 🟡 In Progress (38%)
+**Status:** 🟡 In Progress (53%)
 **Started:** 2026-04-13
 **Total Story Points:** 34 pts (US-10.1: 8, US-10.2: 5, US-10.3: 5, US-10.4: 8, US-10.5: 5, US-10.6: 3)
-**Completed:** 14/40 tasks (35%)
+**Completed:** 16/40 tasks (40%)
 
 > **Prerequisites:** Sprints 1-9 complete | All [TECH DEBT] items resolved | Staging environment operational
 
@@ -65,29 +65,29 @@
 ## User Story 10.3: User Acceptance Testing (UAT)
 **As a stakeholder, I want to run through all key workflows in a staging environment with realistic data so that I can approve the MVP for production with confidence.**
 
-**Status:** 🔴 Not Started
+**Status:** 🟡 In Progress (2/6 tasks done — blocked on staging environment)
 
 | Task ID | Task | Branch | Status | Notes |
 |---------|------|--------|--------|-------|
-| TASK-10.3.1 | Create database seed script for UAT demo data: 50+ products with pricing, 5 customers with CFDI data, 30 days of historical sales, "Almacén Principal" with realistic stock | `feature/US-10.3-uat` | 🔴 | Demo tenant: "Ferretería Demo S.A. de C.V." |
-| TASK-10.3.2 | Write UAT test script document — 7 core workflows with step-by-step instructions and expected outcomes | `feature/US-10.3-uat` | 🔴 | See workflow list in Acceptance Criteria |
-| TASK-10.3.3 | Deploy to staging environment and execute UAT with stakeholders | `feature/US-10.3-uat` | 🔴 | |
-| TASK-10.3.4 | Document all bugs found — categorize by P0/P1/P2 | `feature/US-10.3-uat` | 🔴 | |
-| TASK-10.3.5 | Fix all P0 (showstopper) bugs | `feature/US-10.3-uat` | 🔴 | |
-| TASK-10.3.6 | Stakeholder sign-off on production readiness | `feature/US-10.3-uat` | 🔴 | |
+| TASK-10.3.1 | Create database seed script for UAT demo data: 52 products with pricing, 5 customers with CFDI data, 30 days of historical sales, "Almacén Principal" with realistic stock | `feature/US-10.3-TASK-1-2-uat-seeder-and-script` | 🟢 | `UatDataSeeder.cs` — invoke with `--seed-uat` arg; 8 categories, 52 products, 3 pricing tiers, 5 customers, 30 sales with backdated timestamps |
+| TASK-10.3.2 | Write UAT test script document — 7 core workflows with step-by-step instructions and expected outcomes | `feature/US-10.3-TASK-1-2-uat-seeder-and-script` | 🟢 | `docs/testing/uat-test-script.md` — all 7 workflows with step-by-step steps in Spanish, pass/fail columns, sign-off table |
+| TASK-10.3.3 | Deploy to staging environment and execute UAT with stakeholders | `feature/US-10.3-uat` | 🟡 Blocked | Requires staging environment (Azure/DigitalOcean) — depends on US-10.4 infrastructure |
+| TASK-10.3.4 | Document all bugs found — categorize by P0/P1/P2 | `feature/US-10.3-uat` | 🟡 Blocked | Requires UAT execution |
+| TASK-10.3.5 | Fix all P0 (showstopper) bugs | `feature/US-10.3-uat` | 🟡 Blocked | Requires UAT results |
+| TASK-10.3.6 | Stakeholder sign-off on production readiness | `feature/US-10.3-uat` | 🟡 Blocked | Requires stakeholder availability |
 
 **Acceptance Criteria:**
-- [ ] Demo tenant "Ferretería Demo S.A. de C.V." operational in staging with full data set
-- [ ] UAT covers all 7 workflows:
+- [x] Demo tenant "Ferretería Demo S.A. de C.V." UAT seeder implemented (`UatDataSeeder.cs`) — run `--seed-uat` against staging DB
+- [ ] UAT covers all 7 workflows (**script ready** in `docs/testing/uat-test-script.md` — pending execution):
   1. Register and log in as a new user
-  2. Configure pricing tiers at `/settings/pricing`
+  2. Configure pricing tiers at `/ajustes/precios`
   3. Create a product and set multi-tier pricing
   4. Complete a POS sale with cash payment and download receipt
   5. View sales history and cancel a sale
   6. Adjust inventory stock manually with a reason code
   7. Generate and stamp a CFDI invoice for a completed sale
-- [ ] Zero P0 bugs at end of UAT cycle
-- [ ] Stakeholder sign-off received in writing
+- [ ] Zero P0 bugs at end of UAT cycle — **pending UAT execution**
+- [ ] Stakeholder sign-off received in writing — **pending UAT execution**
 
 ---
 
@@ -174,7 +174,7 @@
 |-------|----------|----|--------|
 | US-10.1: Test Coverage Completion | P0 Critical | 8 | 🟢 Complete |
 | US-10.2: Performance Optimization | P1 High | 5 | 🟢 Complete |
-| US-10.3: User Acceptance Testing | P0 Critical | 5 | 🔴 Not Started |
+| US-10.3: User Acceptance Testing | P0 Critical | 5 | 🟡 In Progress (blocked on staging) |
 | US-10.4: Production Infrastructure | P0 Critical | 8 | 🔴 Not Started |
 | US-10.5: Production Deployment & MVP Launch | P0 Critical | 5 | 🔴 Not Started |
 | US-10.6: User & Technical Documentation | P1 High | 3 | 🔴 Not Started |
