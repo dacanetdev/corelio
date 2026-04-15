@@ -1,3 +1,4 @@
+using Azure.Monitor.OpenTelemetry.AspNetCore;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.Extensions.DependencyInjection;
@@ -60,6 +61,17 @@ public static class Extensions
         if (useOtlpExporter)
         {
             builder.Services.AddOpenTelemetry().UseOtlpExporter();
+        }
+
+        // Azure Application Insights — enabled when connection string is configured.
+        // Set APPLICATIONINSIGHTS_CONNECTION_STRING in production environment variables.
+        var appInsightsConnectionString = builder.Configuration["APPLICATIONINSIGHTS_CONNECTION_STRING"];
+        if (!string.IsNullOrWhiteSpace(appInsightsConnectionString))
+        {
+            builder.Services.AddOpenTelemetry().UseAzureMonitor(opts =>
+            {
+                opts.ConnectionString = appInsightsConnectionString;
+            });
         }
 
         return builder;
