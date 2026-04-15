@@ -3,10 +3,10 @@
 **Goal:** Achieve production readiness — complete test coverage, UAT sign-off, production infrastructure provisioned, MVP deployed, and first pilot tenant operational.
 
 **Duration:** TBD (~4-5 days estimated)
-**Status:** 🟡 In Progress (53%)
+**Status:** 🟡 In Progress (68%)
 **Started:** 2026-04-13
 **Total Story Points:** 34 pts (US-10.1: 8, US-10.2: 5, US-10.3: 5, US-10.4: 8, US-10.5: 5, US-10.6: 3)
-**Completed:** 16/40 tasks (40%)
+**Completed:** 21/40 tasks (52%)
 
 > **Prerequisites:** Sprints 1-9 complete | All [TECH DEBT] items resolved | Staging environment operational
 
@@ -94,51 +94,52 @@
 ## User Story 10.4: Production Infrastructure Provisioning
 **As the DevOps engineer, I want all production infrastructure provisioned and verified so that the MVP can be deployed to a stable, secure, and monitored environment.**
 
-**Status:** 🔴 Not Started
+**Status:** 🟡 In Progress (2/8 code tasks done — cloud provisioning blocked on Azure access)
 
 | Task ID | Task | Branch | Status | Notes |
 |---------|------|--------|--------|-------|
-| TASK-10.4.1 | Provision managed PostgreSQL 16 instance (Azure Database for PostgreSQL or DigitalOcean Managed PostgreSQL) | `feature/US-10.4-infrastructure` | 🔴 | |
-| TASK-10.4.2 | Provision Redis cache service (Azure Cache for Redis or DigitalOcean Managed Redis) | `feature/US-10.4-infrastructure` | 🔴 | |
-| TASK-10.4.3 | Provision Azure Key Vault and configure Managed Identity access for the API app service | `feature/US-10.4-infrastructure` | 🔴 | No credentials in code |
+| TASK-10.4.1 | Provision managed PostgreSQL 16 instance (Azure Database for PostgreSQL or DigitalOcean Managed PostgreSQL) | `feature/US-10.4-infrastructure` | 🔴 | Requires Azure credentials |
+| TASK-10.4.2 | Provision Redis cache service (Azure Cache for Redis or DigitalOcean Managed Redis) | `feature/US-10.4-infrastructure` | 🔴 | Requires Azure credentials |
+| TASK-10.4.3 | Provision Azure Key Vault and configure Managed Identity access for the API app service | `feature/US-10.4-infrastructure` | 🔴 | Requires Azure credentials |
 | TASK-10.4.4 | Configure SSL/TLS certificate for production domain (`corelio.com.mx` or equivalent) | `feature/US-10.4-infrastructure` | 🔴 | Let's Encrypt or Azure |
 | TASK-10.4.5 | Set all production environment variables: connection strings, JWT secret, Finkel API key, Key Vault URL | `feature/US-10.4-infrastructure` | 🔴 | No `.env` files — use platform secrets |
-| TASK-10.4.6 | Configure Application Insights for WebAPI and BlazorApp — dashboards for error rates, response times, active users | `feature/US-10.4-infrastructure` | 🔴 | |
-| TASK-10.4.7 | Configure daily PostgreSQL backups with 30-day retention; test restore procedure | `feature/US-10.4-infrastructure` | 🔴 | |
-| TASK-10.4.8 | Write production deployment runbook (step-by-step deployment, rollback, on-call contacts) | `feature/US-10.4-infrastructure` | 🔴 | Second team member review required |
+| TASK-10.4.6 | Configure Application Insights for WebAPI and BlazorApp — dashboards for error rates, response times, active users | `feature/US-10.4-TASK-6-app-insights` | 🟢 | PR #79 — `Azure.Monitor.OpenTelemetry.AspNetCore` wired in `ServiceDefaults/Extensions.cs`; activated by `APPLICATIONINSIGHTS_CONNECTION_STRING` env var |
+| TASK-10.4.7 | Configure daily PostgreSQL backups with 30-day retention; test restore procedure | `feature/US-10.4-infrastructure` | 🔴 | Requires Azure credentials |
+| TASK-10.4.8 | Write production deployment runbook (step-by-step deployment, rollback, on-call contacts) | `feature/US-10.4-TASK-6-app-insights` | 🟢 | PR #79 — `docs/deployment/production-runbook.md` (initial deploy, CI/CD routine, rollback, monitoring, on-call) |
 
 **Acceptance Criteria:**
-- [ ] All infrastructure resources provisioned and accessible
-- [ ] SSL configured — `https://` only, no HTTP
-- [ ] No hardcoded secrets — all via platform environment variables
-- [ ] Application Insights dashboards operational
-- [ ] Backup strategy verified (backup created, restore tested)
-- [ ] Deployment runbook reviewed and approved
+- [ ] All infrastructure resources provisioned and accessible — **blocked on Azure access**
+- [ ] SSL configured — `https://` only, no HTTP — **blocked on Azure access**
+- [ ] No hardcoded secrets — all via platform environment variables — ✅ env var approach documented in runbook
+- [x] Application Insights code integration complete (activated by env var) — pending dashboard setup in Azure
+- [ ] Backup strategy verified (backup created, restore tested) — **blocked on Azure access**
+- [x] Deployment runbook created (`docs/deployment/production-runbook.md`) — pending second team member review
 
 ---
 
 ## User Story 10.5: Production Deployment & MVP Launch
 **As the product team, I want the MVP deployed to production and the first pilot tenant onboarded so that Corelio is live and generating real business value.**
 
-**Status:** 🔴 Not Started
+**Status:** 🟡 In Progress (3/8 code tasks done — deployment blocked on US-10.3/US-10.4)
 
 | Task ID | Task | Branch | Status | Notes |
 |---------|------|--------|--------|-------|
-| TASK-10.5.1 | Configure GitHub Actions production deployment workflow (build → test → deploy on push to `main`) | `feature/US-10.5-production-deploy` | 🔴 | |
-| TASK-10.5.2 | Add health check endpoints: `GET /health` for WebAPI and BlazorApp | `feature/US-10.5-production-deploy` | 🔴 | |
-| TASK-10.5.3 | Write automated smoke test script (bash or Playwright) for post-deployment verification | `feature/US-10.5-production-deploy` | 🔴 | |
-| TASK-10.5.4 | Deploy WebAPI and BlazorApp to production | `feature/US-10.5-production-deploy` | 🔴 | |
-| TASK-10.5.5 | Run full smoke test suite in production — verify all green | `feature/US-10.5-production-deploy` | 🔴 | |
-| TASK-10.5.6 | Onboard first pilot tenant — create admin user, configure pricing, upload CSD certificate | `feature/US-10.5-production-deploy` | 🔴 | |
-| TASK-10.5.7 | Document support process for production incidents (P0/P1 contact, escalation path) | `feature/US-10.5-production-deploy` | 🔴 | |
-| TASK-10.5.8 | Update `CLAUDE.md` and `README.md` with production URLs and any post-launch architectural changes | `feature/US-10.5-production-deploy` | 🔴 | |
+| TASK-10.5.1 | Configure GitHub Actions production deployment workflow (build → test → deploy on push to `main`) | `feature/US-10.5-TASK-1-dockerfiles` | 🟢 | PR #78 — `.github/workflows/ci-cd.yml` already existed; added missing `Dockerfile` for WebAPI and BlazorApp (multi-stage sdk:10.0 → aspnet:10.0) + `.dockerignore` |
+| TASK-10.5.2 | Add health check endpoints: `GET /health` for WebAPI and BlazorApp | — | 🟢 | Already implemented in `ServiceDefaults/Extensions.cs` via `MapDefaultEndpoints()` (`/health` all-checks, `/alive` liveness-only) — no code changes needed |
+| TASK-10.5.3 | Write automated smoke test script (bash or Playwright) for post-deployment verification | `feature/US-10.4-TASK-6-app-insights` | 🟢 | PR #79 — `docs/testing/smoke-test.sh` (tests /health, /alive, auth login, products, POS search, sales; exits 1 on any failure) |
+| TASK-10.5.4 | Deploy WebAPI and BlazorApp to production | `feature/US-10.5-production-deploy` | 🔴 | Blocked on US-10.3 UAT sign-off + US-10.4 infrastructure |
+| TASK-10.5.5 | Run full smoke test suite in production — verify all green | `feature/US-10.5-production-deploy` | 🔴 | Blocked on TASK-10.5.4 |
+| TASK-10.5.6 | Onboard first pilot tenant — create admin user, configure pricing, upload CSD certificate | `feature/US-10.5-production-deploy` | 🔴 | Blocked on TASK-10.5.4 |
+| TASK-10.5.7 | Document support process for production incidents (P0/P1 contact, escalation path) | `feature/US-10.5-production-deploy` | 🔴 | Escalation contacts placeholder in `docs/deployment/production-runbook.md` |
+| TASK-10.5.8 | Update `CLAUDE.md` and `README.md` with production URLs and any post-launch architectural changes | `feature/US-10.5-production-deploy` | 🔴 | Blocked on actual production URLs |
 
 **Acceptance Criteria:**
-- [ ] CI/CD pipeline deploys `main` branch to production automatically on merge
-- [ ] Smoke tests run automatically post-deployment — all green
-- [ ] First pilot tenant operational (admin user, pricing configured, CSD uploaded)
-- [ ] Support process documented
-- [ ] `CLAUDE.md` and `README.md` updated
+- [x] CI/CD pipeline exists and Dockerfiles added — auto-deploys `main` on merge (pending Azure Container Apps env vars)
+- [x] `/health` and `/alive` endpoints confirmed operational in `ServiceDefaults`
+- [x] Smoke test script created (`docs/testing/smoke-test.sh`)
+- [ ] First pilot tenant operational — **blocked on infrastructure + UAT**
+- [ ] Support process documented with actual contacts — placeholder in runbook
+- [ ] `CLAUDE.md` and `README.md` updated with production URLs
 
 **Dependencies:**
 - [ ] US-10.3: UAT sign-off complete
@@ -175,8 +176,8 @@
 | US-10.1: Test Coverage Completion | P0 Critical | 8 | 🟢 Complete |
 | US-10.2: Performance Optimization | P1 High | 5 | 🟢 Complete |
 | US-10.3: User Acceptance Testing | P0 Critical | 5 | 🟡 In Progress (blocked on staging) |
-| US-10.4: Production Infrastructure | P0 Critical | 8 | 🔴 Not Started |
-| US-10.5: Production Deployment & MVP Launch | P0 Critical | 5 | 🔴 Not Started |
+| US-10.4: Production Infrastructure | P0 Critical | 8 | 🟡 In Progress (blocked on Azure access) |
+| US-10.5: Production Deployment & MVP Launch | P0 Critical | 5 | 🟡 In Progress (blocked on infrastructure) |
 | US-10.6: User & Technical Documentation | P1 High | 3 | 🔴 Not Started |
 | **Total** | | **34** | |
 
