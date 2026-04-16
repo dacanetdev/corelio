@@ -26,7 +26,7 @@
 - **Database:** PostgreSQL 16
 - **ORM:** Entity Framework Core 10
 - **Migrations:** Code-first with EF Core migrations
-- **Caching:** Redis (via Aspire)
+- **Caching:** Redis (via Aspire) — version-based cache invalidation for POS search
 
 ### Testing
 - **Framework:** xUnit v3
@@ -43,8 +43,14 @@
 ### Security & Compliance
 - **Authentication:** JWT tokens with refresh tokens
 - **Authorization:** Role-based access control (RBAC)
-- **Certificates:** Azure Key Vault (CSD for CFDI)
-- **CFDI:** 4.0 compliance with PAC integration
+- **Certificates:** CSD stored encrypted in `TenantConfiguration` (database), loaded in memory only during signing
+- **CFDI:** 4.0 compliance with PAC integration (MockPACProvider in dev; real PAC in production)
+
+### Observability & Deployment (added Sprint 10)
+- **Monitoring:** Azure Application Insights via `Azure.Monitor.OpenTelemetry.AspNetCore` — activated by `APPLICATIONINSIGHTS_CONNECTION_STRING` env var in `ServiceDefaults/Extensions.cs`
+- **Containers:** Multi-stage Dockerfiles for WebAPI and BlazorApp (`sdk:10.0` → `aspnet:10.0`)
+- **PDF Generation:** QuestPDF (invoice receipts and CFDI PDF representation)
+- **CI/CD:** `.github/workflows/ci-cd.yml` — build → test → Docker push on merge to `main`
 
 ### Localization & Language Standards
 - **Code Language:** All code (classes, methods, variables) in **English**
@@ -856,13 +862,64 @@ Format: `[US-X.X] TASK Y: Short description`
 - Ensure PostgreSQL container is running
 - Verify migration syntax (PostgreSQL-specific)
 
-### 18. Resources
+### 18. Key Sprint 10 Patterns
+
+#### Redis Cache Invalidation (POS Search)
+Version-based invalidation — incrementing a version GUID invalidates all cached search results without explicit key enumeration:
+```csharp
+// Cache key: pos:search:{tenantId}:{version}:{term}
+// Version key: pos:ver:{tenantId}
+
+// In ProductSearchCacheService:
+var version = await _redis.GetStringAsync(versionKey) ?? Guid.NewGuid().ToString();
+var cacheKey = $"pos:search:{tenantId}:{version}:{searchTerm}";
+
+// Invalidation (called in CreateProduct/UpdateProduct handlers):
+await _redis.SetStringAsync(versionKey, Guid.NewGuid().ToString());
+```
+
+#### EF Core Compiled Queries
+Use for hot read paths to avoid repeated query compilation overhead:
+```csharp
+// In repository — static field, initialized once:
+private static readonly Func<ApplicationDbContext, IAsyncEnumerable<Warehouse>> GetDefaultWarehouseQuery =
+    EF.CompileAsyncQuery((ApplicationDbContext ctx) =>
+        ctx.Warehouses.Where(w => w.IsDefault));
+```
+
+#### UAT Data Seeder
+Invoke to seed realistic demo data for UAT or staging environments:
+```bash
+dotnet run --project src/Presentation/Corelio.WebAPI -- --seed-uat
+```
+Seeds: 8 categories, 52 products (3 pricing tiers each), 5 CFDI customers, 30 historical sales with backdated timestamps. Idempotent — safe to run multiple times.
+
+#### OpenAPI / Scalar Documentation Pattern
+For endpoints, add `WithDescription` + `Produces<T>` for full Scalar documentation:
+```csharp
+group.MapGet("/", GetProducts)
+    .WithName("GetProducts")
+    .WithSummary("Brief one-line summary")
+    .WithDescription("Detailed paragraph describing behavior, caching, edge cases.")
+    .Produces<PagedResult<ProductListDto>>(200)
+    .ProducesProblem(400)
+    .RequireAuthorization("products.view");
+```
+
+---
+
+### 19. Resources
 
 - **Architecture:** See `docs/planning/00-architecture-specification.md`
 - **Database:** See `docs/planning/01-database-schema-design.md`
 - **API:** See `docs/planning/02-api-specification.md`
 - **Multi-Tenancy:** See `docs/planning/03-multi-tenancy-implementation-guide.md`
 - **CFDI:** See `docs/planning/04-cfdi-integration-specification.md`
+- **User Manual:** See `docs/user-manual.md`
+- **Admin Guide:** See `docs/admin-guide.md`
+- **CFDI Certificate Guide:** See `docs/cfdi-certificate-guide.md`
+- **Production Runbook:** See `docs/deployment/production-runbook.md`
+- **Load Test Script:** See `docs/testing/load-test-k6.js`
 
 **External Links:**
 - [.NET Aspire Documentation](https://learn.microsoft.com/en-us/dotnet/aspire/)
@@ -870,7 +927,8 @@ Format: `[US-X.X] TASK Y: Short description`
 - [MediatR GitHub](https://github.com/jbogard/MediatR)
 - [MudBlazor Documentation](https://mudblazor.com/)
 - [SAT CFDI Portal](https://www.sat.gob.mx/consulta/71875/comprobante-fiscal-digital-por-internet-(cfdi))
+- [QuestPDF Documentation](https://www.questpdf.com/)
 
 ---
-**Last Updated:** 2025-12-21
+**Last Updated:** 2026-04-16
 **Maintainer:** Development Team

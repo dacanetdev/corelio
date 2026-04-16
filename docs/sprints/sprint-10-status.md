@@ -150,7 +150,7 @@
 ## User Story 10.6: User & Technical Documentation
 **As a new tenant administrator, I want clear documentation on how to set up and use Corelio so that I can onboard my team without requiring developer support.**
 
-**Status:** 🟡 In Progress
+**Status:** 🟢 Complete
 
 | Task ID | Task | Branch | Status | Notes |
 |---------|------|--------|--------|-------|
@@ -158,7 +158,7 @@
 | TASK-10.6.2 | Write admin guide — tenant setup, user and role management, pricing configuration, CSD certificate upload | `feature/US-10.6-TASK-2-admin-guide` | 🟢 | `docs/admin-guide.md` — tenant registration, user/role management, pricing config, CFDI setup, full permissions reference |
 | TASK-10.6.3 | Verify Scalar API documentation complete — all endpoints documented with request/response examples | `feature/US-10.6-TASK-3-scalar-docs` | 🟢 | Added `WithDescription` + `Produces<T>` to Products, Sales, POS, CFDI, Customers endpoints; 8 remaining groups verified (have WithSummary+WithName+WithTags — sufficient for Scalar) |
 | TASK-10.6.4 | Write CFDI certificate setup guide — SAT portal process → download CSD → upload to Corelio → verify | `feature/US-10.6-TASK-4-cfdi-guide` | 🟢 | `docs/cfdi-certificate-guide.md` — SAT portal steps, OpenSSL PFX conversion, Corelio upload, verification, renewal, troubleshooting |
-| TASK-10.6.5 | Final review of `CLAUDE.md` — update with any post-Sprint-10 architectural changes | `feature/US-10.6-TASK-5-claude-md` | 🔴 | |
+| TASK-10.6.5 | Final review of `CLAUDE.md` — update with any post-Sprint-10 architectural changes | `feature/US-10.6-TASK-5-claude-md` | 🟢 | Added Sprint 10 patterns (Redis cache invalidation, compiled queries, UAT seeder, OpenAPI pattern), Observability section, resources updated, Last Updated → 2026-04-16 |
 
 **Acceptance Criteria:**
 - [ ] User manual covers all 7 core workflows
@@ -178,7 +178,7 @@
 | US-10.3: User Acceptance Testing | P0 Critical | 5 | 🟡 In Progress (blocked on staging) |
 | US-10.4: Production Infrastructure | P0 Critical | 8 | 🟡 In Progress (blocked on Azure access) |
 | US-10.5: Production Deployment & MVP Launch | P0 Critical | 5 | 🟡 In Progress (blocked on infrastructure) |
-| US-10.6: User & Technical Documentation | P1 High | 3 | 🔴 Not Started |
+| US-10.6: User & Technical Documentation | P1 High | 3 | 🟢 Complete |
 | **Total** | | **34** | |
 
 **Recommended execution order:** US-10.1 + US-10.2 (parallel) → US-10.3 → US-10.4 → US-10.5 → US-10.6
