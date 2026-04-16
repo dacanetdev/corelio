@@ -150,15 +150,15 @@
 ## User Story 10.6: User & Technical Documentation
 **As a new tenant administrator, I want clear documentation on how to set up and use Corelio so that I can onboard my team without requiring developer support.**
 
-**Status:** 🔴 Not Started
+**Status:** 🟡 In Progress
 
 | Task ID | Task | Branch | Status | Notes |
 |---------|------|--------|--------|-------|
-| TASK-10.6.1 | Write user manual — 7 core workflow walkthroughs (login → product management → POS → sales history → inventory → CFDI) with screenshots | `feature/US-10.6-documentation` | 🔴 | Markdown or Word |
-| TASK-10.6.2 | Write admin guide — tenant setup, user and role management, pricing configuration, CSD certificate upload | `feature/US-10.6-documentation` | 🔴 | |
-| TASK-10.6.3 | Verify Scalar API documentation complete — all endpoints documented with request/response examples | `feature/US-10.6-documentation` | 🔴 | Accessible at `/scalar` |
-| TASK-10.6.4 | Write CFDI certificate setup guide — SAT portal process → download CSD → upload to Corelio → verify | `feature/US-10.6-documentation` | 🔴 | |
-| TASK-10.6.5 | Final review of `CLAUDE.md` — update with any post-Sprint-10 architectural changes | `feature/US-10.6-documentation` | 🔴 | |
+| TASK-10.6.1 | Write user manual — 7 core workflow walkthroughs (login → product management → POS → sales history → inventory → CFDI) with screenshots | `feature/US-10.6-TASK-1-user-manual` | 🟢 | `docs/user-manual.md` — 7 workflows in Spanish, role/permission matrix, error table |
+| TASK-10.6.2 | Write admin guide — tenant setup, user and role management, pricing configuration, CSD certificate upload | `feature/US-10.6-TASK-2-admin-guide` | 🔴 | |
+| TASK-10.6.3 | Verify Scalar API documentation complete — all endpoints documented with request/response examples | `feature/US-10.6-TASK-3-scalar-docs` | 🔴 | Accessible at `/scalar` |
+| TASK-10.6.4 | Write CFDI certificate setup guide — SAT portal process → download CSD → upload to Corelio → verify | `feature/US-10.6-TASK-4-cfdi-guide` | 🔴 | |
+| TASK-10.6.5 | Final review of `CLAUDE.md` — update with any post-Sprint-10 architectural changes | `feature/US-10.6-TASK-5-claude-md` | 🔴 | |
 
 **Acceptance Criteria:**
 - [ ] User manual covers all 7 core workflows
