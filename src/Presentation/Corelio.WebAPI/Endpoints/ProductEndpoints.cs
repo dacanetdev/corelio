@@ -1,3 +1,4 @@
+using Corelio.Application.Common.Models;
 using Corelio.Application.Products.Common;
 using Corelio.Application.Products.Commands.CreateProduct;
 using Corelio.Application.Products.Commands.DeleteProduct;
@@ -30,31 +31,50 @@ public static class ProductEndpoints
         group.MapGet("/", GetProducts)
             .WithName("GetProducts")
             .WithSummary("Get a paged list of products with optional filtering")
+            .WithDescription("Returns a paginated list of products for the current tenant. Supports filtering by category ID, active status, and a free-text search term (matches name, SKU, or barcode). Results default to page 1 with 20 items per page.")
+            .Produces<PagedResult<ProductListDto>>(200)
+            .ProducesProblem(400)
             .RequireAuthorization("products.view");
 
         group.MapGet("/{id:guid}", GetProductById)
             .WithName("GetProductById")
             .WithSummary("Get a product by its ID")
+            .WithDescription("Returns the full product record including pricing details, SAT classification codes, and category assignment. Returns 404 if the product does not exist or belongs to a different tenant.")
+            .Produces<ProductDto>(200)
+            .Produces(404)
             .RequireAuthorization("products.view");
 
         group.MapGet("/search", SearchProducts)
             .WithName("SearchProducts")
             .WithSummary("Search products by barcode, SKU, or name (optimized for POS)")
+            .WithDescription("Fast product search intended for the POS screen. Results are cached in Redis (TTL: 5 min, version-based invalidation on product mutations). Requires query parameter `q` (minimum 1 character). Returns up to `limit` results (default: 20).")
+            .Produces<List<ProductListDto>>(200)
+            .ProducesProblem(400)
             .RequireAuthorization("products.view");
 
         group.MapPost("/", CreateProduct)
             .WithName("CreateProduct")
             .WithSummary("Create a new product")
+            .WithDescription("Creates a new active product in the current tenant's catalog. SKU must be unique within the tenant. Invalidates the Redis POS search cache upon success. Returns the new product ID and a 201 Created response with the resource location.")
+            .Produces<object>(201)
+            .ProducesProblem(400)
             .RequireAuthorization("products.create");
 
         group.MapPut("/{id:guid}", UpdateProduct)
             .WithName("UpdateProduct")
             .WithSummary("Update an existing product")
+            .WithDescription("Updates all mutable fields of an existing product. Returns 204 No Content on success. Invalidates the Redis POS search cache for the tenant. Returns 404 if the product is not found.")
+            .Produces(204)
+            .Produces(404)
+            .ProducesProblem(400)
             .RequireAuthorization("products.update");
 
         group.MapDelete("/{id:guid}", DeleteProduct)
             .WithName("DeleteProduct")
             .WithSummary("Delete a product (soft delete)")
+            .WithDescription("Soft-deletes a product by setting its `IsActive` flag to false. The product is removed from POS search results and the active catalog, but its data is retained for sales history and audit purposes. Returns 204 No Content on success.")
+            .Produces(204)
+            .Produces(404)
             .RequireAuthorization("products.delete");
 
         return app;
