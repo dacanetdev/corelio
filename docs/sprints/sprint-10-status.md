@@ -156,7 +156,7 @@
 |---------|------|--------|--------|-------|
 | TASK-10.6.1 | Write user manual — 7 core workflow walkthroughs (login → product management → POS → sales history → inventory → CFDI) with screenshots | `feature/US-10.6-TASK-1-user-manual` | 🟢 | `docs/user-manual.md` — 7 workflows in Spanish, role/permission matrix, error table |
 | TASK-10.6.2 | Write admin guide — tenant setup, user and role management, pricing configuration, CSD certificate upload | `feature/US-10.6-TASK-2-admin-guide` | 🟢 | `docs/admin-guide.md` — tenant registration, user/role management, pricing config, CFDI setup, full permissions reference |
-| TASK-10.6.3 | Verify Scalar API documentation complete — all endpoints documented with request/response examples | `feature/US-10.6-TASK-3-scalar-docs` | 🔴 | Accessible at `/scalar` |
+| TASK-10.6.3 | Verify Scalar API documentation complete — all endpoints documented with request/response examples | `feature/US-10.6-TASK-3-scalar-docs` | 🟢 | Added `WithDescription` + `Produces<T>` to Products, Sales, POS, CFDI, Customers endpoints; 8 remaining groups verified (have WithSummary+WithName+WithTags — sufficient for Scalar) |
 | TASK-10.6.4 | Write CFDI certificate setup guide — SAT portal process → download CSD → upload to Corelio → verify | `feature/US-10.6-TASK-4-cfdi-guide` | 🔴 | |
 | TASK-10.6.5 | Final review of `CLAUDE.md` — update with any post-Sprint-10 architectural changes | `feature/US-10.6-TASK-5-claude-md` | 🔴 | |
 

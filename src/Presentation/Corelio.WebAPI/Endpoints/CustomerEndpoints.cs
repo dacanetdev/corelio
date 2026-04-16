@@ -1,3 +1,5 @@
+using Corelio.Application.Common.Models;
+using Corelio.Application.Customers.Common;
 using Corelio.Application.Customers.Commands.CreateCustomer;
 using Corelio.Application.Customers.Commands.DeleteCustomer;
 using Corelio.Application.Customers.Commands.UpdateCustomer;
@@ -27,31 +29,49 @@ public static class CustomerEndpoints
         group.MapGet("/", GetCustomers)
             .WithName("GetCustomers")
             .WithSummary("Get paged list of customers")
+            .WithDescription("Returns a paginated list of customers for the current tenant. Supports a free-text `search` parameter that matches against full name, RFC, email, or phone. Results default to page 1, 20 items per page.")
+            .Produces<PagedResult<CustomerListDto>>(200)
+            .ProducesProblem(400)
             .RequireAuthorization("customers.view");
 
         group.MapGet("/{id:guid}", GetCustomerById)
             .WithName("GetCustomerById")
             .WithSummary("Get customer by ID")
+            .WithDescription("Returns the complete customer record including CFDI-specific fields (RFC, tax regime, CFDI use, CURP) and contact details. Returns 404 if the customer does not exist or belongs to a different tenant.")
+            .Produces<CustomerDto>(200)
+            .Produces(404)
             .RequireAuthorization("customers.view");
 
         group.MapGet("/search", SearchCustomers)
             .WithName("SearchCustomers")
             .WithSummary("Search customers by name or RFC (for POS)")
+            .WithDescription("Lightweight customer search intended for the POS screen when associating a customer with a sale for CFDI purposes. Query parameter `q` matches full name and RFC (case-insensitive, using PostgreSQL ILike). Returns up to 10 results.")
+            .Produces<List<CustomerListDto>>(200)
             .RequireAuthorization("customers.view");
 
         group.MapPost("/", CreateCustomer)
             .WithName("CreateCustomer")
             .WithSummary("Create a new customer")
+            .WithDescription("Creates a new customer in the current tenant. Supports both individual (persona física) and business (persona moral) customer types. RFC and CFDI fields are optional but required when generating CFDI invoices for this customer. Returns 201 Created with the new customer ID.")
+            .Produces<object>(201)
+            .ProducesProblem(400)
             .RequireAuthorization("customers.create");
 
         group.MapPut("/{id:guid}", UpdateCustomer)
             .WithName("UpdateCustomer")
             .WithSummary("Update an existing customer")
+            .WithDescription("Updates all mutable fields of an existing customer record. Returns 204 No Content on success. Returns 404 if the customer is not found.")
+            .Produces(204)
+            .Produces(404)
+            .ProducesProblem(400)
             .RequireAuthorization("customers.update");
 
         group.MapDelete("/{id:guid}", DeleteCustomer)
             .WithName("DeleteCustomer")
             .WithSummary("Soft-delete a customer")
+            .WithDescription("Soft-deletes a customer by marking them as inactive. The customer record is retained for historical sales and CFDI invoice data. Returns 204 No Content on success.")
+            .Produces(204)
+            .Produces(404)
             .RequireAuthorization("customers.delete");
 
         return app;
