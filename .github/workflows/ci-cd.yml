@@ -238,91 +238,46 @@ jobs:
         cache-from: type=registry,ref=dacanetdev/corelio-blazor:latest
         cache-to: type=inline
 
-  deploy-staging:
-    name: Deploy to Staging
-    runs-on: ubuntu-latest
-    needs: docker-build
-    if: github.event_name == 'push' && github.ref == 'refs/heads/develop'
-    environment:
-      name: staging
-      url: https://staging.corelio.app
-
-    steps:
-    - name: Checkout code
-      uses: actions/checkout@v6
-
-    - name: Azure Login
-      uses: azure/login@v1
-      with:
-        creds: ${{ secrets.AZURE_CREDENTIALS_STAGING }}
-
-    - name: Deploy to Azure Container Apps (Staging)
-      run: |
-        az containerapp update \
-          --name corelio-api-staging \
-          --resource-group corelio-staging-rg \
-          --image dacanetdev/corelio-api:${{ github.sha }}
-
-        az containerapp update \
-          --name corelio-blazor-staging \
-          --resource-group corelio-staging-rg \
-          --image dacanetdev/corelio-blazor:${{ github.sha }}
-
-    - name: Run database migrations
-      run: |
-        # Run migrations using Azure Container Apps job
-        az containerapp job start \
-          --name corelio-migrations-staging \
-          --resource-group corelio-staging-rg
-
-    - name: Smoke test staging
-      run: |
-        echo "Running smoke tests against staging environment..."
-        curl -f https://staging.corelio.app/health || exit 1
-        curl -f https://staging-api.corelio.app/health || exit 1
-
-  deploy-production:
-    name: Deploy to Production
+  deploy-fly:
+    name: Deploy to Fly.io
     runs-on: ubuntu-latest
     needs: docker-build
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
     environment:
       name: production
-      url: https://corelio.app
+      url: https://corelio-blazor.fly.dev
 
     steps:
     - name: Checkout code
       uses: actions/checkout@v6
 
-    - name: Azure Login
-      uses: azure/login@v1
-      with:
-        creds: ${{ secrets.AZURE_CREDENTIALS_PRODUCTION }}
+    - name: Install flyctl
+      uses: superfly/flyctl-actions/setup-flyctl@master
 
-    - name: Deploy to Azure Container Apps (Production)
+    - name: Deploy WebAPI to Fly.io
+      env:
+        FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
       run: |
-        az containerapp update \
-          --name corelio-api-prod \
-          --resource-group corelio-prod-rg \
-          --image dacanetdev/corelio-api:${{ github.sha }}
+        flyctl deploy --app corelio-api \
+          --image dacanetdev/corelio-api:${{ github.sha }} \
+          --config src/Presentation/Corelio.WebAPI/fly.toml \
+          --wait-timeout 300
 
-        az containerapp update \
-          --name corelio-blazor-prod \
-          --resource-group corelio-prod-rg \
-          --image dacanetdev/corelio-blazor:${{ github.sha }}
-
-    - name: Run database migrations
+    - name: Deploy BlazorApp to Fly.io
+      env:
+        FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
       run: |
-        # Run migrations using Azure Container Apps job
-        az containerapp job start \
-          --name corelio-migrations-prod \
-          --resource-group corelio-prod-rg
+        flyctl deploy --app corelio-blazor \
+          --image dacanetdev/corelio-blazor:${{ github.sha }} \
+          --config src/Presentation/Corelio.BlazorApp/fly.toml \
+          --wait-timeout 300
 
     - name: Smoke test production
       run: |
-        echo "Running smoke tests against production environment..."
-        curl -f https://corelio.app/health || exit 1
-        curl -f https://api.corelio.app/health || exit 1
+        echo "Running smoke tests against Fly.io production..."
+        curl -f https://corelio-api.fly.dev/health || exit 1
+        curl -f https://corelio-api.fly.dev/alive || exit 1
+        curl -f https://corelio-blazor.fly.dev/health || exit 1
 
     - name: Create GitHub Release
       uses: actions/create-release@v1
@@ -342,7 +297,7 @@ jobs:
   notify:
     name: Notify Team
     runs-on: ubuntu-latest
-    needs: [deploy-staging, deploy-production]
+    needs: [deploy-fly]
     if: always()
 
     steps:
