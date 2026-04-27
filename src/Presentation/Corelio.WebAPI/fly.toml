@@ -1,0 +1,42 @@
+app = "corelio-api"
+primary_region = "mia"
+
+[build]
+  image = "dacanetdev/corelio-api:latest"
+
+[deploy]
+  release_command = "dotnet Corelio.WebAPI.dll --migrate"
+  strategy = "rolling"
+
+[env]
+  ASPNETCORE_ENVIRONMENT = "Production"
+  ASPNETCORE_URLS = "http://+:8080"
+
+[http_service]
+  internal_port = 8080
+  force_https = true
+  auto_stop_machines = "stop"
+  auto_start_machines = true
+  min_machines_running = 0
+  processes = ["app"]
+
+  [[http_service.checks]]
+    grace_period = "30s"
+    interval = "15s"
+    method = "GET"
+    path = "/health"
+    timeout = "5s"
+    type = "http"
+
+  [[http_service.checks]]
+    grace_period = "10s"
+    interval = "10s"
+    method = "GET"
+    path = "/alive"
+    timeout = "3s"
+    type = "http"
+
+[[vm]]
+  memory = "256mb"
+  cpu_kind = "shared"
+  cpus = 1
