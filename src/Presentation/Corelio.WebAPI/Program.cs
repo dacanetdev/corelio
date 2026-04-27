@@ -47,6 +47,26 @@ builder.Services.AddOpenApi();
 
 var app = builder.Build();
 
+// Run EF Core migrations and exit — invoked as Fly.io release_command before traffic promotion
+if (args.Contains("--migrate"))
+{
+    app.Logger.LogInformation("Running database migrations (--migrate mode)...");
+    using var migrateScope = app.Services.CreateScope();
+    var migrateDb = migrateScope.ServiceProvider
+        .GetRequiredService<Corelio.Infrastructure.Persistence.ApplicationDbContext>();
+    try
+    {
+        await migrateDb.Database.MigrateAsync();
+        app.Logger.LogInformation("Database migrations applied successfully");
+    }
+    catch (Exception ex)
+    {
+        app.Logger.LogError(ex, "An error occurred while running database migrations");
+        throw;
+    }
+    return;
+}
+
 // Apply pending migrations in development
 if (app.Environment.IsDevelopment())
 {

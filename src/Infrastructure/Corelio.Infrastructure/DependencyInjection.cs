@@ -198,12 +198,26 @@ public static class DependencyInjection
         builder.Services.AddScoped<TenantInterceptor>();
         builder.Services.AddScoped<AuditInterceptor>();
 
-        // Add Redis distributed cache with Aspire integration (for tenant caching)
-        builder.AddRedisClient("redis");
-        builder.Services.AddStackExchangeRedisCache(options =>
+        // Add Redis distributed cache — supports Fly.io (explicit connection string),
+        // Aspire (service discovery), and fallback to in-memory when neither is configured
+        var redisConnection = builder.Configuration.GetConnectionString("redis");
+        if (!string.IsNullOrEmpty(redisConnection))
         {
-            // Aspire will auto-configure the connection via service discovery
-        });
+            builder.Services.AddStackExchangeRedisCache(options =>
+            {
+                options.Configuration = redisConnection;
+            });
+        }
+        else if (builder.Configuration.GetSection("services:cache").Exists()
+                 || builder.Configuration.GetSection("services:redis").Exists())
+        {
+            builder.AddRedisClient("redis");
+            builder.Services.AddStackExchangeRedisCache(options => { });
+        }
+        else
+        {
+            builder.Services.AddDistributedMemoryCache();
+        }
 
         // Add DbContext without pooling
         // Cannot use AddNpgsqlDbContext because it uses pooling which conflicts with scoped ITenantProvider
