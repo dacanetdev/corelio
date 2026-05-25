@@ -120,7 +120,13 @@ public static class AuthorizationExtensions
 
             // Pricing policies
             .AddPolicy("pricing.view", policy => policy.RequireClaim("permissions", "pricing.view"))
-            .AddPolicy("pricing.manage", policy => policy.RequireClaim("permissions", "pricing.manage"));
+            .AddPolicy("pricing.manage", policy => policy.RequireClaim("permissions", "pricing.manage"))
+
+            // Supplier policies
+            .AddPolicy("suppliers.view", policy => policy.RequireClaim("permissions", "suppliers.view"))
+            .AddPolicy("suppliers.create", policy => policy.RequireClaim("permissions", "suppliers.create"))
+            .AddPolicy("suppliers.update", policy => policy.RequireClaim("permissions", "suppliers.update"))
+            .AddPolicy("suppliers.delete", policy => policy.RequireClaim("permissions", "suppliers.delete"));
 
         return services;
     }
