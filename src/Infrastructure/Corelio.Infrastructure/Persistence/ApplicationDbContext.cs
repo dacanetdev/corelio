@@ -51,6 +51,9 @@ public class ApplicationDbContext(
     // Customer entities
     public DbSet<Customer> Customers => Set<Customer>();
 
+    // Supplier entities
+    public DbSet<Supplier> Suppliers => Set<Supplier>();
+
     // Sales & Inventory entities
     public DbSet<Warehouse> Warehouses => Set<Warehouse>();
     public DbSet<InventoryItem> InventoryItems => Set<InventoryItem>();
@@ -140,6 +143,10 @@ public class ApplicationDbContext(
         // Customer - strict tenant isolation
         modelBuilder.Entity<Customer>()
             .HasQueryFilter(c => !tenantProvider.HasTenantContext || c.TenantId == tenantProvider.TenantId);
+
+        // Supplier - strict tenant isolation
+        modelBuilder.Entity<Supplier>()
+            .HasQueryFilter(s => !tenantProvider.HasTenantContext || s.TenantId == tenantProvider.TenantId);
 
         // Warehouse - strict tenant isolation
         modelBuilder.Entity<Warehouse>()
