@@ -126,7 +126,14 @@ public static class AuthorizationExtensions
             .AddPolicy("suppliers.view", policy => policy.RequireClaim("permissions", "suppliers.view"))
             .AddPolicy("suppliers.create", policy => policy.RequireClaim("permissions", "suppliers.create"))
             .AddPolicy("suppliers.update", policy => policy.RequireClaim("permissions", "suppliers.update"))
-            .AddPolicy("suppliers.delete", policy => policy.RequireClaim("permissions", "suppliers.delete"));
+            .AddPolicy("suppliers.delete", policy => policy.RequireClaim("permissions", "suppliers.delete"))
+
+            // Purchase Order policies
+            .AddPolicy("purchases.view", policy => policy.RequireClaim("permissions", "purchases.view"))
+            .AddPolicy("purchases.create", policy => policy.RequireClaim("permissions", "purchases.create"))
+            .AddPolicy("purchases.submit", policy => policy.RequireClaim("permissions", "purchases.submit"))
+            .AddPolicy("purchases.approve", policy => policy.RequireClaim("permissions", "purchases.approve"))
+            .AddPolicy("purchases.cancel", policy => policy.RequireClaim("permissions", "purchases.cancel"));
 
         return services;
     }

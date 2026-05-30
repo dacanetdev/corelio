@@ -1,0 +1,40 @@
+using Corelio.Application.Common.Interfaces;
+using Corelio.Application.Common.Models;
+using Corelio.Domain.Enums;
+using Corelio.Domain.Repositories;
+using Corelio.SharedKernel.Messaging;
+
+namespace Corelio.Application.PurchaseOrders.Commands.CancelPurchaseOrder;
+
+public class CancelPurchaseOrderCommandHandler(
+    IPurchaseOrderRepository purchaseOrderRepository,
+    IUnitOfWork unitOfWork,
+    ITenantService tenantService) : IRequestHandler<CancelPurchaseOrderCommand, Result<bool>>
+{
+    public async Task<Result<bool>> Handle(CancelPurchaseOrderCommand request, CancellationToken cancellationToken)
+    {
+        var tenantId = tenantService.GetCurrentTenantId();
+        if (!tenantId.HasValue)
+        {
+            return Result<bool>.Failure(new Error("Tenant.NotResolved", "Unable to resolve current tenant.", ErrorType.Unauthorized));
+        }
+
+        var purchaseOrder = await purchaseOrderRepository.GetByIdAsync(request.Id, cancellationToken);
+        if (purchaseOrder is null)
+        {
+            return Result<bool>.Failure(new Error("PurchaseOrder.NotFound", $"Purchase order with ID '{request.Id}' not found.", ErrorType.NotFound));
+        }
+
+        if (purchaseOrder.Status != PurchaseOrderStatus.Draft && purchaseOrder.Status != PurchaseOrderStatus.Submitted)
+        {
+            return Result<bool>.Failure(new Error("PurchaseOrder.InvalidTransition", $"Cannot cancel a purchase order in '{purchaseOrder.Status}' status. Only Draft or Submitted orders can be cancelled.", ErrorType.Conflict));
+        }
+
+        purchaseOrder.Status = PurchaseOrderStatus.Cancelled;
+
+        purchaseOrderRepository.Update(purchaseOrder);
+        await unitOfWork.SaveChangesAsync(cancellationToken);
+
+        return Result<bool>.Success(true);
+    }
+}
