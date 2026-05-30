@@ -37,24 +37,24 @@
 ## User Story 12.2: Purchase Order Backend
 **As a store owner, I want to create purchase orders for products I need to restock so that I can track what I've ordered from each supplier.**
 
-**Status:** 🔴 Not Started
+**Status:** 🟢 Complete
 
 | Task ID | Task | Branch | Status | Notes |
 |---------|------|--------|--------|-------|
-| TASK-12.2.1 | `PurchaseOrder` + `PurchaseOrderItem` domain entities; `PurchaseOrderStatus` enum (`Draft`, `Submitted`, `Approved`, `PartiallyReceived`, `Received`, `Cancelled`) | — | 🔴 | `PurchaseOrder` inherits `TenantAuditableEntity`; `OrderNumber` auto-generated `PO-{year}-{seq}` |
-| TASK-12.2.2 | Commands: `CreatePurchaseOrderCommand`, `UpdatePurchaseOrderCommand`, `SubmitPurchaseOrderCommand`, `ApprovePurchaseOrderCommand`, `CancelPurchaseOrderCommand` + handlers | — | 🔴 | Status transition guards (e.g., cannot approve a Cancelled PO); `Result<T>` pattern |
-| TASK-12.2.3 | Queries: `GetPurchaseOrdersQuery` (paged, filterable by status/supplier/date), `GetPurchaseOrderByIdQuery` | — | 🔴 | `AsNoTracking()`, include items + product names |
-| TASK-12.2.4 | EF Core config (`PurchaseOrderConfiguration.cs`, `PurchaseOrderItemConfiguration.cs`) + migration `AddPurchaseOrderSchema` | — | 🔴 | `purchase_orders` + `purchase_order_items` tables; `ix_purchase_orders_tenant_status` index |
-| TASK-12.2.5 | `PurchaseOrderEndpoints.cs` — GET list (paged), GET by ID, POST create, PUT update, POST submit, POST approve, POST cancel | — | 🔴 | Separate action endpoints for state transitions |
-| TASK-12.2.6 | Unit tests for all PO command/query handlers | — | 🔴 | Status transition edge cases; invalid transitions return `Result.Failure` |
+| TASK-12.2.1 | `PurchaseOrder` + `PurchaseOrderItem` domain entities; `PurchaseOrderStatus` enum (`Draft`, `Submitted`, `Approved`, `PartiallyReceived`, `Received`, `Cancelled`) | feature/US-12.2-TASK-1-to-6-purchase-order-backend | 🟢 | `PurchaseOrder` inherits `TenantAuditableEntity` + `ISoftDeletable`; `OrderNumber` auto-generated `PO-{year}-{seq:D4}` |
+| TASK-12.2.2 | Commands: `CreatePurchaseOrderCommand`, `UpdatePurchaseOrderCommand`, `SubmitPurchaseOrderCommand`, `ApprovePurchaseOrderCommand`, `CancelPurchaseOrderCommand` + handlers | feature/US-12.2-TASK-1-to-6-purchase-order-backend | 🟢 | Status transition guards; FluentValidation validators for Create/Update; `Result<T>` pattern throughout |
+| TASK-12.2.3 | Queries: `GetPurchaseOrdersQuery` (paged, filterable by status/supplier/date), `GetPurchaseOrderByIdQuery` | feature/US-12.2-TASK-1-to-6-purchase-order-backend | 🟢 | `AsNoTracking()`, includes items + supplier; DTOs: `PurchaseOrderListDto`, `PurchaseOrderDto`, `PurchaseOrderItemDto` |
+| TASK-12.2.4 | EF Core config (`PurchaseOrderConfiguration.cs`, `PurchaseOrderItemConfiguration.cs`) + migrations `AddPurchaseOrderSchema` + `AddPurchaseOrderPermissionsSeed` | feature/US-12.2-TASK-1-to-6-purchase-order-backend | 🟢 | `purchase_orders` + `purchase_order_items` tables; 3 indexes; 5 permissions (Administrator+Manager get all, Cashier gets view) |
+| TASK-12.2.5 | `PurchaseOrderEndpoints.cs` — GET list (paged), GET by ID, POST create, PUT update, POST submit, POST approve, POST cancel | feature/US-12.2-TASK-1-to-6-purchase-order-backend | 🟢 | 7 endpoints at `/api/v1/purchase-orders`; separate action routes for state transitions |
+| TASK-12.2.6 | Unit tests for all PO command/query handlers | feature/US-12.2-TASK-1-to-6-purchase-order-backend | 🟢 | 24 tests passing — Create(6), Update(4), Submit(3), Approve(3), Cancel(4), GetList(2), GetById(2) |
 
 **Acceptance Criteria:**
-- [ ] Purchase order creation with at least one line item enforced
-- [ ] `OrderNumber` auto-generated as `PO-{YYYY}-{sequence}` per tenant
-- [ ] Status transitions enforced: Draft→Submitted→Approved, Draft/Submitted→Cancelled
-- [ ] Total calculated server-side (Subtotal + IVA 16% = Total)
-- [ ] `purchases.view`, `purchases.create`, `purchases.submit`, `purchases.approve`, `purchases.cancel` permissions seeded
-- [ ] Unit tests passing for all state transitions
+- [x] Purchase order creation with at least one line item enforced
+- [x] `OrderNumber` auto-generated as `PO-{YYYY}-{sequence}` per tenant
+- [x] Status transitions enforced: Draft→Submitted→Approved, Draft/Submitted→Cancelled
+- [x] Total calculated server-side (Subtotal + IVA 16% = Total)
+- [x] `purchases.view`, `purchases.create`, `purchases.submit`, `purchases.approve`, `purchases.cancel` permissions seeded
+- [x] Unit tests passing for all state transitions
 
 ---
 
@@ -117,7 +117,7 @@
 | Story | Priority | SP | Status |
 |-------|----------|----|--------|
 | US-12.1: Supplier Management | P1 High | 5 | 🟢 Complete |
-| US-12.2: Purchase Order Backend | P0 Critical | 8 | 🔴 Not Started |
+| US-12.2: Purchase Order Backend | P0 Critical | 8 | 🟢 Complete |
 | US-12.3: Goods Receipt & Inventory Integration | P0 Critical | 5 | 🔴 Not Started |
 | US-12.4: Purchase Management UI | P1 High | 8 | 🔴 Not Started |
 | **Total** | | **26** | |
