@@ -57,6 +57,8 @@ public class ApplicationDbContext(
     // Purchase Order entities
     public DbSet<PurchaseOrder> PurchaseOrders => Set<PurchaseOrder>();
     public DbSet<PurchaseOrderItem> PurchaseOrderItems => Set<PurchaseOrderItem>();
+    public DbSet<GoodsReceipt> GoodsReceipts => Set<GoodsReceipt>();
+    public DbSet<GoodsReceiptItem> GoodsReceiptItems => Set<GoodsReceiptItem>();
 
     // Sales & Inventory entities
     public DbSet<Warehouse> Warehouses => Set<Warehouse>();

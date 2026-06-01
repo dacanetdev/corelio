@@ -26,6 +26,7 @@ public static class EndpointExtensions
         app.MapCfdiSettingsEndpoints();
         app.MapSupplierEndpoints();
         app.MapPurchaseOrderEndpoints();
+        app.MapGoodsReceiptEndpoints();
 
         return app;
     }
