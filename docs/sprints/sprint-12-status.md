@@ -61,15 +61,15 @@
 ## User Story 12.3: Goods Receipt & Inventory Integration
 **As a warehouse manager, I want to record goods received against a purchase order so that inventory levels are automatically updated when stock arrives.**
 
-**Status:** 🔴 Not Started
+**Status:** 🟡 In Progress
 
 | Task ID | Task | Branch | Status | Notes |
 |---------|------|--------|--------|-------|
-| TASK-12.3.1 | `GoodsReceipt` + `GoodsReceiptItem` domain entities | — | 🔴 | `GoodsReceipt` inherits `TenantAuditableEntity`; links to `PurchaseOrder` |
-| TASK-12.3.2 | `ReceiveGoodsCommand` handler: validate PO is Approved/PartiallyReceived, update `InventoryItem.Quantity` per warehouse, update `PurchaseOrderItem.ReceivedQuantity`, update PO status (PartiallyReceived vs Received) | — | 🔴 | Transactional — all updates in one `SaveChangesAsync`; reuses existing `InventoryItem` entity from Sprint 7 |
-| TASK-12.3.3 | `GetGoodsReceiptsQuery` (list by PO or by date range) + `GetGoodsReceiptByIdQuery` | — | 🔴 | Include receipt items + product names + warehouse names |
-| TASK-12.3.4 | EF Core config (`GoodsReceiptConfiguration.cs`, `GoodsReceiptItemConfiguration.cs`) + migration `AddGoodsReceiptSchema` | — | 🔴 | `goods_receipts` + `goods_receipt_items` tables |
-| TASK-12.3.5 | `GoodsReceiptEndpoints.cs` — POST receive (creates receipt + updates inventory), GET receipts by PO, GET receipt by ID | — | 🔴 | — |
+| TASK-12.3.1 | `GoodsReceipt` + `GoodsReceiptItem` domain entities | feature/US-12.3-TASK-1-goods-receipt-domain | 🟢 | `GoodsReceipt` inherits `TenantAuditableEntity`; links to `PurchaseOrder`; IGoodsReceiptRepository |
+| TASK-12.3.2 | `ReceiveGoodsCommand` handler: validate PO is Approved/PartiallyReceived, update `InventoryItem.Quantity` per warehouse, update `PurchaseOrderItem.ReceivedQuantity`, update PO status (PartiallyReceived vs Received) | feature/US-12.3-TASK-1-goods-receipt-domain | 🟢 | Transactional — all updates in one `SaveChangesAsync`; reuses existing `InventoryItem` entity from Sprint 7 |
+| TASK-12.3.3 | `GetGoodsReceiptsQuery` (list by PO or by date range) + `GetGoodsReceiptByIdQuery` | feature/US-12.3-TASK-1-goods-receipt-domain | 🟢 | Include receipt items + product names + warehouse names |
+| TASK-12.3.4 | EF Core config (`GoodsReceiptConfiguration.cs`, `GoodsReceiptItemConfiguration.cs`) + migration `AddGoodsReceiptSchema` | feature/US-12.3-TASK-4-ef-config-migration | 🟢 | `goods_receipts` + `goods_receipt_items` tables; GoodsReceiptRepository; DbContext + DI updated |
+| TASK-12.3.5 | `GoodsReceiptEndpoints.cs` — POST receive (creates receipt + updates inventory), GET receipts by PO, GET receipt by ID | feature/US-12.3-TASK-4-ef-config-migration | 🟢 | 3 endpoints at /api/v1/goods-receipts; receipts.view + receipts.create permissions; AddGoodsReceiptPermissionsSeed migration |
 | TASK-12.3.6 | Unit tests for `ReceiveGoodsCommand` (full receipt, partial receipt, over-receipt rejected, wrong PO status rejected) | — | 🔴 | — |
 
 **Acceptance Criteria:**

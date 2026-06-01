@@ -133,7 +133,11 @@ public static class AuthorizationExtensions
             .AddPolicy("purchases.create", policy => policy.RequireClaim("permissions", "purchases.create"))
             .AddPolicy("purchases.submit", policy => policy.RequireClaim("permissions", "purchases.submit"))
             .AddPolicy("purchases.approve", policy => policy.RequireClaim("permissions", "purchases.approve"))
-            .AddPolicy("purchases.cancel", policy => policy.RequireClaim("permissions", "purchases.cancel"));
+            .AddPolicy("purchases.cancel", policy => policy.RequireClaim("permissions", "purchases.cancel"))
+
+            // Goods Receipt policies
+            .AddPolicy("receipts.view", policy => policy.RequireClaim("permissions", "receipts.view"))
+            .AddPolicy("receipts.create", policy => policy.RequireClaim("permissions", "receipts.create"));
 
         return services;
     }
