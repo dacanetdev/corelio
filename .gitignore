@@ -16,6 +16,9 @@ nupkg/
 # Rider
 .idea/
 
+# Language server cache files
+*.lscache
+
 # Visual Studio
 .vs/
 *.user

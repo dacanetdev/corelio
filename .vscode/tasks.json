@@ -1,0 +1,13 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "Start Claude",
+      "type": "shell",
+      "command": "claude",
+      "presentation": { "reveal": "always", "panel": "new", "focus": true },
+      "runOptions": { "runOn": "folderOpen" },
+      "problemMatcher": []
+    }
+  ]
+}
