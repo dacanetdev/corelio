@@ -586,4 +586,215 @@
   <data name="StampInvoiceConfirm" xml:space="preserve">
     <value>Do you want to stamp this invoice with the PAC?</value>
   </data>
+
+  <!-- Supplier Management -->
+  <data name="Suppliers" xml:space="preserve">
+    <value>Suppliers</value>
+  </data>
+  <data name="Supplier" xml:space="preserve">
+    <value>Supplier</value>
+  </data>
+  <data name="SupplierListDescription" xml:space="preserve">
+    <value>Manage your store suppliers</value>
+  </data>
+  <data name="AddSupplier" xml:space="preserve">
+    <value>Add Supplier</value>
+  </data>
+  <data name="EditSupplier" xml:space="preserve">
+    <value>Edit Supplier</value>
+  </data>
+  <data name="NewSupplier" xml:space="preserve">
+    <value>New Supplier</value>
+  </data>
+  <data name="DeleteSupplier" xml:space="preserve">
+    <value>Delete Supplier</value>
+  </data>
+  <data name="DeleteSupplierConfirmation" xml:space="preserve">
+    <value>Are you sure you want to delete this supplier?</value>
+  </data>
+  <data name="SupplierCreatedSuccessfully" xml:space="preserve">
+    <value>Supplier created successfully</value>
+  </data>
+  <data name="SupplierUpdatedSuccessfully" xml:space="preserve">
+    <value>Supplier updated successfully</value>
+  </data>
+  <data name="SupplierDeletedSuccessfully" xml:space="preserve">
+    <value>Supplier deleted successfully</value>
+  </data>
+  <data name="SearchSuppliers" xml:space="preserve">
+    <value>Search suppliers...</value>
+  </data>
+  <data name="NoSuppliersFound" xml:space="preserve">
+    <value>No suppliers found</value>
+  </data>
+  <data name="NoSuppliersDescription" xml:space="preserve">
+    <value>Add your first supplier to get started</value>
+  </data>
+  <data name="SupplierName" xml:space="preserve">
+    <value>Supplier Name</value>
+  </data>
+  <data name="ContactName" xml:space="preserve">
+    <value>Contact Name</value>
+  </data>
+  <data name="PaymentTermsDays" xml:space="preserve">
+    <value>Payment Terms (Days)</value>
+  </data>
+  <data name="SupplierActive" xml:space="preserve">
+    <value>Active Supplier</value>
+  </data>
+  <data name="SupplierNotes" xml:space="preserve">
+    <value>Supplier Notes</value>
+  </data>
+  <data name="ErrorLoadingSuppliers" xml:space="preserve">
+    <value>Error loading suppliers</value>
+  </data>
+  <data name="ErrorDeletingSupplier" xml:space="preserve">
+    <value>Error deleting supplier</value>
+  </data>
+  <data name="ErrorCreatingSupplier" xml:space="preserve">
+    <value>Error creating supplier</value>
+  </data>
+  <data name="ErrorUpdatingSupplier" xml:space="preserve">
+    <value>Error updating supplier</value>
+  </data>
+
+  <!-- Purchase Order Management -->
+  <data name="PurchaseOrders" xml:space="preserve">
+    <value>Purchase Orders</value>
+  </data>
+  <data name="PurchaseOrder" xml:space="preserve">
+    <value>Purchase Order</value>
+  </data>
+  <data name="PurchaseOrderListDescription" xml:space="preserve">
+    <value>Manage and track your purchase orders</value>
+  </data>
+  <data name="NewPurchaseOrder" xml:space="preserve">
+    <value>New Purchase Order</value>
+  </data>
+  <data name="EditPurchaseOrder" xml:space="preserve">
+    <value>Edit Purchase Order</value>
+  </data>
+  <data name="OrderNumber" xml:space="preserve">
+    <value>Order Number</value>
+  </data>
+  <data name="ExpectedDate" xml:space="preserve">
+    <value>Expected Delivery Date</value>
+  </data>
+  <data name="PurchaseOrderNotes" xml:space="preserve">
+    <value>Order Notes</value>
+  </data>
+  <data name="AddItem" xml:space="preserve">
+    <value>Add Item</value>
+  </data>
+  <data name="NoPurchaseOrdersFound" xml:space="preserve">
+    <value>No purchase orders found</value>
+  </data>
+  <data name="NoPurchaseOrdersDescription" xml:space="preserve">
+    <value>Create your first purchase order to get started</value>
+  </data>
+  <data name="StatusDraft" xml:space="preserve">
+    <value>Draft</value>
+  </data>
+  <data name="StatusSubmitted" xml:space="preserve">
+    <value>Submitted</value>
+  </data>
+  <data name="StatusApproved" xml:space="preserve">
+    <value>Approved</value>
+  </data>
+  <data name="StatusPartiallyReceived" xml:space="preserve">
+    <value>Partially Received</value>
+  </data>
+  <data name="StatusReceived" xml:space="preserve">
+    <value>Received</value>
+  </data>
+  <data name="StatusCancelled" xml:space="preserve">
+    <value>Cancelled</value>
+  </data>
+  <data name="SubmitOrder" xml:space="preserve">
+    <value>Submit Order</value>
+  </data>
+  <data name="ApproveOrder" xml:space="preserve">
+    <value>Approve Order</value>
+  </data>
+  <data name="CancelOrder" xml:space="preserve">
+    <value>Cancel Order</value>
+  </data>
+  <data name="ReceiveGoods" xml:space="preserve">
+    <value>Receive Goods</value>
+  </data>
+  <data name="ReceiveGoodsTitle" xml:space="preserve">
+    <value>Record Goods Receipt</value>
+  </data>
+  <data name="ReceivedDate" xml:space="preserve">
+    <value>Received Date</value>
+  </data>
+  <data name="QuantityToReceive" xml:space="preserve">
+    <value>Quantity to Receive</value>
+  </data>
+  <data name="OrderedQuantity" xml:space="preserve">
+    <value>Ordered Quantity</value>
+  </data>
+  <data name="AlreadyReceived" xml:space="preserve">
+    <value>Already Received</value>
+  </data>
+  <data name="Remaining" xml:space="preserve">
+    <value>Remaining</value>
+  </data>
+  <data name="RecordReceipt" xml:space="preserve">
+    <value>Record Receipt</value>
+  </data>
+  <data name="GoodsReceivedSuccessfully" xml:space="preserve">
+    <value>Goods received successfully</value>
+  </data>
+  <data name="PurchaseOrderCreatedSuccessfully" xml:space="preserve">
+    <value>Purchase order created successfully</value>
+  </data>
+  <data name="PurchaseOrderUpdatedSuccessfully" xml:space="preserve">
+    <value>Purchase order updated successfully</value>
+  </data>
+  <data name="PurchaseOrderSubmittedSuccessfully" xml:space="preserve">
+    <value>Purchase order submitted to supplier</value>
+  </data>
+  <data name="PurchaseOrderApprovedSuccessfully" xml:space="preserve">
+    <value>Purchase order approved successfully</value>
+  </data>
+  <data name="PurchaseOrderCancelledSuccessfully" xml:space="preserve">
+    <value>Purchase order cancelled successfully</value>
+  </data>
+  <data name="ErrorLoadingPurchaseOrders" xml:space="preserve">
+    <value>Error loading purchase orders</value>
+  </data>
+  <data name="ErrorLoadingPurchaseOrder" xml:space="preserve">
+    <value>Error loading purchase order</value>
+  </data>
+  <data name="ErrorCreatingPurchaseOrder" xml:space="preserve">
+    <value>Error creating purchase order</value>
+  </data>
+  <data name="ErrorUpdatingPurchaseOrder" xml:space="preserve">
+    <value>Error updating purchase order</value>
+  </data>
+  <data name="IVA" xml:space="preserve">
+    <value>IVA (16%)</value>
+  </data>
+  <data name="LineItems" xml:space="preserve">
+    <value>Line Items</value>
+  </data>
+  <data name="ReceiveGoodsNotes" xml:space="preserve">
+    <value>Receipt Notes</value>
+  </data>
+  <data name="SelectSupplier" xml:space="preserve">
+    <value>Select Supplier</value>
+  </data>
+  <data name="SelectWarehouse" xml:space="preserve">
+    <value>Select Warehouse</value>
+  </data>
+  <data name="SearchProductsPlaceholder" xml:space="preserve">
+    <value>Search products...</value>
+  </data>
+  <data name="SupplierNameRequired" xml:space="preserve">
+    <value>Supplier name is required</value>
+  </data>
+  <data name="AtLeastOneItem" xml:space="preserve">
+    <value>At least one item is required</value>
+  </data>
 </root>

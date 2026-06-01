@@ -1,0 +1,229 @@
+@page "/proveedores/nueva"
+@page "/proveedores/{Id:guid}/editar"
+@using Corelio.BlazorApp.Models.Suppliers
+@using Corelio.BlazorApp.Resources
+@using Corelio.BlazorApp.Services.Suppliers
+@using Microsoft.Extensions.Localization
+@inject ISupplierHttpService SupplierService
+@inject IStringLocalizer<SharedResource> L
+@inject ISnackbar Snackbar
+@inject NavigationManager Nav
+
+<PageTitle>@(Id.HasValue ? L["EditSupplier"] : L["NewSupplier"]) - Corelio</PageTitle>
+
+<MudContainer MaxWidth="MaxWidth.Medium" Class="mt-4">
+    <MudStack Row="true" AlignItems="AlignItems.Center" Class="mb-4">
+        <MudIconButton Icon="@Icons.Material.Rounded.ArrowBack" OnClick="@(() => Nav.NavigateTo("/proveedores"))" />
+        <div>
+            <MudText Typo="Typo.h5">@(Id.HasValue ? L["EditSupplier"] : L["NewSupplier"])</MudText>
+        </div>
+    </MudStack>
+
+    @if (_loading)
+    {
+        <MudProgressLinear Indeterminate="true" Color="Color.Primary" />
+    }
+    else
+    {
+        <MudPaper Elevation="1" Class="pa-6">
+            <MudForm @ref="_form" Model="_model" @bind-IsValid="_isValid">
+
+                <MudText Typo="Typo.subtitle1" Class="mb-3">Información del Proveedor</MudText>
+
+                <MudGrid>
+                    <MudItem xs="12">
+                        <MudTextField @bind-Value="_model.Name"
+                                      Label="@L["SupplierName"]"
+                                      Required="true"
+                                      RequiredError="@L["SupplierNameRequired"]"
+                                      MaxLength="200" />
+                    </MudItem>
+                    <MudItem xs="12" sm="6">
+                        <MudTextField @bind-Value="_model.Rfc"
+                                      Label="@L["RFC"]"
+                                      MaxLength="13"
+                                      HelperText="Ej: XAXX010101000" />
+                    </MudItem>
+                    <MudItem xs="12" sm="6">
+                        <MudTextField @bind-Value="_model.TaxRegime"
+                                      Label="@L["TaxRegime"]"
+                                      MaxLength="10"
+                                      HelperText="Ej: 601, 612, 626" />
+                    </MudItem>
+                </MudGrid>
+
+                <MudDivider Class="my-4" />
+                <MudText Typo="Typo.subtitle2" Class="mb-3">Datos de Contacto</MudText>
+
+                <MudGrid>
+                    <MudItem xs="12" sm="6">
+                        <MudTextField @bind-Value="_model.ContactName"
+                                      Label="@L["ContactName"]"
+                                      MaxLength="150" />
+                    </MudItem>
+                    <MudItem xs="12" sm="6">
+                        <MudTextField @bind-Value="_model.Email"
+                                      Label="@L["Email"]"
+                                      InputType="InputType.Email"
+                                      MaxLength="200" />
+                    </MudItem>
+                    <MudItem xs="12" sm="6">
+                        <MudTextField @bind-Value="_model.Phone"
+                                      Label="@L["Phone"]"
+                                      MaxLength="20" />
+                    </MudItem>
+                    <MudItem xs="12" sm="6">
+                        <MudNumericField @bind-Value="_model.PaymentTermsDays"
+                                         Label="@L["PaymentTermsDays"]"
+                                         Min="0" Max="365"
+                                         Margin="Margin.Dense" />
+                    </MudItem>
+                </MudGrid>
+
+                <MudDivider Class="my-4" />
+                <MudText Typo="Typo.subtitle2" Class="mb-3">Dirección</MudText>
+
+                <MudGrid>
+                    <MudItem xs="12">
+                        <MudTextField @bind-Value="_model.Street"
+                                      Label="Calle y Número"
+                                      MaxLength="200" />
+                    </MudItem>
+                    <MudItem xs="12" sm="5">
+                        <MudTextField @bind-Value="_model.City"
+                                      Label="Ciudad"
+                                      MaxLength="100" />
+                    </MudItem>
+                    <MudItem xs="12" sm="4">
+                        <MudTextField @bind-Value="_model.State"
+                                      Label="Estado"
+                                      MaxLength="100" />
+                    </MudItem>
+                    <MudItem xs="12" sm="3">
+                        <MudTextField @bind-Value="_model.ZipCode"
+                                      Label="C.P."
+                                      MaxLength="10" />
+                    </MudItem>
+                </MudGrid>
+
+                <MudDivider Class="my-4" />
+
+                <MudTextField @bind-Value="_model.Notes"
+                              Label="@L["SupplierNotes"]"
+                              Lines="3"
+                              MaxLength="500"
+                              Class="mb-3" />
+
+                @if (Id.HasValue)
+                {
+                    <MudSwitch @bind-Value="_model.IsActive"
+                               Label="@L["SupplierActive"]"
+                               Color="Color.Primary"
+                               Class="mb-3" />
+                }
+
+                <MudStack Row="true" Justify="Justify.FlexEnd" Class="mt-6" Spacing="2">
+                    <MudButton Variant="Variant.Text"
+                               OnClick="@(() => Nav.NavigateTo("/proveedores"))">
+                        @L["Cancel"]
+                    </MudButton>
+                    <MudButton Variant="Variant.Filled" Color="Color.Primary"
+                               OnClick="SaveSupplier" Disabled="_saving">
+                        @if (_saving)
+                        {
+                            <MudProgressCircular Size="Size.Small" Indeterminate="true" Class="mr-2" />
+                            @L["Saving"]
+                        }
+                        else
+                        {
+                            @L["Save"]
+                        }
+                    </MudButton>
+                </MudStack>
+            </MudForm>
+        </MudPaper>
+    }
+</MudContainer>
+
+@code {
+    [Parameter] public Guid? Id { get; set; }
+
+    private MudForm _form = null!;
+    private SupplierFormModel _model = new();
+    private bool _loading;
+    private bool _saving;
+    private bool _isValid;
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (Id.HasValue)
+        {
+            _loading = true;
+            var result = await SupplierService.GetSupplierByIdAsync(Id.Value);
+            if (result.IsSuccess && result.Value is not null)
+            {
+                var s = result.Value;
+                _model = new SupplierFormModel
+                {
+                    Name = s.Name,
+                    Rfc = s.Rfc,
+                    ContactName = s.ContactName,
+                    Email = s.Email,
+                    Phone = s.Phone,
+                    Street = s.Street,
+                    City = s.City,
+                    State = s.State,
+                    ZipCode = s.ZipCode,
+                    PaymentTermsDays = s.PaymentTermsDays,
+                    TaxRegime = s.TaxRegime,
+                    Notes = s.Notes,
+                    IsActive = s.IsActive
+                };
+            }
+            else
+            {
+                Snackbar.Add(result.Error ?? L["ErrorLoadingSuppliers"], Severity.Error);
+                Nav.NavigateTo("/proveedores");
+            }
+
+            _loading = false;
+        }
+    }
+
+    private async Task SaveSupplier()
+    {
+        await _form.Validate();
+        if (!_isValid) { return; }
+
+        _saving = true;
+
+        if (Id.HasValue)
+        {
+            var result = await SupplierService.UpdateSupplierAsync(Id.Value, _model);
+            if (result.IsSuccess)
+            {
+                Snackbar.Add(L["SupplierUpdatedSuccessfully"], Severity.Success);
+                Nav.NavigateTo("/proveedores");
+            }
+            else
+            {
+                Snackbar.Add(result.Error ?? L["ErrorUpdatingSupplier"], Severity.Error);
+            }
+        }
+        else
+        {
+            var result = await SupplierService.CreateSupplierAsync(_model);
+            if (result.IsSuccess)
+            {
+                Snackbar.Add(L["SupplierCreatedSuccessfully"], Severity.Success);
+                Nav.NavigateTo("/proveedores");
+            }
+            else
+            {
+                Snackbar.Add(result.Error ?? L["ErrorCreatingSupplier"], Severity.Error);
+            }
+        }
+
+        _saving = false;
+    }
+}
