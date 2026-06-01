@@ -61,7 +61,7 @@
 ## User Story 12.3: Goods Receipt & Inventory Integration
 **As a warehouse manager, I want to record goods received against a purchase order so that inventory levels are automatically updated when stock arrives.**
 
-**Status:** 🟡 In Progress
+**Status:** 🟢 Complete
 
 | Task ID | Task | Branch | Status | Notes |
 |---------|------|--------|--------|-------|
@@ -70,17 +70,17 @@
 | TASK-12.3.3 | `GetGoodsReceiptsQuery` (list by PO or by date range) + `GetGoodsReceiptByIdQuery` | feature/US-12.3-TASK-1-goods-receipt-domain | 🟢 | Include receipt items + product names + warehouse names |
 | TASK-12.3.4 | EF Core config (`GoodsReceiptConfiguration.cs`, `GoodsReceiptItemConfiguration.cs`) + migration `AddGoodsReceiptSchema` | feature/US-12.3-TASK-4-ef-config-migration | 🟢 | `goods_receipts` + `goods_receipt_items` tables; GoodsReceiptRepository; DbContext + DI updated |
 | TASK-12.3.5 | `GoodsReceiptEndpoints.cs` — POST receive (creates receipt + updates inventory), GET receipts by PO, GET receipt by ID | feature/US-12.3-TASK-4-ef-config-migration | 🟢 | 3 endpoints at /api/v1/goods-receipts; receipts.view + receipts.create permissions; AddGoodsReceiptPermissionsSeed migration |
-| TASK-12.3.6 | Unit tests for `ReceiveGoodsCommand` (full receipt, partial receipt, over-receipt rejected, wrong PO status rejected) | — | 🔴 | — |
+| TASK-12.3.6 | Unit tests for `ReceiveGoodsCommand` (full receipt, partial receipt, over-receipt rejected, wrong PO status rejected) | feature/US-12.3-TASK-6-unit-tests | 🟢 | 9 tests: full→Received, partial→PartiallyReceived, 2nd-partial completes, over-receipt, Draft+Cancelled rejected, PO not found, new/existing InventoryItem |
 
 **Acceptance Criteria:**
-- [ ] Receiving goods against an Approved PO updates `InventoryItem.Quantity` in the specified warehouse
-- [ ] Partial receipt (some items received, not all) → PO status = `PartiallyReceived`
-- [ ] Full receipt (all items received) → PO status = `Received`
-- [ ] Over-receiving (more than ordered) returns validation error
-- [ ] Receipt against non-Approved PO returns error
-- [ ] Inventory update and receipt creation are atomic (single transaction)
-- [ ] `receipts.create`, `receipts.view` permissions seeded
-- [ ] Unit tests for all edge cases passing
+- [x] Receiving goods against an Approved PO updates `InventoryItem.Quantity` in the specified warehouse
+- [x] Partial receipt (some items received, not all) → PO status = `PartiallyReceived`
+- [x] Full receipt (all items received) → PO status = `Received`
+- [x] Over-receiving (more than ordered) returns validation error
+- [x] Receipt against non-Approved PO returns error
+- [x] Inventory update and receipt creation are atomic (single transaction)
+- [x] `receipts.create`, `receipts.view` permissions seeded
+- [x] Unit tests for all edge cases passing (9 tests)
 
 ---
 
@@ -118,7 +118,7 @@
 |-------|----------|----|--------|
 | US-12.1: Supplier Management | P1 High | 5 | 🟢 Complete |
 | US-12.2: Purchase Order Backend | P0 Critical | 8 | 🟢 Complete |
-| US-12.3: Goods Receipt & Inventory Integration | P0 Critical | 5 | 🔴 Not Started |
+| US-12.3: Goods Receipt & Inventory Integration | P0 Critical | 5 | 🟢 Complete |
 | US-12.4: Purchase Management UI | P1 High | 8 | 🔴 Not Started |
 | **Total** | | **26** | |
 
