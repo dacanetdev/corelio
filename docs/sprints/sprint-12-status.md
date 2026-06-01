@@ -93,8 +93,8 @@
 |---------|------|--------|--------|-------|
 | TASK-12.4.1 | `ISupplierHttpService` + `SupplierHttpService` in BlazorApp (`Services/Suppliers/`) | feature/US-12.4-TASK-1-2-http-services | 🟢 | SupplierModels.cs (ListModel, Model, FormModel); CRUD calls to /api/v1/suppliers |
 | TASK-12.4.2 | `IPurchaseOrderHttpService` + `PurchaseOrderHttpService` in BlazorApp (`Services/PurchaseOrders/`) | feature/US-12.4-TASK-1-2-http-services | 🟢 | PurchaseOrderModels.cs; Submit/Approve/Cancel/ReceiveGoods; ReceiveGoods posts to /api/v1/goods-receipts |
-| TASK-12.4.3 | `SupplierList.razor` at `/proveedores` — MudDataGrid with search, add/edit/delete actions | — | 🔴 | Follows `CustomerList.razor` pattern |
-| TASK-12.4.4 | `SupplierForm.razor` component — create/edit supplier modal with RFC validation | — | 🔴 | MudDialog, inline RFC format validation |
+| TASK-12.4.3 | `SupplierList.razor` at `/proveedores` — MudDataGrid with search, add/edit/delete actions | feature/US-12.4-TASK-3-4-supplier-pages | 🟢 | MudTable + search debounce + pagination + inline delete dialog; follows CustomerList pattern |
+| TASK-12.4.4 | `SupplierForm.razor` component — create/edit supplier modal with RFC validation | feature/US-12.4-TASK-3-4-supplier-pages | 🟢 | Pages at /proveedores/nueva + /proveedores/{Id}/editar; all fields + IsActive toggle on edit |
 | TASK-12.4.5 | `PurchaseOrderList.razor` at `/compras` — MudDataGrid with status filter chips, date range filter | — | 🔴 | Status badges with color coding (Draft=grey, Submitted=blue, Approved=green, etc.) |
 | TASK-12.4.6 | `PurchaseOrderDetail.razor` at `/compras/{id}` — order header + line items grid + action buttons (Submit, Approve, Cancel, Receive) | — | 🔴 | Action buttons shown/hidden by PO status and user permissions |
 | TASK-12.4.7 | `ReceiveGoodsDialog.razor` — dialog to enter received quantities per line item + warehouse selector | — | 🔴 | Opens from PurchaseOrderDetail; partial receipt supported |

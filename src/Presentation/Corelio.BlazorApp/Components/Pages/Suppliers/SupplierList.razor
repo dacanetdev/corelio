@@ -1,0 +1,203 @@
+@page "/proveedores"
+@using Corelio.BlazorApp.Models.Suppliers
+@using Corelio.BlazorApp.Resources
+@using Corelio.BlazorApp.Services.Suppliers
+@using Microsoft.Extensions.Localization
+@using MudBlazor
+@inject ISupplierHttpService SupplierService
+@inject IStringLocalizer<SharedResource> L
+@inject ISnackbar Snackbar
+@inject NavigationManager Nav
+
+<PageTitle>@L["Suppliers"] - Corelio</PageTitle>
+
+<MudContainer MaxWidth="MaxWidth.ExtraLarge" Class="mt-4">
+    <MudStack Row="true" AlignItems="AlignItems.Center" Justify="Justify.SpaceBetween" Class="mb-4">
+        <div>
+            <MudText Typo="Typo.h5" GutterBottom="false">@L["Suppliers"]</MudText>
+            <MudText Typo="Typo.body2" Color="Color.Secondary">@L["SupplierListDescription"]</MudText>
+        </div>
+        <MudButton Variant="Variant.Filled" Color="Color.Primary"
+                   StartIcon="@Icons.Material.Rounded.Add"
+                   Href="/proveedores/nueva">
+            @L["AddSupplier"]
+        </MudButton>
+    </MudStack>
+
+    <MudPaper Elevation="1" Class="pa-4 mb-4">
+        <MudTextField @bind-Value="_searchTerm"
+                      Placeholder="@L["SearchSuppliers"]"
+                      Adornment="Adornment.Start"
+                      AdornmentIcon="@Icons.Material.Rounded.Search"
+                      Immediate="true"
+                      DebounceInterval="300"
+                      OnDebounceIntervalElapsed="LoadSuppliers"
+                      Class="mb-0" />
+    </MudPaper>
+
+    @if (_loading)
+    {
+        <MudProgressLinear Indeterminate="true" Color="Color.Primary" Class="mb-4" />
+    }
+    else if (_error is not null)
+    {
+        <MudAlert Severity="Severity.Error" Class="mb-4">@_error</MudAlert>
+    }
+    else if (_suppliers.Count == 0)
+    {
+        <MudPaper Elevation="0" Class="pa-8 text-center">
+            <MudIcon Icon="@Icons.Material.Rounded.LocalShipping" Color="Color.Secondary" Size="Size.Large" />
+            <MudText Typo="Typo.h6" Class="mt-2">@L["NoSuppliersFound"]</MudText>
+            <MudText Color="Color.Secondary">@L["NoSuppliersDescription"]</MudText>
+            <MudButton Variant="Variant.Filled" Color="Color.Primary" Class="mt-4" Href="/proveedores/nueva">
+                @L["AddSupplier"]
+            </MudButton>
+        </MudPaper>
+    }
+    else
+    {
+        <MudTable Items="_suppliers" Hover="true" Breakpoint="Breakpoint.Sm"
+                  Dense="true" Striped="true">
+            <HeaderContent>
+                <MudTh>@L["SupplierName"]</MudTh>
+                <MudTh>@L["RFC"]</MudTh>
+                <MudTh>@L["ContactName"]</MudTh>
+                <MudTh>@L["Email"]</MudTh>
+                <MudTh>@L["Phone"]</MudTh>
+                <MudTh>Estado</MudTh>
+                <MudTh>@L["Actions"]</MudTh>
+            </HeaderContent>
+            <RowTemplate>
+                <MudTd DataLabel="@L["SupplierName"]">
+                    <MudText Typo="Typo.body2" Class="fw-medium">@context.Name</MudText>
+                </MudTd>
+                <MudTd DataLabel="@L["RFC"]">@(context.Rfc ?? "—")</MudTd>
+                <MudTd DataLabel="@L["ContactName"]">@(context.ContactName ?? "—")</MudTd>
+                <MudTd DataLabel="@L["Email"]">@(context.Email ?? "—")</MudTd>
+                <MudTd DataLabel="@L["Phone"]">@(context.Phone ?? "—")</MudTd>
+                <MudTd DataLabel="Estado">
+                    <MudChip T="string" Size="Size.Small"
+                             Color="@(context.IsActive ? Color.Success : Color.Default)">
+                        @(context.IsActive ? "Activo" : "Inactivo")
+                    </MudChip>
+                </MudTd>
+                <MudTd DataLabel="@L["Actions"]">
+                    <MudIconButton Icon="@Icons.Material.Rounded.Edit" Size="Size.Small"
+                                   Href="@($"/proveedores/{context.Id}/editar")" />
+                    <MudIconButton Icon="@Icons.Material.Rounded.Delete" Size="Size.Small"
+                                   Color="Color.Error"
+                                   OnClick="@(() => ConfirmDelete(context))" />
+                </MudTd>
+            </RowTemplate>
+        </MudTable>
+
+        <MudStack Row="true" AlignItems="AlignItems.Center" Justify="Justify.SpaceBetween" Class="mt-4">
+            <MudText Typo="Typo.body2" Color="Color.Secondary">
+                @L["ShowingResults"] @((_currentPage - 1) * _pageSize + 1)–@Math.Min(_currentPage * _pageSize, _totalCount) @L["Of"] @_totalCount
+            </MudText>
+            <MudPagination Count="_totalPages" Selected="_currentPage"
+                           SelectedChanged="OnPageChanged" />
+        </MudStack>
+    }
+</MudContainer>
+
+@* Delete Confirmation Dialog *@
+<MudDialog @bind-Visible="_showDeleteDialog">
+    <TitleContent>@L["DeleteSupplier"]</TitleContent>
+    <DialogContent>
+        <MudText>@L["DeleteSupplierConfirmation"]</MudText>
+        @if (_supplierToDelete is not null)
+        {
+            <MudText Class="mt-2"><strong>@_supplierToDelete.Name</strong></MudText>
+        }
+    </DialogContent>
+    <DialogActions>
+        <MudButton OnClick="@(() => _showDeleteDialog = false)">@L["Cancel"]</MudButton>
+        <MudButton Color="Color.Error" Variant="Variant.Filled"
+                   OnClick="DeleteSupplier" Disabled="_deleting">
+            @if (_deleting)
+            {
+                <MudProgressCircular Size="Size.Small" Indeterminate="true" />
+            }
+            else
+            {
+                @L["Delete"]
+            }
+        </MudButton>
+    </DialogActions>
+</MudDialog>
+
+@code {
+    private List<SupplierListModel> _suppliers = [];
+    private bool _loading = true;
+    private string? _error;
+    private string _searchTerm = string.Empty;
+    private int _currentPage = 1;
+    private int _pageSize = 20;
+    private int _totalCount;
+    private int _totalPages = 1;
+
+    private bool _showDeleteDialog;
+    private bool _deleting;
+    private SupplierListModel? _supplierToDelete;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadSuppliers();
+    }
+
+    private async Task LoadSuppliers()
+    {
+        _loading = true;
+        _error = null;
+
+        var result = await SupplierService.GetSuppliersAsync(_currentPage, _pageSize, _searchTerm);
+
+        if (result.IsSuccess && result.Value is not null)
+        {
+            _suppliers = result.Value.Items;
+            _totalCount = result.Value.TotalCount;
+            _totalPages = result.Value.TotalPages;
+        }
+        else
+        {
+            _error = result.Error ?? L["ErrorLoadingSuppliers"];
+        }
+
+        _loading = false;
+    }
+
+    private async Task OnPageChanged(int page)
+    {
+        _currentPage = page;
+        await LoadSuppliers();
+    }
+
+    private void ConfirmDelete(SupplierListModel supplier)
+    {
+        _supplierToDelete = supplier;
+        _showDeleteDialog = true;
+    }
+
+    private async Task DeleteSupplier()
+    {
+        if (_supplierToDelete is null) { return; }
+
+        _deleting = true;
+        var result = await SupplierService.DeleteSupplierAsync(_supplierToDelete.Id);
+
+        if (result.IsSuccess)
+        {
+            Snackbar.Add(L["SupplierDeletedSuccessfully"], Severity.Success);
+            _showDeleteDialog = false;
+            _supplierToDelete = null;
+            await LoadSuppliers();
+        }
+        else
+        {
+            Snackbar.Add(result.Error ?? L["ErrorDeletingSupplier"], Severity.Error);
+        }
+
+        _deleting = false;
+    }
+}

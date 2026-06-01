@@ -1588,4 +1588,215 @@
   <data name="ErrorLoading" xml:space="preserve">
     <value>Error al cargar los datos</value>
   </data>
+
+  <!-- Supplier Management -->
+  <data name="Suppliers" xml:space="preserve">
+    <value>Proveedores</value>
+  </data>
+  <data name="Supplier" xml:space="preserve">
+    <value>Proveedor</value>
+  </data>
+  <data name="SupplierListDescription" xml:space="preserve">
+    <value>Administra los proveedores de tu ferretería</value>
+  </data>
+  <data name="AddSupplier" xml:space="preserve">
+    <value>Agregar Proveedor</value>
+  </data>
+  <data name="EditSupplier" xml:space="preserve">
+    <value>Editar Proveedor</value>
+  </data>
+  <data name="NewSupplier" xml:space="preserve">
+    <value>Nuevo Proveedor</value>
+  </data>
+  <data name="DeleteSupplier" xml:space="preserve">
+    <value>Eliminar Proveedor</value>
+  </data>
+  <data name="DeleteSupplierConfirmation" xml:space="preserve">
+    <value>¿Estás seguro de que deseas eliminar este proveedor?</value>
+  </data>
+  <data name="SupplierCreatedSuccessfully" xml:space="preserve">
+    <value>Proveedor creado exitosamente</value>
+  </data>
+  <data name="SupplierUpdatedSuccessfully" xml:space="preserve">
+    <value>Proveedor actualizado exitosamente</value>
+  </data>
+  <data name="SupplierDeletedSuccessfully" xml:space="preserve">
+    <value>Proveedor eliminado exitosamente</value>
+  </data>
+  <data name="SearchSuppliers" xml:space="preserve">
+    <value>Buscar proveedores...</value>
+  </data>
+  <data name="NoSuppliersFound" xml:space="preserve">
+    <value>No se encontraron proveedores</value>
+  </data>
+  <data name="NoSuppliersDescription" xml:space="preserve">
+    <value>Agrega tu primer proveedor para comenzar</value>
+  </data>
+  <data name="SupplierName" xml:space="preserve">
+    <value>Nombre del Proveedor</value>
+  </data>
+  <data name="ContactName" xml:space="preserve">
+    <value>Nombre de Contacto</value>
+  </data>
+  <data name="PaymentTermsDays" xml:space="preserve">
+    <value>Días de Crédito</value>
+  </data>
+  <data name="SupplierActive" xml:space="preserve">
+    <value>Proveedor Activo</value>
+  </data>
+  <data name="SupplierNotes" xml:space="preserve">
+    <value>Notas del Proveedor</value>
+  </data>
+  <data name="ErrorLoadingSuppliers" xml:space="preserve">
+    <value>Error al cargar los proveedores</value>
+  </data>
+  <data name="ErrorDeletingSupplier" xml:space="preserve">
+    <value>Error al eliminar el proveedor</value>
+  </data>
+  <data name="ErrorCreatingSupplier" xml:space="preserve">
+    <value>Error al crear el proveedor</value>
+  </data>
+  <data name="ErrorUpdatingSupplier" xml:space="preserve">
+    <value>Error al actualizar el proveedor</value>
+  </data>
+
+  <!-- Purchase Order Management -->
+  <data name="PurchaseOrders" xml:space="preserve">
+    <value>Órdenes de Compra</value>
+  </data>
+  <data name="PurchaseOrder" xml:space="preserve">
+    <value>Orden de Compra</value>
+  </data>
+  <data name="PurchaseOrderListDescription" xml:space="preserve">
+    <value>Administra y da seguimiento a tus órdenes de compra</value>
+  </data>
+  <data name="NewPurchaseOrder" xml:space="preserve">
+    <value>Nueva Orden de Compra</value>
+  </data>
+  <data name="EditPurchaseOrder" xml:space="preserve">
+    <value>Editar Orden de Compra</value>
+  </data>
+  <data name="OrderNumber" xml:space="preserve">
+    <value>Número de Orden</value>
+  </data>
+  <data name="ExpectedDate" xml:space="preserve">
+    <value>Fecha Esperada de Entrega</value>
+  </data>
+  <data name="PurchaseOrderNotes" xml:space="preserve">
+    <value>Notas de la Orden</value>
+  </data>
+  <data name="AddItem" xml:space="preserve">
+    <value>Agregar Artículo</value>
+  </data>
+  <data name="NoPurchaseOrdersFound" xml:space="preserve">
+    <value>No se encontraron órdenes de compra</value>
+  </data>
+  <data name="NoPurchaseOrdersDescription" xml:space="preserve">
+    <value>Crea tu primera orden de compra para comenzar</value>
+  </data>
+  <data name="StatusDraft" xml:space="preserve">
+    <value>Borrador</value>
+  </data>
+  <data name="StatusSubmitted" xml:space="preserve">
+    <value>Enviada</value>
+  </data>
+  <data name="StatusApproved" xml:space="preserve">
+    <value>Aprobada</value>
+  </data>
+  <data name="StatusPartiallyReceived" xml:space="preserve">
+    <value>Parcialmente Recibida</value>
+  </data>
+  <data name="StatusReceived" xml:space="preserve">
+    <value>Recibida</value>
+  </data>
+  <data name="StatusCancelled" xml:space="preserve">
+    <value>Cancelada</value>
+  </data>
+  <data name="SubmitOrder" xml:space="preserve">
+    <value>Enviar Orden</value>
+  </data>
+  <data name="ApproveOrder" xml:space="preserve">
+    <value>Aprobar Orden</value>
+  </data>
+  <data name="CancelOrder" xml:space="preserve">
+    <value>Cancelar Orden</value>
+  </data>
+  <data name="ReceiveGoods" xml:space="preserve">
+    <value>Recibir Mercancía</value>
+  </data>
+  <data name="ReceiveGoodsTitle" xml:space="preserve">
+    <value>Registrar Recepción de Mercancía</value>
+  </data>
+  <data name="ReceivedDate" xml:space="preserve">
+    <value>Fecha de Recepción</value>
+  </data>
+  <data name="QuantityToReceive" xml:space="preserve">
+    <value>Cantidad a Recibir</value>
+  </data>
+  <data name="OrderedQuantity" xml:space="preserve">
+    <value>Cantidad Ordenada</value>
+  </data>
+  <data name="AlreadyReceived" xml:space="preserve">
+    <value>Ya Recibido</value>
+  </data>
+  <data name="Remaining" xml:space="preserve">
+    <value>Pendiente</value>
+  </data>
+  <data name="RecordReceipt" xml:space="preserve">
+    <value>Registrar Recepción</value>
+  </data>
+  <data name="GoodsReceivedSuccessfully" xml:space="preserve">
+    <value>Mercancía recibida exitosamente</value>
+  </data>
+  <data name="PurchaseOrderCreatedSuccessfully" xml:space="preserve">
+    <value>Orden de compra creada exitosamente</value>
+  </data>
+  <data name="PurchaseOrderUpdatedSuccessfully" xml:space="preserve">
+    <value>Orden de compra actualizada exitosamente</value>
+  </data>
+  <data name="PurchaseOrderSubmittedSuccessfully" xml:space="preserve">
+    <value>Orden enviada al proveedor</value>
+  </data>
+  <data name="PurchaseOrderApprovedSuccessfully" xml:space="preserve">
+    <value>Orden aprobada exitosamente</value>
+  </data>
+  <data name="PurchaseOrderCancelledSuccessfully" xml:space="preserve">
+    <value>Orden cancelada exitosamente</value>
+  </data>
+  <data name="ErrorLoadingPurchaseOrders" xml:space="preserve">
+    <value>Error al cargar las órdenes de compra</value>
+  </data>
+  <data name="ErrorLoadingPurchaseOrder" xml:space="preserve">
+    <value>Error al cargar la orden de compra</value>
+  </data>
+  <data name="ErrorCreatingPurchaseOrder" xml:space="preserve">
+    <value>Error al crear la orden de compra</value>
+  </data>
+  <data name="ErrorUpdatingPurchaseOrder" xml:space="preserve">
+    <value>Error al actualizar la orden de compra</value>
+  </data>
+  <data name="IVA" xml:space="preserve">
+    <value>IVA (16%)</value>
+  </data>
+  <data name="LineItems" xml:space="preserve">
+    <value>Artículos</value>
+  </data>
+  <data name="ReceiveGoodsNotes" xml:space="preserve">
+    <value>Notas de Recepción</value>
+  </data>
+  <data name="SelectSupplier" xml:space="preserve">
+    <value>Seleccionar Proveedor</value>
+  </data>
+  <data name="SelectWarehouse" xml:space="preserve">
+    <value>Seleccionar Almacén</value>
+  </data>
+  <data name="SearchProductsPlaceholder" xml:space="preserve">
+    <value>Buscar productos...</value>
+  </data>
+  <data name="SupplierNameRequired" xml:space="preserve">
+    <value>El nombre del proveedor es requerido</value>
+  </data>
+  <data name="AtLeastOneItem" xml:space="preserve">
+    <value>Debe agregar al menos un artículo</value>
+  </data>
 </root>
