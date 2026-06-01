@@ -91,8 +91,8 @@
 
 | Task ID | Task | Branch | Status | Notes |
 |---------|------|--------|--------|-------|
-| TASK-12.4.1 | `ISupplierHttpService` + `SupplierHttpService` in BlazorApp (`Services/Suppliers/`) | — | 🔴 | Follows pattern of `ICfdiHttpService`; JWT bearer injected via `HttpClient` |
-| TASK-12.4.2 | `IPurchaseOrderHttpService` + `PurchaseOrderHttpService` in BlazorApp (`Services/PurchaseOrders/`) | — | 🔴 | Includes `SubmitAsync`, `ApproveAsync`, `CancelAsync`, `ReceiveGoodsAsync` actions |
+| TASK-12.4.1 | `ISupplierHttpService` + `SupplierHttpService` in BlazorApp (`Services/Suppliers/`) | feature/US-12.4-TASK-1-2-http-services | 🟢 | SupplierModels.cs (ListModel, Model, FormModel); CRUD calls to /api/v1/suppliers |
+| TASK-12.4.2 | `IPurchaseOrderHttpService` + `PurchaseOrderHttpService` in BlazorApp (`Services/PurchaseOrders/`) | feature/US-12.4-TASK-1-2-http-services | 🟢 | PurchaseOrderModels.cs; Submit/Approve/Cancel/ReceiveGoods; ReceiveGoods posts to /api/v1/goods-receipts |
 | TASK-12.4.3 | `SupplierList.razor` at `/proveedores` — MudDataGrid with search, add/edit/delete actions | — | 🔴 | Follows `CustomerList.razor` pattern |
 | TASK-12.4.4 | `SupplierForm.razor` component — create/edit supplier modal with RFC validation | — | 🔴 | MudDialog, inline RFC format validation |
 | TASK-12.4.5 | `PurchaseOrderList.razor` at `/compras` — MudDataGrid with status filter chips, date range filter | — | 🔴 | Status badges with color coding (Draft=grey, Submitted=blue, Approved=green, etc.) |

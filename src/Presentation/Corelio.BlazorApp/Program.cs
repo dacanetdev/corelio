@@ -12,6 +12,8 @@ using Corelio.BlazorApp.Services.Inventory;
 using Corelio.BlazorApp.Services.Cfdi;
 using Corelio.BlazorApp.Services.Pricing;
 using Corelio.BlazorApp.Services.Products;
+using Corelio.BlazorApp.Services.Suppliers;
+using Corelio.BlazorApp.Services.PurchaseOrders;
 using Corelio.BlazorApp.Services.Theming;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Localization;
@@ -120,6 +122,12 @@ builder.Services.AddScoped<IInventoryService, InventoryService>();
 
 // Add CFDI service
 builder.Services.AddScoped<ICfdiHttpService, CfdiHttpService>();
+
+// Add Supplier service
+builder.Services.AddScoped<ISupplierHttpService, SupplierHttpService>();
+
+// Add Purchase Order service
+builder.Services.AddScoped<IPurchaseOrderHttpService, PurchaseOrderHttpService>();
 
 // Add Theme services
 builder.Services.AddScoped<IDynamicThemeService, DynamicThemeService>();
