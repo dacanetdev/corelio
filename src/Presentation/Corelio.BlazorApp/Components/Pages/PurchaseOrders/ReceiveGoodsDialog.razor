@@ -1,0 +1,152 @@
+@using Corelio.BlazorApp.Models.PurchaseOrders
+@using Corelio.BlazorApp.Models.Inventory
+@using Corelio.BlazorApp.Resources
+@using Corelio.BlazorApp.Services.PurchaseOrders
+@using Microsoft.Extensions.Localization
+@using MudBlazor
+@inject IPurchaseOrderHttpService PurchaseOrderService
+@inject IStringLocalizer<SharedResource> L
+@inject ISnackbar Snackbar
+
+<MudDialog @bind-Visible="Visible" Options="_dialogOptions">
+    <TitleContent>@L["ReceiveGoodsTitle"]</TitleContent>
+    <DialogContent>
+        <MudGrid Class="mb-4">
+            <MudItem xs="12" sm="6">
+                <MudSelect T="Guid" @bind-Value="_form.WarehouseId"
+                           Label="@L["SelectWarehouse"]"
+                           Required="true"
+                           RequiredError="@L["Required"]">
+                    @foreach (var wh in Warehouses)
+                    {
+                        <MudSelectItem T="Guid" Value="wh.Id">@wh.Name</MudSelectItem>
+                    }
+                </MudSelect>
+            </MudItem>
+            <MudItem xs="12" sm="6">
+                <MudDatePicker @bind-Date="_receivedDate"
+                               Label="@L["ReceivedDate"]"
+                               DateFormat="dd/MM/yyyy"
+                               Culture="@(new System.Globalization.CultureInfo("es-MX"))" />
+            </MudItem>
+            <MudItem xs="12">
+                <MudTextField @bind-Value="_form.Notes"
+                              Label="@L["ReceiveGoodsNotes"]"
+                              Lines="2"
+                              MaxLength="500" />
+            </MudItem>
+        </MudGrid>
+
+        <MudText Typo="Typo.subtitle2" Class="mb-2">@L["LineItems"]</MudText>
+        <MudTable Items="_form.Items" Dense="true" Elevation="0">
+            <HeaderContent>
+                <MudTh>Producto</MudTh>
+                <MudTh Style="width:100px">@L["OrderedQuantity"]</MudTh>
+                <MudTh Style="width:100px">@L["AlreadyReceived"]</MudTh>
+                <MudTh Style="width:100px">@L["Remaining"]</MudTh>
+                <MudTh Style="width:130px">@L["QuantityToReceive"]</MudTh>
+            </HeaderContent>
+            <RowTemplate>
+                <MudTd DataLabel="Producto">@context.ProductName</MudTd>
+                <MudTd DataLabel="@L["OrderedQuantity"]">@context.OrderedQuantity.ToString("G")</MudTd>
+                <MudTd DataLabel="@L["AlreadyReceived"]">@context.AlreadyReceived.ToString("G")</MudTd>
+                <MudTd DataLabel="@L["Remaining"]">@context.RemainingQuantity.ToString("G")</MudTd>
+                <MudTd DataLabel="@L["QuantityToReceive"]">
+                    <MudNumericField @bind-Value="context.QuantityToReceive"
+                                     Min="0m"
+                                     Max="context.RemainingQuantity"
+                                     Step="1m"
+                                     Margin="Margin.Dense"
+                                     HideSpinButtons="true"
+                                     Disabled="context.RemainingQuantity <= 0" />
+                </MudTd>
+            </RowTemplate>
+        </MudTable>
+    </DialogContent>
+    <DialogActions>
+        <MudButton OnClick="Close" Disabled="_submitting">@L["Cancel"]</MudButton>
+        <MudButton Color="Color.Primary" Variant="Variant.Filled"
+                   OnClick="Submit" Disabled="_submitting || !CanSubmit">
+            @if (_submitting)
+            {
+                <MudProgressCircular Size="Size.Small" Indeterminate="true" Class="mr-2" />
+                @L["Saving"]
+            }
+            else
+            {
+                @L["RecordReceipt"]
+            }
+        </MudButton>
+    </DialogActions>
+</MudDialog>
+
+@code {
+    [Parameter, EditorRequired] public PurchaseOrderModel Order { get; set; } = null!;
+    [Parameter, EditorRequired] public List<WarehouseModel> Warehouses { get; set; } = [];
+    [Parameter] public bool Visible { get; set; }
+    [Parameter] public EventCallback<bool> VisibleChanged { get; set; }
+    [Parameter] public EventCallback OnReceived { get; set; }
+
+    private ReceiveGoodsFormModel _form = new();
+    private DateTime? _receivedDate = DateTime.Today;
+    private bool _submitting;
+
+    private static readonly DialogOptions _dialogOptions = new()
+    {
+        MaxWidth = MaxWidth.Large,
+        FullWidth = true,
+        CloseOnEscapeKey = true
+    };
+
+    private bool CanSubmit =>
+        _form.WarehouseId != Guid.Empty &&
+        _form.Items.Any(i => i.QuantityToReceive > 0);
+
+    protected override void OnParametersSet()
+    {
+        if (_form.Items.Count == 0 && Order is not null)
+        {
+            _form.Items = Order.Items
+                .Where(i => i.Quantity - i.ReceivedQuantity > 0)
+                .Select(i => new ReceiveGoodsItemFormModel
+                {
+                    PurchaseOrderItemId = i.Id,
+                    ProductName = i.ProductName,
+                    OrderedQuantity = i.Quantity,
+                    AlreadyReceived = i.ReceivedQuantity,
+                    QuantityToReceive = i.Quantity - i.ReceivedQuantity
+                })
+                .ToList();
+
+            if (Warehouses.Count == 1)
+            {
+                _form.WarehouseId = Warehouses[0].Id;
+            }
+        }
+    }
+
+    private async Task Submit()
+    {
+        if (!CanSubmit) { return; }
+
+        _form.ReceivedDate = _receivedDate ?? DateTime.Today;
+        _submitting = true;
+
+        var result = await PurchaseOrderService.ReceiveGoodsAsync(_form, Order.Id);
+        if (result.IsSuccess)
+        {
+            await OnReceived.InvokeAsync();
+        }
+        else
+        {
+            Snackbar.Add(result.Error ?? L["ErrorUpdatingPurchaseOrder"], Severity.Error);
+        }
+
+        _submitting = false;
+    }
+
+    private async Task Close()
+    {
+        await VisibleChanged.InvokeAsync(false);
+    }
+}

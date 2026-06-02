@@ -1,0 +1,192 @@
+@page "/compras"
+@using Corelio.BlazorApp.Models.PurchaseOrders
+@using Corelio.BlazorApp.Resources
+@using Corelio.BlazorApp.Services.PurchaseOrders
+@using Corelio.Domain.Enums
+@using Microsoft.Extensions.Localization
+@using MudBlazor
+@inject IPurchaseOrderHttpService PurchaseOrderService
+@inject IStringLocalizer<SharedResource> L
+@inject ISnackbar Snackbar
+@inject NavigationManager Nav
+
+<PageTitle>@L["PurchaseOrders"] - Corelio</PageTitle>
+
+<MudContainer MaxWidth="MaxWidth.ExtraLarge" Class="mt-4">
+    <MudStack Row="true" AlignItems="AlignItems.Center" Justify="Justify.SpaceBetween" Class="mb-4">
+        <div>
+            <MudText Typo="Typo.h5" GutterBottom="false">@L["PurchaseOrders"]</MudText>
+            <MudText Typo="Typo.body2" Color="Color.Secondary">@L["PurchaseOrderListDescription"]</MudText>
+        </div>
+        <MudButton Variant="Variant.Filled" Color="Color.Primary"
+                   StartIcon="@Icons.Material.Rounded.Add"
+                   Href="/compras/nueva">
+            @L["NewPurchaseOrder"]
+        </MudButton>
+    </MudStack>
+
+    @* Status filter chips *@
+    <MudPaper Elevation="1" Class="pa-3 mb-4">
+        <MudStack Row="true" Spacing="1" Wrap="Wrap.Wrap">
+            <MudChip T="string" Color="@(_statusFilter == null ? Color.Primary : Color.Default)"
+                     Variant="@(_statusFilter == null ? Variant.Filled : Variant.Outlined)"
+                     OnClick="@(() => SetStatusFilter(null))" Size="Size.Small">
+                Todos
+            </MudChip>
+            @foreach (var status in _allStatuses)
+            {
+                <MudChip T="string" Color="@(_statusFilter == status ? GetStatusColor(status) : Color.Default)"
+                         Variant="@(_statusFilter == status ? Variant.Filled : Variant.Outlined)"
+                         OnClick="@(() => SetStatusFilter(status))" Size="Size.Small">
+                    @GetStatusLabel(status)
+                </MudChip>
+            }
+        </MudStack>
+    </MudPaper>
+
+    @if (_loading)
+    {
+        <MudProgressLinear Indeterminate="true" Color="Color.Primary" Class="mb-4" />
+    }
+    else if (_error is not null)
+    {
+        <MudAlert Severity="Severity.Error" Class="mb-4">@_error</MudAlert>
+    }
+    else if (_orders.Count == 0)
+    {
+        <MudPaper Elevation="0" Class="pa-8 text-center">
+            <MudIcon Icon="@Icons.Material.Rounded.ShoppingCart" Color="Color.Secondary" Size="Size.Large" />
+            <MudText Typo="Typo.h6" Class="mt-2">@L["NoPurchaseOrdersFound"]</MudText>
+            <MudText Color="Color.Secondary">@L["NoPurchaseOrdersDescription"]</MudText>
+            <MudButton Variant="Variant.Filled" Color="Color.Primary" Class="mt-4" Href="/compras/nueva">
+                @L["NewPurchaseOrder"]
+            </MudButton>
+        </MudPaper>
+    }
+    else
+    {
+        <MudTable Items="_orders" Hover="true" Breakpoint="Breakpoint.Sm"
+                  Dense="true" Striped="true"
+                  OnRowClick="@((TableRowClickEventArgs<PurchaseOrderListModel> args) => Nav.NavigateTo($"/compras/{args.Item.Id}"))">
+            <HeaderContent>
+                <MudTh>@L["OrderNumber"]</MudTh>
+                <MudTh>@L["Supplier"]</MudTh>
+                <MudTh>Estado</MudTh>
+                <MudTh>@L["ExpectedDate"]</MudTh>
+                <MudTh>Total</MudTh>
+                <MudTh>Fecha</MudTh>
+            </HeaderContent>
+            <RowTemplate>
+                <MudTd DataLabel="@L["OrderNumber"]">
+                    <MudText Typo="Typo.body2" Class="fw-medium">@context.OrderNumber</MudText>
+                </MudTd>
+                <MudTd DataLabel="@L["Supplier"]">@context.SupplierName</MudTd>
+                <MudTd DataLabel="Estado">
+                    <MudChip T="string" Size="Size.Small" Color="@GetStatusColor(context.Status)">
+                        @GetStatusLabel(context.Status)
+                    </MudChip>
+                </MudTd>
+                <MudTd DataLabel="@L["ExpectedDate"]">
+                    @(context.ExpectedDate.HasValue ? context.ExpectedDate.Value.ToString("dd/MM/yyyy") : "—")
+                </MudTd>
+                <MudTd DataLabel="Total">
+                    @context.Total.ToString("C", new System.Globalization.CultureInfo("es-MX"))
+                </MudTd>
+                <MudTd DataLabel="Fecha">
+                    @context.CreatedAt.ToString("dd/MM/yyyy")
+                </MudTd>
+            </RowTemplate>
+        </MudTable>
+
+        <MudStack Row="true" AlignItems="AlignItems.Center" Justify="Justify.SpaceBetween" Class="mt-4">
+            <MudText Typo="Typo.body2" Color="Color.Secondary">
+                @L["ShowingResults"] @((_currentPage - 1) * _pageSize + 1)–@Math.Min(_currentPage * _pageSize, _totalCount) @L["Of"] @_totalCount
+            </MudText>
+            <MudPagination Count="_totalPages" Selected="_currentPage"
+                           SelectedChanged="OnPageChanged" />
+        </MudStack>
+    }
+</MudContainer>
+
+@code {
+    private List<PurchaseOrderListModel> _orders = [];
+    private bool _loading = true;
+    private string? _error;
+    private int _currentPage = 1;
+    private int _pageSize = 20;
+    private int _totalCount;
+    private int _totalPages = 1;
+    private PurchaseOrderStatus? _statusFilter;
+
+    private static readonly PurchaseOrderStatus[] _allStatuses =
+    [
+        PurchaseOrderStatus.Draft,
+        PurchaseOrderStatus.Submitted,
+        PurchaseOrderStatus.Approved,
+        PurchaseOrderStatus.PartiallyReceived,
+        PurchaseOrderStatus.Received,
+        PurchaseOrderStatus.Cancelled
+    ];
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadOrders();
+    }
+
+    private async Task LoadOrders()
+    {
+        _loading = true;
+        _error = null;
+
+        var result = await PurchaseOrderService.GetPurchaseOrdersAsync(
+            _currentPage, _pageSize, _statusFilter);
+
+        if (result.IsSuccess && result.Value is not null)
+        {
+            _orders = result.Value.Items;
+            _totalCount = result.Value.TotalCount;
+            _totalPages = result.Value.TotalPages;
+        }
+        else
+        {
+            _error = result.Error ?? L["ErrorLoadingPurchaseOrders"];
+        }
+
+        _loading = false;
+    }
+
+    private async Task OnPageChanged(int page)
+    {
+        _currentPage = page;
+        await LoadOrders();
+    }
+
+    private async Task SetStatusFilter(PurchaseOrderStatus? status)
+    {
+        _statusFilter = status;
+        _currentPage = 1;
+        await LoadOrders();
+    }
+
+    private string GetStatusLabel(PurchaseOrderStatus status) => status switch
+    {
+        PurchaseOrderStatus.Draft => L["StatusDraft"],
+        PurchaseOrderStatus.Submitted => L["StatusSubmitted"],
+        PurchaseOrderStatus.Approved => L["StatusApproved"],
+        PurchaseOrderStatus.PartiallyReceived => L["StatusPartiallyReceived"],
+        PurchaseOrderStatus.Received => L["StatusReceived"],
+        PurchaseOrderStatus.Cancelled => L["StatusCancelled"],
+        _ => status.ToString()
+    };
+
+    private static Color GetStatusColor(PurchaseOrderStatus status) => status switch
+    {
+        PurchaseOrderStatus.Draft => Color.Default,
+        PurchaseOrderStatus.Submitted => Color.Info,
+        PurchaseOrderStatus.Approved => Color.Success,
+        PurchaseOrderStatus.PartiallyReceived => Color.Warning,
+        PurchaseOrderStatus.Received => Color.Success,
+        PurchaseOrderStatus.Cancelled => Color.Error,
+        _ => Color.Default
+    };
+}

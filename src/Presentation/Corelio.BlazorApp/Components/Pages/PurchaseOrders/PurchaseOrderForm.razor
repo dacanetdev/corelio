@@ -1,0 +1,297 @@
+@page "/compras/nueva"
+@page "/compras/{Id:guid}/editar"
+@using Corelio.BlazorApp.Models.PurchaseOrders
+@using Corelio.BlazorApp.Models.Suppliers
+@using Corelio.BlazorApp.Resources
+@using Corelio.BlazorApp.Services.PurchaseOrders
+@using Corelio.BlazorApp.Services.Suppliers
+@using Corelio.BlazorApp.Services.Products
+@using Corelio.Application.Products.Common
+@using Corelio.Domain.Enums
+@using Microsoft.Extensions.Localization
+@inject IPurchaseOrderHttpService PurchaseOrderService
+@inject ISupplierHttpService SupplierService
+@inject IProductService ProductService
+@inject IStringLocalizer<SharedResource> L
+@inject ISnackbar Snackbar
+@inject NavigationManager Nav
+
+<PageTitle>@(Id.HasValue ? L["EditPurchaseOrder"] : L["NewPurchaseOrder"]) - Corelio</PageTitle>
+
+<MudContainer MaxWidth="MaxWidth.Large" Class="mt-4">
+    <MudStack Row="true" AlignItems="AlignItems.Center" Class="mb-4">
+        <MudIconButton Icon="@Icons.Material.Rounded.ArrowBack" OnClick="@(() => Nav.NavigateTo("/compras"))" />
+        <div>
+            <MudText Typo="Typo.h5">@(Id.HasValue ? L["EditPurchaseOrder"] : L["NewPurchaseOrder"])</MudText>
+        </div>
+    </MudStack>
+
+    @if (_loading)
+    {
+        <MudProgressLinear Indeterminate="true" Color="Color.Primary" />
+    }
+    else
+    {
+        <MudPaper Elevation="1" Class="pa-6">
+            <MudForm @ref="_form" Model="_model" @bind-IsValid="_isValid">
+
+                <MudText Typo="Typo.subtitle1" Class="mb-3">Datos de la Orden</MudText>
+
+                <MudGrid>
+                    <MudItem xs="12" sm="6">
+                        <MudSelect T="Guid" @bind-Value="_model.SupplierId"
+                                   Label="@L["SelectSupplier"]"
+                                   Required="true"
+                                   RequiredError="@L["Required"]">
+                            @foreach (var supplier in _suppliers)
+                            {
+                                <MudSelectItem T="Guid" Value="supplier.Id">@supplier.Name</MudSelectItem>
+                            }
+                        </MudSelect>
+                    </MudItem>
+                    <MudItem xs="12" sm="6">
+                        <MudDatePicker @bind-Date="_model.ExpectedDate"
+                                       Label="@L["ExpectedDate"]"
+                                       DateFormat="dd/MM/yyyy"
+                                       Culture="@(new System.Globalization.CultureInfo("es-MX"))" />
+                    </MudItem>
+                    <MudItem xs="12">
+                        <MudTextField @bind-Value="_model.Notes"
+                                      Label="@L["PurchaseOrderNotes"]"
+                                      Lines="2"
+                                      MaxLength="500" />
+                    </MudItem>
+                </MudGrid>
+
+                <MudDivider Class="my-4" />
+                <MudStack Row="true" AlignItems="AlignItems.Center" Justify="Justify.SpaceBetween" Class="mb-3">
+                    <MudText Typo="Typo.subtitle1">@L["LineItems"]</MudText>
+                    <MudButton Variant="Variant.Outlined" Color="Color.Primary"
+                               StartIcon="@Icons.Material.Rounded.Add"
+                               OnClick="AddItem" Size="Size.Small">
+                        @L["AddItem"]
+                    </MudButton>
+                </MudStack>
+
+                @if (_model.Items.Count == 0)
+                {
+                    <MudAlert Severity="Severity.Info" Class="mb-3">@L["AtLeastOneItem"]</MudAlert>
+                }
+                else
+                {
+                    <MudTable Items="_model.Items" Dense="true" Elevation="0" Class="mb-3">
+                        <HeaderContent>
+                            <MudTh>Producto</MudTh>
+                            <MudTh Style="width:120px">@L["Quantity"]</MudTh>
+                            <MudTh Style="width:140px">@L["UnitPrice"]</MudTh>
+                            <MudTh Style="width:130px">@L["Subtotal"]</MudTh>
+                            <MudTh Style="width:50px"></MudTh>
+                        </HeaderContent>
+                        <RowTemplate>
+                            <MudTd>
+                                <MudAutocomplete T="ProductListDto?"
+                                                 Value="_itemProductMap.GetValueOrDefault(context)"
+                                                 ValueChanged="@((ProductListDto? p) => OnProductSelected(context, p))"
+                                                 SearchFunc="SearchProducts"
+                                                 ToStringFunc="@(p => p?.Name ?? string.Empty)"
+                                                 Placeholder="@L["SearchProductsPlaceholder"]"
+                                                 MinCharacters="2"
+                                                 Dense="true" />
+                            </MudTd>
+                            <MudTd>
+                                <MudNumericField @bind-Value="context.Quantity"
+                                                 Min="0.001m" Step="1m"
+                                                 Margin="Margin.Dense"
+                                                 HideSpinButtons="true" />
+                            </MudTd>
+                            <MudTd>
+                                <MudNumericField @bind-Value="context.UnitPrice"
+                                                 Min="0m" Step="0.01m"
+                                                 Format="F2"
+                                                 Margin="Margin.Dense"
+                                                 HideSpinButtons="true" />
+                            </MudTd>
+                            <MudTd>
+                                @((context.Quantity * context.UnitPrice).ToString("C", new System.Globalization.CultureInfo("es-MX")))
+                            </MudTd>
+                            <MudTd>
+                                <MudIconButton Icon="@Icons.Material.Rounded.Delete"
+                                               Size="Size.Small" Color="Color.Error"
+                                               OnClick="@(() => RemoveItem(context))" />
+                            </MudTd>
+                        </RowTemplate>
+                    </MudTable>
+                }
+
+                @* Totals summary *@
+                @if (_model.Items.Count > 0)
+                {
+                    var subtotal = _model.Items.Sum(i => i.Quantity * i.UnitPrice);
+                    var iva = subtotal * 0.16m;
+                    var total = subtotal + iva;
+
+                    <MudStack AlignItems="AlignItems.End" Class="mt-2 mb-4">
+                        <MudStack Row="true" Spacing="4">
+                            <MudText Typo="Typo.body2" Color="Color.Secondary">@L["Subtotal"]:</MudText>
+                            <MudText Typo="Typo.body2">@subtotal.ToString("C", new System.Globalization.CultureInfo("es-MX"))</MudText>
+                        </MudStack>
+                        <MudStack Row="true" Spacing="4">
+                            <MudText Typo="Typo.body2" Color="Color.Secondary">@L["IVA"]:</MudText>
+                            <MudText Typo="Typo.body2">@iva.ToString("C", new System.Globalization.CultureInfo("es-MX"))</MudText>
+                        </MudStack>
+                        <MudStack Row="true" Spacing="4">
+                            <MudText Typo="Typo.subtitle2">Total:</MudText>
+                            <MudText Typo="Typo.subtitle2">@total.ToString("C", new System.Globalization.CultureInfo("es-MX"))</MudText>
+                        </MudStack>
+                    </MudStack>
+                }
+
+                <MudStack Row="true" Justify="Justify.FlexEnd" Spacing="2">
+                    <MudButton Variant="Variant.Text"
+                               OnClick="@(() => Nav.NavigateTo("/compras"))">
+                        @L["Cancel"]
+                    </MudButton>
+                    <MudButton Variant="Variant.Filled" Color="Color.Primary"
+                               OnClick="SaveOrder" Disabled="_saving || _model.Items.Count == 0">
+                        @if (_saving)
+                        {
+                            <MudProgressCircular Size="Size.Small" Indeterminate="true" Class="mr-2" />
+                            @L["Saving"]
+                        }
+                        else
+                        {
+                            @L["Save"]
+                        }
+                    </MudButton>
+                </MudStack>
+            </MudForm>
+        </MudPaper>
+    }
+</MudContainer>
+
+@code {
+    [Parameter] public Guid? Id { get; set; }
+
+    private MudForm _form = null!;
+    private PurchaseOrderFormModel _model = new();
+    private List<SupplierListModel> _suppliers = [];
+    private bool _loading = true;
+    private bool _saving;
+    private bool _isValid;
+
+    private readonly Dictionary<PurchaseOrderItemFormModel, ProductListDto?> _itemProductMap = [];
+
+    protected override async Task OnInitializedAsync()
+    {
+        var suppliersResult = await SupplierService.GetSuppliersAsync(pageSize: 200, isActive: true);
+        if (suppliersResult.IsSuccess && suppliersResult.Value is not null)
+        {
+            _suppliers = suppliersResult.Value.Items;
+        }
+
+        if (Id.HasValue)
+        {
+            var result = await PurchaseOrderService.GetPurchaseOrderByIdAsync(Id.Value);
+            if (result.IsSuccess && result.Value is not null)
+            {
+                var po = result.Value;
+                _model = new PurchaseOrderFormModel
+                {
+                    SupplierId = po.SupplierId,
+                    ExpectedDate = po.ExpectedDate?.LocalDateTime,
+                    Notes = po.Notes,
+                    Items = po.Items.Select(i => new PurchaseOrderItemFormModel
+                    {
+                        ProductId = i.ProductId,
+                        ProductName = i.ProductName,
+                        Quantity = i.Quantity,
+                        UnitPrice = i.UnitPrice
+                    }).ToList()
+                };
+
+                foreach (var item in _model.Items)
+                {
+                    _itemProductMap[item] = new ProductListDto(
+                        item.ProductId, string.Empty, item.ProductName,
+                        item.UnitPrice, 0m, UnitOfMeasure.PCS,
+                        null, null, null, true, false, 0m, null);
+                }
+            }
+            else
+            {
+                Snackbar.Add(result.Error ?? L["ErrorLoadingPurchaseOrder"], Severity.Error);
+                Nav.NavigateTo("/compras");
+            }
+        }
+
+        _loading = false;
+    }
+
+    private void AddItem()
+    {
+        var item = new PurchaseOrderItemFormModel();
+        _model.Items.Add(item);
+        _itemProductMap[item] = null;
+    }
+
+    private void RemoveItem(PurchaseOrderItemFormModel item)
+    {
+        _model.Items.Remove(item);
+        _itemProductMap.Remove(item);
+    }
+
+    private void OnProductSelected(PurchaseOrderItemFormModel item, ProductListDto? product)
+    {
+        if (product is null) { return; }
+
+        _itemProductMap[item] = product;
+        item.ProductId = product.Id;
+        item.ProductName = product.Name;
+        item.UnitPrice = product.SalePrice;
+    }
+
+    private async Task<IEnumerable<ProductListDto?>> SearchProducts(string query, CancellationToken ct)
+    {
+        if (string.IsNullOrWhiteSpace(query)) { return []; }
+
+        var result = await ProductService.SearchProductsAsync(query, 20, ct);
+        return result.IsSuccess ? result.Value!.Cast<ProductListDto?>() : [];
+    }
+
+    private async Task SaveOrder()
+    {
+        await _form.Validate();
+        if (!_isValid || _model.Items.Count == 0) { return; }
+
+        _saving = true;
+
+        if (Id.HasValue)
+        {
+            var result = await PurchaseOrderService.UpdatePurchaseOrderAsync(Id.Value, _model);
+            if (result.IsSuccess)
+            {
+                Snackbar.Add(L["PurchaseOrderUpdatedSuccessfully"], Severity.Success);
+                Nav.NavigateTo($"/compras/{Id.Value}");
+            }
+            else
+            {
+                Snackbar.Add(result.Error ?? L["ErrorUpdatingPurchaseOrder"], Severity.Error);
+            }
+        }
+        else
+        {
+            var result = await PurchaseOrderService.CreatePurchaseOrderAsync(_model);
+            if (result.IsSuccess)
+            {
+                Snackbar.Add(L["PurchaseOrderCreatedSuccessfully"], Severity.Success);
+                Nav.NavigateTo($"/compras/{result.Value!}");
+            }
+            else
+            {
+                Snackbar.Add(result.Error ?? L["ErrorCreatingPurchaseOrder"], Severity.Error);
+            }
+        }
+
+        _saving = false;
+    }
+}
