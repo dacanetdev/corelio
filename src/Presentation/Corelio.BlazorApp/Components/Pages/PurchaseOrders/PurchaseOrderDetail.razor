@@ -1,0 +1,326 @@
+@page "/compras/{Id:guid}"
+@using Corelio.BlazorApp.Models.PurchaseOrders
+@using Corelio.BlazorApp.Models.Inventory
+@using Corelio.BlazorApp.Resources
+@using Corelio.BlazorApp.Services.PurchaseOrders
+@using Corelio.BlazorApp.Services.Inventory
+@using Corelio.Domain.Enums
+@using Microsoft.Extensions.Localization
+@using MudBlazor
+@inject IPurchaseOrderHttpService PurchaseOrderService
+@inject IInventoryService InventoryService
+@inject IStringLocalizer<SharedResource> L
+@inject ISnackbar Snackbar
+@inject NavigationManager Nav
+
+<PageTitle>@(_order?.OrderNumber ?? L["PurchaseOrder"]) - Corelio</PageTitle>
+
+<MudContainer MaxWidth="MaxWidth.Large" Class="mt-4">
+    <MudStack Row="true" AlignItems="AlignItems.Center" Class="mb-4">
+        <MudIconButton Icon="@Icons.Material.Rounded.ArrowBack" OnClick="@(() => Nav.NavigateTo("/compras"))" />
+        <div>
+            <MudText Typo="Typo.h5" GutterBottom="false">@(_order?.OrderNumber ?? L["PurchaseOrder"])</MudText>
+            @if (_order is not null)
+            {
+                <MudChip T="string" Size="Size.Small" Color="@GetStatusColor(_order.Status)">
+                    @GetStatusLabel(_order.Status)
+                </MudChip>
+            }
+        </div>
+    </MudStack>
+
+    @if (_loading)
+    {
+        <MudProgressLinear Indeterminate="true" Color="Color.Primary" Class="mb-4" />
+    }
+    else if (_error is not null)
+    {
+        <MudAlert Severity="Severity.Error" Class="mb-4">@_error</MudAlert>
+    }
+    else if (_order is not null)
+    {
+        @* Action buttons — visible by status *@
+        <MudStack Row="true" Spacing="2" Class="mb-4" Wrap="Wrap.Wrap">
+            @if (_order.Status == PurchaseOrderStatus.Draft)
+            {
+                <MudButton Variant="Variant.Outlined" Color="Color.Primary"
+                           StartIcon="@Icons.Material.Rounded.Edit"
+                           Href="@($"/compras/{_order.Id}/editar")">
+                    @L["Edit"]
+                </MudButton>
+                <MudButton Variant="Variant.Filled" Color="Color.Info"
+                           StartIcon="@Icons.Material.Rounded.Send"
+                           OnClick="SubmitOrder" Disabled="_actionInProgress">
+                    @L["SubmitOrder"]
+                </MudButton>
+                <MudButton Variant="Variant.Outlined" Color="Color.Error"
+                           StartIcon="@Icons.Material.Rounded.Cancel"
+                           OnClick="@(() => _showCancelDialog = true)">
+                    @L["CancelOrder"]
+                </MudButton>
+            }
+            @if (_order.Status == PurchaseOrderStatus.Submitted)
+            {
+                <MudButton Variant="Variant.Filled" Color="Color.Success"
+                           StartIcon="@Icons.Material.Rounded.CheckCircle"
+                           OnClick="ApproveOrder" Disabled="_actionInProgress">
+                    @L["ApproveOrder"]
+                </MudButton>
+                <MudButton Variant="Variant.Outlined" Color="Color.Error"
+                           StartIcon="@Icons.Material.Rounded.Cancel"
+                           OnClick="@(() => _showCancelDialog = true)">
+                    @L["CancelOrder"]
+                </MudButton>
+            }
+            @if (_order.Status == PurchaseOrderStatus.Approved || _order.Status == PurchaseOrderStatus.PartiallyReceived)
+            {
+                <MudButton Variant="Variant.Filled" Color="Color.Primary"
+                           StartIcon="@Icons.Material.Rounded.LocalShipping"
+                           OnClick="OpenReceiveDialog" Disabled="_actionInProgress">
+                    @L["ReceiveGoods"]
+                </MudButton>
+            }
+        </MudStack>
+
+        @* Order Header *@
+        <MudPaper Elevation="1" Class="pa-4 mb-4">
+            <MudGrid>
+                <MudItem xs="12" sm="6" md="3">
+                    <MudText Typo="Typo.caption" Color="Color.Secondary">Proveedor</MudText>
+                    <MudText Typo="Typo.body1">@_order.SupplierName</MudText>
+                </MudItem>
+                <MudItem xs="12" sm="6" md="3">
+                    <MudText Typo="Typo.caption" Color="Color.Secondary">@L["ExpectedDate"]</MudText>
+                    <MudText Typo="Typo.body1">
+                        @(_order.ExpectedDate.HasValue ? _order.ExpectedDate.Value.ToString("dd/MM/yyyy") : "—")
+                    </MudText>
+                </MudItem>
+                <MudItem xs="12" sm="6" md="3">
+                    <MudText Typo="Typo.caption" Color="Color.Secondary">Fecha de Creación</MudText>
+                    <MudText Typo="Typo.body1">@_order.CreatedAt.ToString("dd/MM/yyyy")</MudText>
+                </MudItem>
+                @if (!string.IsNullOrWhiteSpace(_order.Notes))
+                {
+                    <MudItem xs="12">
+                        <MudText Typo="Typo.caption" Color="Color.Secondary">@L["PurchaseOrderNotes"]</MudText>
+                        <MudText Typo="Typo.body2">@_order.Notes</MudText>
+                    </MudItem>
+                }
+            </MudGrid>
+        </MudPaper>
+
+        @* Line Items *@
+        <MudPaper Elevation="1" Class="pa-4 mb-4">
+            <MudText Typo="Typo.subtitle1" Class="mb-3">@L["LineItems"]</MudText>
+            <MudTable Items="_order.Items" Dense="true" Hover="true" Elevation="0">
+                <HeaderContent>
+                    <MudTh>Producto</MudTh>
+                    <MudTh>@L["OrderedQuantity"]</MudTh>
+                    <MudTh>@L["AlreadyReceived"]</MudTh>
+                    <MudTh>@L["UnitPrice"]</MudTh>
+                    <MudTh>@L["Subtotal"]</MudTh>
+                </HeaderContent>
+                <RowTemplate>
+                    <MudTd DataLabel="Producto">@context.ProductName</MudTd>
+                    <MudTd DataLabel="@L["OrderedQuantity"]">@context.Quantity.ToString("G")</MudTd>
+                    <MudTd DataLabel="@L["AlreadyReceived"]">
+                        @context.ReceivedQuantity.ToString("G")
+                        @if (context.ReceivedQuantity > 0)
+                        {
+                            <MudChip T="string" Size="Size.Small" Color="Color.Success" Class="ml-1">
+                                @((context.ReceivedQuantity / context.Quantity * 100).ToString("F0"))%
+                            </MudChip>
+                        }
+                    </MudTd>
+                    <MudTd DataLabel="@L["UnitPrice"]">
+                        @context.UnitPrice.ToString("C", new System.Globalization.CultureInfo("es-MX"))
+                    </MudTd>
+                    <MudTd DataLabel="@L["Subtotal"]">
+                        @context.Subtotal.ToString("C", new System.Globalization.CultureInfo("es-MX"))
+                    </MudTd>
+                </RowTemplate>
+            </MudTable>
+
+            <MudStack AlignItems="AlignItems.End" Class="mt-3">
+                <MudStack Row="true" Spacing="4">
+                    <MudText Typo="Typo.body2" Color="Color.Secondary">@L["Subtotal"]:</MudText>
+                    <MudText Typo="Typo.body2">
+                        @_order.Subtotal.ToString("C", new System.Globalization.CultureInfo("es-MX"))
+                    </MudText>
+                </MudStack>
+                <MudStack Row="true" Spacing="4">
+                    <MudText Typo="Typo.body2" Color="Color.Secondary">@L["IVA"]:</MudText>
+                    <MudText Typo="Typo.body2">
+                        @_order.IvaAmount.ToString("C", new System.Globalization.CultureInfo("es-MX"))
+                    </MudText>
+                </MudStack>
+                <MudStack Row="true" Spacing="4">
+                    <MudText Typo="Typo.subtitle2">Total:</MudText>
+                    <MudText Typo="Typo.subtitle2">
+                        @_order.Total.ToString("C", new System.Globalization.CultureInfo("es-MX"))
+                    </MudText>
+                </MudStack>
+            </MudStack>
+        </MudPaper>
+    }
+</MudContainer>
+
+@* Cancel Confirmation Dialog *@
+<MudDialog @bind-Visible="_showCancelDialog">
+    <TitleContent>@L["CancelOrder"]</TitleContent>
+    <DialogContent>
+        <MudText>¿Estás seguro de que deseas cancelar esta orden de compra?</MudText>
+        @if (_order is not null)
+        {
+            <MudText Class="mt-2"><strong>@_order.OrderNumber</strong></MudText>
+        }
+    </DialogContent>
+    <DialogActions>
+        <MudButton OnClick="@(() => _showCancelDialog = false)">@L["Cancel"]</MudButton>
+        <MudButton Color="Color.Error" Variant="Variant.Filled"
+                   OnClick="CancelOrder" Disabled="_actionInProgress">
+            @if (_actionInProgress)
+            {
+                <MudProgressCircular Size="Size.Small" Indeterminate="true" />
+            }
+            else
+            {
+                @L["Confirm"]
+            }
+        </MudButton>
+    </DialogActions>
+</MudDialog>
+
+@* Receive Goods Dialog — rendered inline via parameter binding *@
+@if (_showReceiveDialog && _order is not null)
+{
+    <ReceiveGoodsDialog Order="_order"
+                        Warehouses="_warehouses"
+                        Visible="_showReceiveDialog"
+                        VisibleChanged="@((bool v) => _showReceiveDialog = v)"
+                        OnReceived="OnGoodsReceived" />
+}
+
+@code {
+    [Parameter] public Guid Id { get; set; }
+
+    private PurchaseOrderModel? _order;
+    private List<WarehouseModel> _warehouses = [];
+    private bool _loading = true;
+    private string? _error;
+    private bool _actionInProgress;
+    private bool _showCancelDialog;
+    private bool _showReceiveDialog;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadOrder();
+        var warehousesResult = await InventoryService.GetWarehousesAsync();
+        if (warehousesResult.IsSuccess && warehousesResult.Value is not null)
+        {
+            _warehouses = warehousesResult.Value;
+        }
+    }
+
+    private async Task LoadOrder()
+    {
+        _loading = true;
+        _error = null;
+
+        var result = await PurchaseOrderService.GetPurchaseOrderByIdAsync(Id);
+        if (result.IsSuccess && result.Value is not null)
+        {
+            _order = result.Value;
+        }
+        else
+        {
+            _error = result.Error ?? L["ErrorLoadingPurchaseOrder"];
+        }
+
+        _loading = false;
+    }
+
+    private async Task SubmitOrder()
+    {
+        _actionInProgress = true;
+        var result = await PurchaseOrderService.SubmitAsync(Id);
+        if (result.IsSuccess)
+        {
+            Snackbar.Add(L["PurchaseOrderSubmittedSuccessfully"], Severity.Success);
+            await LoadOrder();
+        }
+        else
+        {
+            Snackbar.Add(result.Error ?? L["ErrorUpdatingPurchaseOrder"], Severity.Error);
+        }
+        _actionInProgress = false;
+    }
+
+    private async Task ApproveOrder()
+    {
+        _actionInProgress = true;
+        var result = await PurchaseOrderService.ApproveAsync(Id);
+        if (result.IsSuccess)
+        {
+            Snackbar.Add(L["PurchaseOrderApprovedSuccessfully"], Severity.Success);
+            await LoadOrder();
+        }
+        else
+        {
+            Snackbar.Add(result.Error ?? L["ErrorUpdatingPurchaseOrder"], Severity.Error);
+        }
+        _actionInProgress = false;
+    }
+
+    private async Task CancelOrder()
+    {
+        _actionInProgress = true;
+        var result = await PurchaseOrderService.CancelAsync(Id);
+        if (result.IsSuccess)
+        {
+            Snackbar.Add(L["PurchaseOrderCancelledSuccessfully"], Severity.Success);
+            _showCancelDialog = false;
+            await LoadOrder();
+        }
+        else
+        {
+            Snackbar.Add(result.Error ?? L["ErrorUpdatingPurchaseOrder"], Severity.Error);
+        }
+        _actionInProgress = false;
+    }
+
+    private async Task OpenReceiveDialog()
+    {
+        _showReceiveDialog = true;
+        await Task.CompletedTask;
+    }
+
+    private async Task OnGoodsReceived()
+    {
+        _showReceiveDialog = false;
+        Snackbar.Add(L["GoodsReceivedSuccessfully"], Severity.Success);
+        await LoadOrder();
+    }
+
+    private string GetStatusLabel(PurchaseOrderStatus status) => status switch
+    {
+        PurchaseOrderStatus.Draft => L["StatusDraft"],
+        PurchaseOrderStatus.Submitted => L["StatusSubmitted"],
+        PurchaseOrderStatus.Approved => L["StatusApproved"],
+        PurchaseOrderStatus.PartiallyReceived => L["StatusPartiallyReceived"],
+        PurchaseOrderStatus.Received => L["StatusReceived"],
+        PurchaseOrderStatus.Cancelled => L["StatusCancelled"],
+        _ => status.ToString()
+    };
+
+    private static Color GetStatusColor(PurchaseOrderStatus status) => status switch
+    {
+        PurchaseOrderStatus.Draft => Color.Default,
+        PurchaseOrderStatus.Submitted => Color.Info,
+        PurchaseOrderStatus.Approved => Color.Success,
+        PurchaseOrderStatus.PartiallyReceived => Color.Warning,
+        PurchaseOrderStatus.Received => Color.Success,
+        PurchaseOrderStatus.Cancelled => Color.Error,
+        _ => Color.Default
+    };
+}

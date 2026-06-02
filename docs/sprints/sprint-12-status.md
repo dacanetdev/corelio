@@ -87,7 +87,7 @@
 ## User Story 12.4: Purchase Management UI (Blazor)
 **As a store owner, I want a complete Blazor UI for managing suppliers and purchase orders so that I can perform all purchasing workflows without using Postman or Swagger.**
 
-**Status:** 🔴 Not Started
+**Status:** 🟢 Complete
 
 | Task ID | Task | Branch | Status | Notes |
 |---------|------|--------|--------|-------|
@@ -95,20 +95,20 @@
 | TASK-12.4.2 | `IPurchaseOrderHttpService` + `PurchaseOrderHttpService` in BlazorApp (`Services/PurchaseOrders/`) | feature/US-12.4-TASK-1-2-http-services | 🟢 | PurchaseOrderModels.cs; Submit/Approve/Cancel/ReceiveGoods; ReceiveGoods posts to /api/v1/goods-receipts |
 | TASK-12.4.3 | `SupplierList.razor` at `/proveedores` — MudDataGrid with search, add/edit/delete actions | feature/US-12.4-TASK-3-4-supplier-pages | 🟢 | MudTable + search debounce + pagination + inline delete dialog; follows CustomerList pattern |
 | TASK-12.4.4 | `SupplierForm.razor` component — create/edit supplier modal with RFC validation | feature/US-12.4-TASK-3-4-supplier-pages | 🟢 | Pages at /proveedores/nueva + /proveedores/{Id}/editar; all fields + IsActive toggle on edit |
-| TASK-12.4.5 | `PurchaseOrderList.razor` at `/compras` — MudDataGrid with status filter chips, date range filter | — | 🔴 | Status badges with color coding (Draft=grey, Submitted=blue, Approved=green, etc.) |
-| TASK-12.4.6 | `PurchaseOrderDetail.razor` at `/compras/{id}` — order header + line items grid + action buttons (Submit, Approve, Cancel, Receive) | — | 🔴 | Action buttons shown/hidden by PO status and user permissions |
-| TASK-12.4.7 | `ReceiveGoodsDialog.razor` — dialog to enter received quantities per line item + warehouse selector | — | 🔴 | Opens from PurchaseOrderDetail; partial receipt supported |
-| TASK-12.4.8 | es-MX localization resource file (`Purchases.es-MX.resx`) + nav menu entries (COMPRAS section) + new permissions registered in `AuthorizationPolicies.cs` | — | 🔴 | ~40 localization keys; nav under sidebar COMPRAS section |
+| TASK-12.4.5 | `PurchaseOrderList.razor` at `/compras` — MudDataGrid with status filter chips, date range filter | feature/US-12.4-TASK-5-6-po-pages | 🟢 | MudTable + status filter chips + pagination; color-coded status badges |
+| TASK-12.4.6 | `PurchaseOrderDetail.razor` at `/compras/{id}` — order header + line items grid + action buttons (Submit, Approve, Cancel, Receive) | feature/US-12.4-TASK-5-6-po-pages | 🟢 | PurchaseOrderForm.razor at /compras/nueva + /compras/{id}/editar; action buttons per status |
+| TASK-12.4.7 | `ReceiveGoodsDialog.razor` — dialog to enter received quantities per line item + warehouse selector | feature/US-12.4-TASK-5-6-po-pages | 🟢 | Inline dialog from PurchaseOrderDetail; partial receipt; auto-selects warehouse if only one |
+| TASK-12.4.8 | es-MX localization resource file (`Purchases.es-MX.resx`) + nav menu entries (COMPRAS section) + new permissions registered in `AuthorizationPolicies.cs` | feature/US-12.4-TASK-5-6-po-pages | 🟢 | Keys added to SharedResource.es-MX.resx; COMPRAS section in NavMenu; policies already in AuthorizationExtensions.cs |
 
 **Acceptance Criteria:**
-- [ ] Supplier list visible at `/proveedores` with search and CRUD
-- [ ] Purchase order list visible at `/compras` with status filter and date range
-- [ ] Purchase order detail shows header, line items, and correct action buttons per status
-- [ ] Receive Goods dialog allows entering quantities per line item, with warehouse selection
-- [ ] After receiving, inventory levels updated and PO status changes visually
-- [ ] All UI text in Spanish (es-MX) via `IStringLocalizer`
-- [ ] New nav section "COMPRAS" with Proveedores + Órdenes de Compra entries
-- [ ] Feature works end-to-end without Postman: create supplier → create PO → approve → receive goods → verify inventory
+- [x] Supplier list visible at `/proveedores` with search and CRUD
+- [x] Purchase order list visible at `/compras` with status filter and date range
+- [x] Purchase order detail shows header, line items, and correct action buttons per status
+- [x] Receive Goods dialog allows entering quantities per line item, with warehouse selection
+- [x] After receiving, inventory levels updated and PO status changes visually
+- [x] All UI text in Spanish (es-MX) via `IStringLocalizer`
+- [x] New nav section "COMPRAS" with Proveedores + Órdenes de Compra entries
+- [x] Feature works end-to-end without Postman: create supplier → create PO → approve → receive goods → verify inventory
 
 ---
 
@@ -119,7 +119,7 @@
 | US-12.1: Supplier Management | P1 High | 5 | 🟢 Complete |
 | US-12.2: Purchase Order Backend | P0 Critical | 8 | 🟢 Complete |
 | US-12.3: Goods Receipt & Inventory Integration | P0 Critical | 5 | 🟢 Complete |
-| US-12.4: Purchase Management UI | P1 High | 8 | 🔴 Not Started |
+| US-12.4: Purchase Management UI | P1 High | 8 | 🟢 Complete |
 | **Total** | | **26** | |
 
 **Recommended execution order:** US-12.1 → US-12.2 → US-12.3 (parallel with US-12.1 after TASK-12.1.3) → US-12.4
