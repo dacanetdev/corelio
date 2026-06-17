@@ -1,0 +1,311 @@
+@page "/reportes/ventas"
+@using Corelio.BlazorApp.Models.Reports
+@using Corelio.BlazorApp.Resources
+@using Corelio.BlazorApp.Services.Reports
+@using Corelio.Domain.Enums
+@using Microsoft.Extensions.Localization
+@using MudBlazor
+@using System.Globalization
+@inject ISalesReportHttpService ReportService
+@inject IJSRuntime JS
+@inject IStringLocalizer<SharedResource> L
+@inject ISnackbar Snackbar
+
+<PageTitle>@L["SalesReport"] - Corelio</PageTitle>
+
+<MudContainer MaxWidth="MaxWidth.ExtraLarge" Class="mt-4">
+    <MudStack Row="true" AlignItems="AlignItems.Center" Justify="Justify.SpaceBetween" Class="mb-4">
+        <div>
+            <MudText Typo="Typo.h5" GutterBottom="false">@L["SalesReport"]</MudText>
+            <MudText Typo="Typo.body2" Color="Color.Secondary">
+                @L["ReportPeriod"]: @(_dateFrom?.ToString("dd/MM/yyyy", _esMx)) — @(_dateTo?.ToString("dd/MM/yyyy", _esMx))
+            </MudText>
+        </div>
+        <MudStack Row="true" Spacing="1">
+            <MudButton Variant="Variant.Outlined"
+                       StartIcon="@Icons.Material.Rounded.PictureAsPdf"
+                       Color="Color.Error"
+                       OnClick="@(() => ExportReport("pdf"))"
+                       Disabled="_exporting">
+                @L["ExportPdf"]
+            </MudButton>
+            <MudButton Variant="Variant.Outlined"
+                       StartIcon="@Icons.Material.Rounded.TableChart"
+                       Color="Color.Success"
+                       OnClick="@(() => ExportReport("csv"))"
+                       Disabled="_exporting">
+                @L["ExportCsv"]
+            </MudButton>
+        </MudStack>
+    </MudStack>
+
+    <MudPaper Elevation="1" Class="pa-4 mb-4">
+        <MudGrid>
+            <MudItem xs="12" md="3">
+                <MudDatePicker Label="@L["DateFrom"]"
+                               Date="_dateFrom"
+                               DateChanged="OnDateFromChanged"
+                               DateFormat="dd/MM/yyyy"
+                               Culture="@_esMx"
+                               Clearable="false" />
+            </MudItem>
+            <MudItem xs="12" md="3">
+                <MudDatePicker Label="@L["DateTo"]"
+                               Date="_dateTo"
+                               DateChanged="OnDateToChanged"
+                               DateFormat="dd/MM/yyyy"
+                               Culture="@_esMx"
+                               Clearable="false" />
+            </MudItem>
+            <MudItem xs="12" md="3">
+                <MudSelect T="PaymentMethod?" Value="_paymentMethod" ValueChanged="OnPaymentMethodChanged"
+                           Label="@L["PaymentMethod"]"
+                           Clearable="true">
+                    <MudSelectItem T="PaymentMethod?" Value="@((PaymentMethod?)PaymentMethod.Cash)">Efectivo</MudSelectItem>
+                    <MudSelectItem T="PaymentMethod?" Value="@((PaymentMethod?)PaymentMethod.Card)">Tarjeta</MudSelectItem>
+                    <MudSelectItem T="PaymentMethod?" Value="@((PaymentMethod?)PaymentMethod.Transfer)">Transferencia</MudSelectItem>
+                    <MudSelectItem T="PaymentMethod?" Value="@((PaymentMethod?)PaymentMethod.Check)">Cheque</MudSelectItem>
+                </MudSelect>
+            </MudItem>
+            <MudItem xs="12" md="3" Class="d-flex align-center">
+                <MudButton Variant="Variant.Filled"
+                           Color="Color.Primary"
+                           StartIcon="@Icons.Material.Rounded.Refresh"
+                           OnClick="LoadReport"
+                           FullWidth="true">
+                    Actualizar
+                </MudButton>
+            </MudItem>
+        </MudGrid>
+    </MudPaper>
+
+    @if (_loading)
+    {
+        <MudText Class="mb-2">@L["GeneratingReport"]</MudText>
+        <MudProgressLinear Indeterminate="true" Color="Color.Primary" />
+    }
+    else if (_errorMessage is not null)
+    {
+        <MudAlert Severity="Severity.Error" Class="mb-4">@_errorMessage</MudAlert>
+    }
+    else if (_report is not null)
+    {
+        <MudGrid Class="mb-4">
+            <MudItem xs="12" md="4">
+                <MudPaper Elevation="2" Class="pa-4 text-center">
+                    <MudText Typo="Typo.caption" Color="Color.Secondary">@L["TotalSales"]</MudText>
+                    <MudText Typo="Typo.h5" Color="Color.Primary">@_report.TotalAmount.ToString("C", _esMx)</MudText>
+                </MudPaper>
+            </MudItem>
+            <MudItem xs="12" md="4">
+                <MudPaper Elevation="2" Class="pa-4 text-center">
+                    <MudText Typo="Typo.caption" Color="Color.Secondary">@L["Transactions"]</MudText>
+                    <MudText Typo="Typo.h5">@_report.TransactionCount</MudText>
+                </MudPaper>
+            </MudItem>
+            <MudItem xs="12" md="4">
+                <MudPaper Elevation="2" Class="pa-4 text-center">
+                    <MudText Typo="Typo.caption" Color="Color.Secondary">@L["AverageTicket"]</MudText>
+                    <MudText Typo="Typo.h5">@_report.AverageTicket.ToString("C", _esMx)</MudText>
+                </MudPaper>
+            </MudItem>
+        </MudGrid>
+
+        @if (_report.TransactionCount == 0)
+        {
+            <MudAlert Severity="Severity.Info">@L["NoSalesInPeriod"]</MudAlert>
+        }
+        else
+        {
+            <MudGrid>
+                <MudItem xs="12" md="6">
+                    <MudPaper Elevation="1" Class="pa-4 mb-4">
+                        <MudText Typo="Typo.h6" GutterBottom="true">@L["PaymentMethodBreakdown"]</MudText>
+                        @if (_paymentAmounts.Length > 0)
+                        {
+                            <MudChart ChartType="ChartType.Donut"
+                                      InputData="_paymentAmounts"
+                                      InputLabels="_paymentLabels"
+                                      Width="250px" Height="250px" />
+                        }
+                        <MudTable Items="_report.PaymentMethodBreakdown" Dense="true" Hover="true" Class="mt-2">
+                            <HeaderContent>
+                                <MudTh>Método</MudTh>
+                                <MudTh Style="text-align:right">Monto</MudTh>
+                                <MudTh Style="text-align:right">%</MudTh>
+                            </HeaderContent>
+                            <RowTemplate>
+                                <MudTd>@context.MethodName</MudTd>
+                                <MudTd Style="text-align:right">@context.Amount.ToString("C", _esMx)</MudTd>
+                                <MudTd Style="text-align:right">@context.Percentage.ToString("0.##")%</MudTd>
+                            </RowTemplate>
+                        </MudTable>
+                    </MudPaper>
+                </MudItem>
+
+                <MudItem xs="12" md="6">
+                    <MudPaper Elevation="1" Class="pa-4 mb-4">
+                        <MudText Typo="Typo.h6" GutterBottom="true">@L["HourlyDistribution"]</MudText>
+                        @if (_hourlySeries.Count > 0)
+                        {
+                            <MudChart ChartType="ChartType.Bar"
+                                      ChartSeries="_hourlySeries"
+                                      XAxisLabels="_hourlyLabels"
+                                      Width="100%" Height="220px" />
+                        }
+                    </MudPaper>
+                </MudItem>
+
+                <MudItem xs="12" md="8">
+                    <MudPaper Elevation="1" Class="pa-4 mb-4">
+                        <MudText Typo="Typo.h6" GutterBottom="true">@L["TopProducts"]</MudText>
+                        <MudTable Items="_topProductsWithRank" Dense="true" Hover="true">
+                            <HeaderContent>
+                                <MudTh>#</MudTh>
+                                <MudTh>Producto</MudTh>
+                                <MudTh>SKU</MudTh>
+                                <MudTh Style="text-align:right">Cant.</MudTh>
+                                <MudTh Style="text-align:right">Ingresos</MudTh>
+                            </HeaderContent>
+                            <RowTemplate>
+                                <MudTd>@context.Rank</MudTd>
+                                <MudTd>@context.Item.ProductName</MudTd>
+                                <MudTd>@context.Item.ProductSku</MudTd>
+                                <MudTd Style="text-align:right">@context.Item.QuantitySold.ToString("0.##")</MudTd>
+                                <MudTd Style="text-align:right">@context.Item.Revenue.ToString("C", _esMx)</MudTd>
+                            </RowTemplate>
+                        </MudTable>
+                    </MudPaper>
+                </MudItem>
+
+                <MudItem xs="12" md="4">
+                    <MudPaper Elevation="1" Class="pa-4 mb-4">
+                        <MudText Typo="Typo.h6" GutterBottom="true">@L["CashierBreakdown"]</MudText>
+                        <MudTable Items="_report.CashierBreakdown" Dense="true" Hover="true">
+                            <HeaderContent>
+                                <MudTh>Cajero</MudTh>
+                                <MudTh Style="text-align:right">Monto</MudTh>
+                                <MudTh Style="text-align:right">Txn</MudTh>
+                            </HeaderContent>
+                            <RowTemplate>
+                                <MudTd>@context.CashierName</MudTd>
+                                <MudTd Style="text-align:right">@context.Amount.ToString("C", _esMx)</MudTd>
+                                <MudTd Style="text-align:right">@context.TransactionCount</MudTd>
+                            </RowTemplate>
+                        </MudTable>
+                    </MudPaper>
+                </MudItem>
+            </MudGrid>
+        }
+    }
+</MudContainer>
+
+@code {
+    private static readonly CultureInfo _esMx = CultureInfo.GetCultureInfo("es-MX");
+
+    private DateTime? _dateFrom = DateTime.Today.AddDays(-29);
+    private DateTime? _dateTo = DateTime.Today;
+    private PaymentMethod? _paymentMethod;
+
+    private bool _loading;
+    private bool _exporting;
+    private string? _errorMessage;
+    private SalesReportModel? _report;
+
+    private double[] _paymentAmounts = [];
+    private string[] _paymentLabels = [];
+    private string[] _hourlyLabels = [];
+    private List<ChartSeries> _hourlySeries = [];
+    private List<(int Rank, TopProductModel Item)> _topProductsWithRank = [];
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadReport();
+    }
+
+    private Task OnDateFromChanged(DateTime? date)
+    {
+        _dateFrom = date;
+        return Task.CompletedTask;
+    }
+
+    private Task OnDateToChanged(DateTime? date)
+    {
+        _dateTo = date;
+        return Task.CompletedTask;
+    }
+
+    private Task OnPaymentMethodChanged(PaymentMethod? value)
+    {
+        _paymentMethod = value;
+        return Task.CompletedTask;
+    }
+
+    private async Task LoadReport()
+    {
+        _loading = true;
+        _errorMessage = null;
+        _report = null;
+
+        var from = _dateFrom ?? DateTime.Today.AddDays(-29);
+        var to = _dateTo ?? DateTime.Today;
+
+        var result = await ReportService.GetSalesReportAsync(from, to, paymentMethod: _paymentMethod);
+
+        if (result.IsSuccess)
+        {
+            _report = result.Value!;
+            BuildChartData();
+        }
+        else
+        {
+            _errorMessage = result.Error ?? L["ErrorLoadingReport"];
+        }
+
+        _loading = false;
+    }
+
+    private void BuildChartData()
+    {
+        if (_report is null)
+        {
+            return;
+        }
+
+        _paymentAmounts = _report.PaymentMethodBreakdown.Select(p => (double)p.Amount).ToArray();
+        _paymentLabels = _report.PaymentMethodBreakdown.Select(p => p.MethodName).ToArray();
+
+        var hourlyData = _report.HourlyDistribution.Select(h => (double)h.Amount).ToArray();
+        _hourlyLabels = _report.HourlyDistribution.Select(h => $"{h.Hour:00}h").ToArray();
+        _hourlySeries = [new ChartSeries { Name = "Ventas", Data = hourlyData }];
+
+        _topProductsWithRank = _report.TopProducts
+            .Select((item, idx) => (Rank: idx + 1, Item: item))
+            .ToList();
+    }
+
+    private async Task ExportReport(string format)
+    {
+        _exporting = true;
+
+        var from = _dateFrom ?? DateTime.Today.AddDays(-29);
+        var to = _dateTo ?? DateTime.Today;
+        var dateLabel = $"{from:yyyyMMdd}-{to:yyyyMMdd}";
+
+        var result = await ReportService.ExportSalesReportAsync(format, from, to, paymentMethod: _paymentMethod);
+
+        if (result.IsSuccess && result.Value is not null)
+        {
+            var base64 = Convert.ToBase64String(result.Value);
+            var mimeType = format == "pdf" ? "application/pdf" : "text/csv";
+            var extension = format == "pdf" ? "pdf" : "csv";
+            await JS.InvokeVoidAsync("downloadFile", base64, $"Ventas_{dateLabel}.{extension}", mimeType);
+        }
+        else
+        {
+            Snackbar.Add(result.Error ?? L["ErrorExportingReport"], Severity.Error);
+        }
+
+        _exporting = false;
+    }
+}

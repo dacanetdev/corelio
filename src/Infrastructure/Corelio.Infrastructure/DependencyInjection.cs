@@ -7,6 +7,7 @@ using Corelio.Infrastructure.Authentication;
 using Corelio.Infrastructure.CFDI;
 using Corelio.Infrastructure.Documents;
 using Corelio.Infrastructure.Email;
+using Corelio.Infrastructure.Reports;
 using Corelio.Infrastructure.MultiTenancy;
 using Corelio.Infrastructure.Persistence;
 using Corelio.Infrastructure.Persistence.Interceptors;
@@ -81,6 +82,10 @@ public static class DependencyInjection
 
         // Register document generation services
         services.AddScoped<ISaleReceiptService, SaleReceiptService>();
+        services.AddScoped<ISalesReportExportService, SalesReportExportService>();
+
+        // Register report query services
+        services.AddScoped<ISalesReportQueryService, SalesReportQueryService>();
 
         // Register CFDI services
         services.AddScoped<ICertificateService, DatabaseCertificateService>();
