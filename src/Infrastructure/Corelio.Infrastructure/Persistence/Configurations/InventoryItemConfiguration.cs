@@ -48,6 +48,12 @@ public class InventoryItemConfiguration : IEntityTypeConfiguration<InventoryItem
             .HasDefaultValue(0m)
             .IsRequired();
 
+        builder.Property(i => i.AverageCost)
+            .HasColumnName("average_cost")
+            .HasColumnType("decimal(18,4)")
+            .HasDefaultValue(0m)
+            .IsRequired();
+
         // Audit fields
         builder.Property(i => i.CreatedAt).HasColumnName("created_at").IsRequired();
         builder.Property(i => i.UpdatedAt).HasColumnName("updated_at");

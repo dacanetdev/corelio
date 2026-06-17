@@ -1856,4 +1856,28 @@
   <data name="ErrorExportingReport" xml:space="preserve">
     <value>Error al exportar el reporte</value>
   </data>
+  <data name="TotalInventoryValue" xml:space="preserve">
+    <value>Valor Total de Inventario</value>
+  </data>
+  <data name="TotalProducts" xml:space="preserve">
+    <value>Productos en Inventario</value>
+  </data>
+  <data name="LowStockAlerts" xml:space="preserve">
+    <value>Alertas de Stock Mínimo</value>
+  </data>
+  <data name="ValueByCategory" xml:space="preserve">
+    <value>Valor por Categoría</value>
+  </data>
+  <data name="ProductValuations" xml:space="preserve">
+    <value>Valuación de Productos</value>
+  </data>
+  <data name="NoInventoryData" xml:space="preserve">
+    <value>No hay productos en inventario con los filtros seleccionados.</value>
+  </data>
+  <data name="GeneratedAt" xml:space="preserve">
+    <value>Generado</value>
+  </data>
+  <data name="Refresh" xml:space="preserve">
+    <value>Actualizar</value>
+  </data>
 </root>

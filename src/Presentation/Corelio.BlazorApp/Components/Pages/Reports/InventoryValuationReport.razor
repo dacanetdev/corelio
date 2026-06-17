@@ -1,0 +1,245 @@
+@page "/reportes/inventario"
+@using Corelio.BlazorApp.Models.Reports
+@using Corelio.BlazorApp.Resources
+@using Corelio.BlazorApp.Services.Reports
+@using Microsoft.Extensions.Localization
+@using MudBlazor
+@using System.Globalization
+@inject IInventoryReportHttpService ReportService
+@inject IJSRuntime JS
+@inject IStringLocalizer<SharedResource> L
+@inject ISnackbar Snackbar
+
+<PageTitle>@L["InventoryReport"] - Corelio</PageTitle>
+
+<MudContainer MaxWidth="MaxWidth.ExtraLarge" Class="mt-4">
+    <MudStack Row="true" AlignItems="AlignItems.Center" Justify="Justify.SpaceBetween" Class="mb-4">
+        <div>
+            <MudText Typo="Typo.h5" GutterBottom="false">@L["InventoryReport"]</MudText>
+            @if (_report is not null)
+            {
+                <MudText Typo="Typo.body2" Color="Color.Secondary">
+                    @L["GeneratedAt"]: @_report.GeneratedAt.ToString("dd/MM/yyyy HH:mm", _esMx)
+                </MudText>
+            }
+        </div>
+        <MudStack Row="true" Spacing="1">
+            <MudButton Variant="Variant.Outlined"
+                       StartIcon="@Icons.Material.Rounded.PictureAsPdf"
+                       Color="Color.Error"
+                       OnClick="@(() => ExportReport("pdf"))"
+                       Disabled="_exporting || _report is null">
+                @L["ExportPdf"]
+            </MudButton>
+            <MudButton Variant="Variant.Outlined"
+                       StartIcon="@Icons.Material.Rounded.TableChart"
+                       Color="Color.Success"
+                       OnClick="@(() => ExportReport("csv"))"
+                       Disabled="_exporting || _report is null">
+                @L["ExportCsv"]
+            </MudButton>
+        </MudStack>
+    </MudStack>
+
+    <MudPaper Elevation="1" Class="pa-4 mb-4">
+        <MudGrid>
+            <MudItem xs="12" md="5" Class="d-flex align-center">
+                <MudButton Variant="Variant.Filled"
+                           Color="Color.Primary"
+                           StartIcon="@Icons.Material.Rounded.Refresh"
+                           OnClick="LoadReport"
+                           FullWidth="true">
+                    @L["Refresh"]
+                </MudButton>
+            </MudItem>
+        </MudGrid>
+    </MudPaper>
+
+    @if (_loading)
+    {
+        <MudText Class="mb-2">@L["GeneratingReport"]</MudText>
+        <MudProgressLinear Indeterminate="true" Color="Color.Primary" />
+    }
+    else if (_errorMessage is not null)
+    {
+        <MudAlert Severity="Severity.Error" Class="mb-4">@_errorMessage</MudAlert>
+    }
+    else if (_report is not null)
+    {
+        <MudGrid Class="mb-4">
+            <MudItem xs="12" md="4">
+                <MudPaper Elevation="2" Class="pa-4 text-center">
+                    <MudText Typo="Typo.caption" Color="Color.Secondary">@L["TotalInventoryValue"]</MudText>
+                    <MudText Typo="Typo.h5" Color="Color.Primary">@_report.TotalInventoryValue.ToString("C", _esMx)</MudText>
+                </MudPaper>
+            </MudItem>
+            <MudItem xs="12" md="4">
+                <MudPaper Elevation="2" Class="pa-4 text-center">
+                    <MudText Typo="Typo.caption" Color="Color.Secondary">@L["TotalProducts"]</MudText>
+                    <MudText Typo="Typo.h5">@_report.TotalProductCount</MudText>
+                </MudPaper>
+            </MudItem>
+            <MudItem xs="12" md="4">
+                <MudPaper Elevation="2" Class="pa-4 text-center">
+                    <MudText Typo="Typo.caption" Color="Color.Secondary">@L["LowStockAlerts"]</MudText>
+                    <MudText Typo="Typo.h5" Color="@(_report.LowStockAlerts.Count > 0 ? Color.Error : Color.Success)">
+                        @_report.LowStockAlerts.Count
+                    </MudText>
+                </MudPaper>
+            </MudItem>
+        </MudGrid>
+
+        @if (_report.TotalProductCount == 0)
+        {
+            <MudAlert Severity="Severity.Info">@L["NoInventoryData"]</MudAlert>
+        }
+        else
+        {
+            <MudGrid>
+                <MudItem xs="12" md="5">
+                    <MudPaper Elevation="1" Class="pa-4 mb-4">
+                        <MudText Typo="Typo.h6" GutterBottom="true">@L["ValueByCategory"]</MudText>
+                        @if (_categoryAmounts.Length > 0)
+                        {
+                            <MudChart ChartType="ChartType.Donut"
+                                      InputData="_categoryAmounts"
+                                      InputLabels="_categoryLabels"
+                                      Width="250px" Height="250px" />
+                        }
+                        <MudTable Items="_report.ValueByCategory" Dense="true" Hover="true" Class="mt-2">
+                            <HeaderContent>
+                                <MudTh>Categoría</MudTh>
+                                <MudTh Style="text-align:right">Valor</MudTh>
+                                <MudTh Style="text-align:right">%</MudTh>
+                            </HeaderContent>
+                            <RowTemplate>
+                                <MudTd>@context.CategoryName</MudTd>
+                                <MudTd Style="text-align:right">@context.TotalValue.ToString("C", _esMx)</MudTd>
+                                <MudTd Style="text-align:right">@context.Percentage.ToString("0.##")%</MudTd>
+                            </RowTemplate>
+                        </MudTable>
+                    </MudPaper>
+                </MudItem>
+
+                <MudItem xs="12" md="7">
+                    <MudPaper Elevation="1" Class="pa-4 mb-4">
+                        <MudText Typo="Typo.h6" GutterBottom="true">@L["ProductValuations"]</MudText>
+                        <MudTable Items="_report.ProductValuations" Dense="true" Hover="true">
+                            <HeaderContent>
+                                <MudTh>Producto</MudTh>
+                                <MudTh>SKU</MudTh>
+                                <MudTh>Categoría</MudTh>
+                                <MudTh Style="text-align:right">Cant.</MudTh>
+                                <MudTh Style="text-align:right">C.P.P.</MudTh>
+                                <MudTh Style="text-align:right">Valor</MudTh>
+                            </HeaderContent>
+                            <RowTemplate>
+                                <MudTd>@context.ProductName</MudTd>
+                                <MudTd>@context.ProductSku</MudTd>
+                                <MudTd>@(context.CategoryName ?? "—")</MudTd>
+                                <MudTd Style="text-align:right">@context.Quantity.ToString("0.##")</MudTd>
+                                <MudTd Style="text-align:right">@context.AverageCost.ToString("C", _esMx)</MudTd>
+                                <MudTd Style="text-align:right">@context.ExtendedValue.ToString("C", _esMx)</MudTd>
+                            </RowTemplate>
+                        </MudTable>
+                    </MudPaper>
+                </MudItem>
+
+                @if (_report.LowStockAlerts.Count > 0)
+                {
+                    <MudItem xs="12">
+                        <MudPaper Elevation="1" Class="pa-4 mb-4">
+                            <MudStack Row="true" AlignItems="AlignItems.Center" Class="mb-2">
+                                <MudIcon Icon="@Icons.Material.Rounded.Warning" Color="Color.Warning" />
+                                <MudText Typo="Typo.h6">@L["LowStockAlerts"] (@_report.LowStockAlerts.Count)</MudText>
+                            </MudStack>
+                            <MudTable Items="_report.LowStockAlerts" Dense="true" Hover="true">
+                                <HeaderContent>
+                                    <MudTh>Producto</MudTh>
+                                    <MudTh>SKU</MudTh>
+                                    <MudTh Style="text-align:right">Existencia</MudTh>
+                                    <MudTh Style="text-align:right">Mínimo</MudTh>
+                                    <MudTh Style="text-align:right">C.P.P.</MudTh>
+                                </HeaderContent>
+                                <RowTemplate>
+                                    <MudTd>@context.ProductName</MudTd>
+                                    <MudTd>@context.ProductSku</MudTd>
+                                    <MudTd Style="text-align:right; color: var(--mud-palette-error)">@context.Quantity.ToString("0.##")</MudTd>
+                                    <MudTd Style="text-align:right">@context.MinimumLevel.ToString("0.##")</MudTd>
+                                    <MudTd Style="text-align:right">@context.AverageCost.ToString("C", _esMx)</MudTd>
+                                </RowTemplate>
+                            </MudTable>
+                        </MudPaper>
+                    </MudItem>
+                }
+            </MudGrid>
+        }
+    }
+</MudContainer>
+
+@code {
+    private static readonly CultureInfo _esMx = CultureInfo.GetCultureInfo("es-MX");
+
+    private bool _loading;
+    private bool _exporting;
+    private string? _errorMessage;
+    private InventoryValuationReportModel? _report;
+
+    private double[] _categoryAmounts = [];
+    private string[] _categoryLabels = [];
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadReport();
+    }
+
+    private async Task LoadReport()
+    {
+        _loading = true;
+        _errorMessage = null;
+        _report = null;
+
+        var result = await ReportService.GetInventoryValuationReportAsync();
+
+        if (result.IsSuccess)
+        {
+            _report = result.Value!;
+            BuildChartData();
+        }
+        else
+        {
+            _errorMessage = result.Error ?? L["ErrorLoadingReport"];
+        }
+
+        _loading = false;
+    }
+
+    private void BuildChartData()
+    {
+        if (_report is null) return;
+
+        _categoryAmounts = _report.ValueByCategory.Select(c => (double)c.TotalValue).ToArray();
+        _categoryLabels = _report.ValueByCategory.Select(c => c.CategoryName).ToArray();
+    }
+
+    private async Task ExportReport(string format)
+    {
+        _exporting = true;
+
+        var result = await ReportService.ExportInventoryReportAsync(format);
+
+        if (result.IsSuccess && result.Value is not null)
+        {
+            var base64 = Convert.ToBase64String(result.Value);
+            var mimeType = format == "pdf" ? "application/pdf" : "text/csv";
+            var extension = format == "pdf" ? "pdf" : "csv";
+            await JS.InvokeVoidAsync("downloadFile", base64, $"Inventario_{DateTime.Today:yyyyMMdd}.{extension}", mimeType);
+        }
+        else
+        {
+            Snackbar.Add(result.Error ?? L["ErrorExportingReport"], Severity.Error);
+        }
+
+        _exporting = false;
+    }
+}

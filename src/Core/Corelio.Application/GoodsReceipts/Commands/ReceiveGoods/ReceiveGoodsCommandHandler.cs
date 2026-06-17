@@ -76,13 +76,19 @@ public class ReceiveGoodsCommandHandler(
                     WarehouseId = request.WarehouseId,
                     Quantity = itemRequest.QuantityReceived,
                     ReservedQuantity = 0,
-                    MinimumLevel = 0
+                    MinimumLevel = 0,
+                    AverageCost = poItem.UnitPrice
                 };
                 inventoryRepository.AddInventoryItem(inventoryItem);
             }
             else
             {
+                var oldQty = inventoryItem.Quantity;
+                var oldCost = inventoryItem.AverageCost;
                 inventoryItem.Quantity += itemRequest.QuantityReceived;
+                inventoryItem.AverageCost = oldQty + itemRequest.QuantityReceived > 0
+                    ? (oldQty * oldCost + itemRequest.QuantityReceived * poItem.UnitPrice) / (oldQty + itemRequest.QuantityReceived)
+                    : poItem.UnitPrice;
                 inventoryRepository.UpdateInventoryItem(inventoryItem);
             }
 
@@ -94,7 +100,8 @@ public class ReceiveGoodsCommandHandler(
                 PurchaseOrderItemId = poItem.Id,
                 ProductId = poItem.ProductId,
                 ProductName = poItem.ProductName,
-                QuantityReceived = itemRequest.QuantityReceived
+                QuantityReceived = itemRequest.QuantityReceived,
+                UnitCost = poItem.UnitPrice
             });
         }
 

@@ -130,8 +130,9 @@ builder.Services.AddScoped<ISupplierHttpService, SupplierHttpService>();
 // Add Purchase Order service
 builder.Services.AddScoped<IPurchaseOrderHttpService, PurchaseOrderHttpService>();
 
-// Add Reports service
+// Add Reports services
 builder.Services.AddScoped<ISalesReportHttpService, SalesReportHttpService>();
+builder.Services.AddScoped<IInventoryReportHttpService, InventoryReportHttpService>();
 
 // Add Theme services
 builder.Services.AddScoped<IDynamicThemeService, DynamicThemeService>();

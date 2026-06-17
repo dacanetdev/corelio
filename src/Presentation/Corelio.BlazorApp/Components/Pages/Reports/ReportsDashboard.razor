@@ -29,10 +29,10 @@
         </MudItem>
 
         <MudItem xs="12" md="4">
-            <MudCard Elevation="2" Style="opacity: 0.6">
+            <MudCard Elevation="2" Class="cursor-pointer" @onclick='() => Nav.NavigateTo("/reportes/inventario")'>
                 <MudCardContent>
                     <MudStack AlignItems="AlignItems.Center" Spacing="2">
-                        <MudIcon Icon="@Icons.Material.Rounded.Inventory" Color="Color.Secondary" Size="Size.Large" />
+                        <MudIcon Icon="@Icons.Material.Rounded.Inventory" Color="Color.Warning" Size="Size.Large" />
                         <MudText Typo="Typo.h6">@L["InventoryReport"]</MudText>
                         <MudText Typo="Typo.body2" Color="Color.Secondary" Align="Align.Center">
                             Valuación de inventario, costo promedio ponderado y alertas de stock bajo.
@@ -40,7 +40,7 @@
                     </MudStack>
                 </MudCardContent>
                 <MudCardActions>
-                    <MudChip T="string" Color="Color.Default" Size="Size.Small">Próximamente</MudChip>
+                    <MudButton Variant="Variant.Text" Color="Color.Warning" FullWidth="true">Ver Reporte</MudButton>
                 </MudCardActions>
             </MudCard>
         </MudItem>

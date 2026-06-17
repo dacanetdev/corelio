@@ -3,8 +3,8 @@
 **Goal:** Deliver a complete Reporting & Analytics module so store owners can view daily sales performance, inventory valuation, and purchase summaries — with chart visualizations and PDF/CSV export — without leaving the Blazor UI.
 
 **Duration:** ~4-5 days estimated
-**Status:** 🔴 Not Started
-**Started:** TBD
+**Status:** 🟡 In Progress
+**Started:** 2026-06-17
 **Total Story Points:** 26 pts
 
 > **Prerequisites:** Sprints 1-12 complete | Sales, InventoryItem, PurchaseOrder, and Supplier entities exist | QuestPDF already integrated (Sprint 9)
@@ -42,16 +42,16 @@
 ## User Story 13.2: Inventory Valuation Report
 **As a store owner or inventory manager, I want to view the current inventory valuation using weighted average cost so that I know the total book value of my stock, which categories hold the most value, and which products are below their minimum stock level.**
 
-**Status:** 🔴 Not Started
+**Status:** 🟢 Complete
 
 | Task ID | Task | Branch | Status | Notes |
 |---------|------|--------|--------|-------|
-| TASK-13.2.1 | Add `AverageCost` (decimal) + `UnitCost` to `GoodsReceiptItem` entity; EF config update; migration `AddInventoryAverageCost`; update `ReceiveGoodsCommandHandler` to recalculate WAC on each goods receipt: `NewAvgCost = (OldQty × OldCost + ReceivedQty × UnitCost) / (OldQty + ReceivedQty)` | - | 🔴 | Schema change — `AverageCost decimal(18,4)` on `InventoryItem`; default 0 for existing rows; `UnitCost decimal(18,4)` on `GoodsReceiptItem` |
-| TASK-13.2.2 | `GetInventoryValuationReportQuery` + handler — join `InventoryItems` → `Products` → `Categories`; compute `ExtendedValue = Quantity × AverageCost`; aggregate `TotalInventoryValue`; group by category for `ValueByCategory`; filter items where `Quantity <= Product.MinStockLevel` for low-stock list | - | 🔴 | Filter params: `WarehouseId?`, `CategoryId?`; returns `InventoryValuationReportDto` |
-| TASK-13.2.3 | `InventoryReportEndpoints.cs` — `GET /api/v1/reports/inventory` + `GET /api/v1/reports/inventory/export?format=pdf\|csv` | - | 🔴 | `reports.inventory.view` permission; reuses migration from TASK-13.1.2 for permission seed |
-| TASK-13.2.4 | `InventoryReportPdfExporter` — QuestPDF: total value header, value-by-category table, full product valuation table (product, category, qty, avg cost, extended value), low-stock alerts section | - | 🔴 | PDF sorted by category then product name |
-| TASK-13.2.5 | `InventoryValuationReport.razor` at `/reportes/inventario` — warehouse/category filters, total value KPI card, `MudChart` donut for value-by-category, `MudDataGrid` for product valuation (sortable by extended value), low-stock alerts `MudAlert` list, export buttons | - | 🔴 | `MudDataGrid` with column sorting; low-stock count badge in page title |
-| TASK-13.2.6 | Unit tests for `GetInventoryValuationReportQuery` handler + WAC calculation in `ReceiveGoodsCommandHandler` | - | 🔴 | 6 tests: correct WAC after first receipt, WAC after second partial receipt, zero-quantity products excluded, low-stock filter, category grouping, empty warehouse |
+| TASK-13.2.1 | Add `AverageCost decimal(18,4)` to `InventoryItem`; `UnitCost decimal(18,4)` to `GoodsReceiptItem`; WAC recalculation in `ReceiveGoodsCommandHandler`; migration `AddInventoryAverageCost` | feature/US-13.2-TASK-1-6-inventory-valuation-report | 🟢 | WAC: `(OldQty×OldCost + RecvQty×UnitCost)/(OldQty+RecvQty)`; new items: `AverageCost = poItem.UnitPrice` |
+| TASK-13.2.2 | `GetInventoryValuationReportQuery` + handler delegates to `IInventoryValuationQueryService` | feature/US-13.2-TASK-1-6-inventory-valuation-report | 🟢 | Returns `InventoryValuationReportDto` with valuations, category groups, low-stock alerts |
+| TASK-13.2.3 | `InventoryReportEndpoints.cs` — `GET /api/v1/reports/inventory` + `/export?format=pdf\|csv`; uses existing `reports.view`/`reports.export` permissions | feature/US-13.2-TASK-1-6-inventory-valuation-report | 🟢 | OpenAPI docs with `WithDescription` + `Produces<T>` |
+| TASK-13.2.4 | `InventoryReportDocument.cs` (QuestPDF A4) + `InventoryReportExportService.cs` (PDF + CSV) | feature/US-13.2-TASK-1-6-inventory-valuation-report | 🟢 | KPI header, category table, product detail table, low-stock alerts section |
+| TASK-13.2.5 | `InventoryValuationReport.razor` at `/reportes/inventario` — KPI cards, MudChart donut (value-by-category), product valuation MudTable, low-stock alerts table, export buttons | feature/US-13.2-TASK-1-6-inventory-valuation-report | 🟢 | Dashboard card now clickable; INVENTARIO nav link added to REPORTES section |
+| TASK-13.2.6 | 6 unit tests in `InventoryValuationReportTests.cs`: empty inventory, single product, category grouping, zero-qty excluded, low-stock alert, warehouse filter, WAC calculation verification | feature/US-13.2-TASK-1-6-inventory-valuation-report | 🟢 | InMemoryDatabase; WAC math test in isolation |
 
 **Acceptance Criteria:**
 - [ ] `AverageCost` on `InventoryItem` updated on every goods receipt using WAC formula
@@ -118,8 +118,8 @@
 
 | Story | Priority | SP | Status |
 |-------|----------|----|--------|
-| US-13.1: Daily Sales Report | P0 Critical | 8 | 🔴 Not Started |
-| US-13.2: Inventory Valuation Report | P0 Critical | 8 | 🔴 Not Started |
+| US-13.1: Daily Sales Report | P0 Critical | 8 | 🟢 Complete |
+| US-13.2: Inventory Valuation Report | P0 Critical | 8 | 🟢 Complete |
 | US-13.3: Purchase Summary Report | P1 High | 6 | 🔴 Not Started |
 | US-13.4: Reports Dashboard & Navigation | P1 High | 4 | 🔴 Not Started |
 | **Total** | | **26** | |

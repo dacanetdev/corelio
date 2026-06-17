@@ -35,6 +35,11 @@ public class InventoryItem : TenantAuditableEntity
     public decimal MinimumLevel { get; set; } = 0;
 
     /// <summary>
+    /// Weighted average cost per unit, updated on each goods receipt.
+    /// </summary>
+    public decimal AverageCost { get; set; } = 0m;
+
+    /// <summary>
     /// Available quantity (Quantity - ReservedQuantity). Computed, not stored.
     /// </summary>
     public decimal AvailableQuantity => Quantity - ReservedQuantity;
