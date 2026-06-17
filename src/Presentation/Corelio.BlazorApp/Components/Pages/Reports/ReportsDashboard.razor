@@ -1,0 +1,65 @@
+@page "/reportes"
+@using Corelio.BlazorApp.Resources
+@using Microsoft.Extensions.Localization
+@using MudBlazor
+@inject IStringLocalizer<SharedResource> L
+@inject NavigationManager Nav
+
+<PageTitle>@L["Reports"] - Corelio</PageTitle>
+
+<MudContainer MaxWidth="MaxWidth.Large" Class="mt-4">
+    <MudText Typo="Typo.h5" GutterBottom="true">@L["ReportDashboard"]</MudText>
+
+    <MudGrid>
+        <MudItem xs="12" md="4">
+            <MudCard Elevation="2" Class="cursor-pointer" @onclick='() => Nav.NavigateTo("/reportes/ventas")'>
+                <MudCardContent>
+                    <MudStack AlignItems="AlignItems.Center" Spacing="2">
+                        <MudIcon Icon="@Icons.Material.Rounded.TrendingUp" Color="Color.Primary" Size="Size.Large" />
+                        <MudText Typo="Typo.h6">@L["SalesReport"]</MudText>
+                        <MudText Typo="Typo.body2" Color="Color.Secondary" Align="Align.Center">
+                            KPIs de ventas, métodos de pago, productos más vendidos y distribución horaria.
+                        </MudText>
+                    </MudStack>
+                </MudCardContent>
+                <MudCardActions>
+                    <MudButton Variant="Variant.Text" Color="Color.Primary" FullWidth="true">Ver Reporte</MudButton>
+                </MudCardActions>
+            </MudCard>
+        </MudItem>
+
+        <MudItem xs="12" md="4">
+            <MudCard Elevation="2" Style="opacity: 0.6">
+                <MudCardContent>
+                    <MudStack AlignItems="AlignItems.Center" Spacing="2">
+                        <MudIcon Icon="@Icons.Material.Rounded.Inventory" Color="Color.Secondary" Size="Size.Large" />
+                        <MudText Typo="Typo.h6">@L["InventoryReport"]</MudText>
+                        <MudText Typo="Typo.body2" Color="Color.Secondary" Align="Align.Center">
+                            Valuación de inventario, costo promedio ponderado y alertas de stock bajo.
+                        </MudText>
+                    </MudStack>
+                </MudCardContent>
+                <MudCardActions>
+                    <MudChip T="string" Color="Color.Default" Size="Size.Small">Próximamente</MudChip>
+                </MudCardActions>
+            </MudCard>
+        </MudItem>
+
+        <MudItem xs="12" md="4">
+            <MudCard Elevation="2" Style="opacity: 0.6">
+                <MudCardContent>
+                    <MudStack AlignItems="AlignItems.Center" Spacing="2">
+                        <MudIcon Icon="@Icons.Material.Rounded.ShoppingCart" Color="Color.Secondary" Size="Size.Large" />
+                        <MudText Typo="Typo.h6">@L["PurchaseReport"]</MudText>
+                        <MudText Typo="Typo.body2" Color="Color.Secondary" Align="Align.Center">
+                            Resumen de compras por proveedor, estado de órdenes y cantidades pendientes.
+                        </MudText>
+                    </MudStack>
+                </MudCardContent>
+                <MudCardActions>
+                    <MudChip T="string" Color="Color.Default" Size="Size.Small">Próximamente</MudChip>
+                </MudCardActions>
+            </MudCard>
+        </MudItem>
+    </MudGrid>
+</MudContainer>

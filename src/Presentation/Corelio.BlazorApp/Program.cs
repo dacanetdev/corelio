@@ -14,6 +14,7 @@ using Corelio.BlazorApp.Services.Pricing;
 using Corelio.BlazorApp.Services.Products;
 using Corelio.BlazorApp.Services.Suppliers;
 using Corelio.BlazorApp.Services.PurchaseOrders;
+using Corelio.BlazorApp.Services.Reports;
 using Corelio.BlazorApp.Services.Theming;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Localization;
@@ -128,6 +129,9 @@ builder.Services.AddScoped<ISupplierHttpService, SupplierHttpService>();
 
 // Add Purchase Order service
 builder.Services.AddScoped<IPurchaseOrderHttpService, PurchaseOrderHttpService>();
+
+// Add Reports service
+builder.Services.AddScoped<ISalesReportHttpService, SalesReportHttpService>();
 
 // Add Theme services
 builder.Services.AddScoped<IDynamicThemeService, DynamicThemeService>();

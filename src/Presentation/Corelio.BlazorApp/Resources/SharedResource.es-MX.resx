@@ -1799,4 +1799,61 @@
   <data name="AtLeastOneItem" xml:space="preserve">
     <value>Debe agregar al menos un artículo</value>
   </data>
+  <data name="Reports" xml:space="preserve">
+    <value>Reportes</value>
+  </data>
+  <data name="SalesReport" xml:space="preserve">
+    <value>Reporte de Ventas</value>
+  </data>
+  <data name="InventoryReport" xml:space="preserve">
+    <value>Reporte de Inventario</value>
+  </data>
+  <data name="PurchaseReport" xml:space="preserve">
+    <value>Reporte de Compras</value>
+  </data>
+  <data name="ReportDashboard" xml:space="preserve">
+    <value>Panel de Reportes</value>
+  </data>
+  <data name="TotalSales" xml:space="preserve">
+    <value>Total Ventas</value>
+  </data>
+  <data name="Transactions" xml:space="preserve">
+    <value>Transacciones</value>
+  </data>
+  <data name="AverageTicket" xml:space="preserve">
+    <value>Ticket Promedio</value>
+  </data>
+  <data name="PaymentMethodBreakdown" xml:space="preserve">
+    <value>Ventas por Método de Pago</value>
+  </data>
+  <data name="TopProducts" xml:space="preserve">
+    <value>Top 10 Productos</value>
+  </data>
+  <data name="HourlyDistribution" xml:space="preserve">
+    <value>Distribución por Hora</value>
+  </data>
+  <data name="CashierBreakdown" xml:space="preserve">
+    <value>Ventas por Cajero</value>
+  </data>
+  <data name="ExportPdf" xml:space="preserve">
+    <value>Exportar PDF</value>
+  </data>
+  <data name="ExportCsv" xml:space="preserve">
+    <value>Exportar CSV</value>
+  </data>
+  <data name="GeneratingReport" xml:space="preserve">
+    <value>Generando reporte...</value>
+  </data>
+  <data name="NoSalesInPeriod" xml:space="preserve">
+    <value>No hay ventas en el período seleccionado.</value>
+  </data>
+  <data name="ReportPeriod" xml:space="preserve">
+    <value>Período</value>
+  </data>
+  <data name="ErrorLoadingReport" xml:space="preserve">
+    <value>Error al cargar el reporte</value>
+  </data>
+  <data name="ErrorExportingReport" xml:space="preserve">
+    <value>Error al exportar el reporte</value>
+  </data>
 </root>
