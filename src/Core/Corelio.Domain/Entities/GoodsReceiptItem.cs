@@ -20,4 +20,7 @@ public class GoodsReceiptItem
     public string ProductName { get; set; } = string.Empty;
 
     public decimal QuantityReceived { get; set; }
+
+    /// <summary>Unit cost from the purchase order item at time of receipt.</summary>
+    public decimal UnitCost { get; set; } = 0m;
 }

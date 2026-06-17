@@ -28,6 +28,7 @@ public static class EndpointExtensions
         app.MapPurchaseOrderEndpoints();
         app.MapGoodsReceiptEndpoints();
         app.MapReportEndpoints();
+        app.MapInventoryReportEndpoints();
 
         return app;
     }

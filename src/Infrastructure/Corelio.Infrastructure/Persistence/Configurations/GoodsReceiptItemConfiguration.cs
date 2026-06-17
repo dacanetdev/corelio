@@ -40,6 +40,12 @@ public class GoodsReceiptItemConfiguration : IEntityTypeConfiguration<GoodsRecei
             .HasPrecision(18, 4)
             .IsRequired();
 
+        builder.Property(i => i.UnitCost)
+            .HasColumnName("unit_cost")
+            .HasPrecision(18, 4)
+            .HasDefaultValue(0m)
+            .IsRequired();
+
         // Relationships
         builder.HasOne(i => i.PurchaseOrderItem)
             .WithMany()

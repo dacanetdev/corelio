@@ -83,9 +83,11 @@ public static class DependencyInjection
         // Register document generation services
         services.AddScoped<ISaleReceiptService, SaleReceiptService>();
         services.AddScoped<ISalesReportExportService, SalesReportExportService>();
+        services.AddScoped<IInventoryReportExportService, InventoryReportExportService>();
 
         // Register report query services
         services.AddScoped<ISalesReportQueryService, SalesReportQueryService>();
+        services.AddScoped<IInventoryValuationQueryService, InventoryValuationQueryService>();
 
         // Register CFDI services
         services.AddScoped<ICertificateService, DatabaseCertificateService>();
@@ -194,6 +196,12 @@ public static class DependencyInjection
 
         // Register document generation services
         builder.Services.AddScoped<ISaleReceiptService, SaleReceiptService>();
+        builder.Services.AddScoped<ISalesReportExportService, SalesReportExportService>();
+        builder.Services.AddScoped<IInventoryReportExportService, InventoryReportExportService>();
+
+        // Register report query services
+        builder.Services.AddScoped<ISalesReportQueryService, SalesReportQueryService>();
+        builder.Services.AddScoped<IInventoryValuationQueryService, InventoryValuationQueryService>();
 
         // Register CFDI services
         builder.Services.AddScoped<ICertificateService, DatabaseCertificateService>();
