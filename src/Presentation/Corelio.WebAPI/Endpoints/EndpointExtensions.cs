@@ -13,6 +13,7 @@ public static class EndpointExtensions
     public static IEndpointRouteBuilder MapAllEndpoints(this IEndpointRouteBuilder app)
     {
         app.MapAuthEndpoints();
+        app.MapUserEndpoints();
         app.MapTenantEndpoints();
         app.MapTenantThemeEndpoints();
         app.MapProductEndpoints();
