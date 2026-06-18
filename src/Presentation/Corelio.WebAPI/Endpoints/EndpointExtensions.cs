@@ -14,6 +14,7 @@ public static class EndpointExtensions
     {
         app.MapAuthEndpoints();
         app.MapUserEndpoints();
+        app.MapWarehouseEndpoints();
         app.MapTenantEndpoints();
         app.MapTenantThemeEndpoints();
         app.MapProductEndpoints();

@@ -38,11 +38,10 @@
                           DebounceInterval="300"
                           OnDebounceIntervalElapsed="OnSearchChanged"
                           Style="flex:1" />
-            <MudSelect T="bool?" @bind-Value="_isActiveFilter"
+            <MudSelect T="bool?" Value="_isActiveFilter"
                        Label="@L["Status"]"
                        Style="width:160px"
                        Clearable="true"
-                       ClearIcon="@Icons.Material.Rounded.Clear"
                        ValueChanged="OnFilterChanged">
                 <MudSelectItem T="bool?" Value="true">@L["Active"]</MudSelectItem>
                 <MudSelectItem T="bool?" Value="false">@L["Inactive"]</MudSelectItem>

@@ -1971,6 +1971,7 @@
   <data name="WarehouseRetail" xml:space="preserve"><value>Tienda</value></data>
   <data name="WarehouseVirtual" xml:space="preserve"><value>Virtual</value></data>
   <data name="WarehouseConsignment" xml:space="preserve"><value>Consignación</value></data>
+  <data name="IsDefaultWarehouseHelper" xml:space="preserve"><value>El almacén principal se usa para las ventas en el punto de venta</value></data>
   <data name="WarehouseCreatedSuccessfully" xml:space="preserve"><value>Almacén creado exitosamente</value></data>
   <data name="WarehouseUpdatedSuccessfully" xml:space="preserve"><value>Almacén actualizado exitosamente</value></data>
   <data name="WarehouseDeletedSuccessfully" xml:space="preserve"><value>Almacén eliminado exitosamente</value></data>

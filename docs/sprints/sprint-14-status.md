@@ -40,14 +40,14 @@
 ## User Story 14.2: Warehouse Management
 **As an administrator, I want to create and manage warehouses so I can track inventory across multiple store locations.**
 
-**Status:** 🔴 Not Started
+**Status:** 🟢 Complete
 
 | Task ID | Task | Branch | Status | Notes |
 |---------|------|--------|--------|-------|
-| TASK-14.2.1 | Extend `IInventoryRepository` with warehouse CRUD methods; implement in `InventoryRepository`; `CreateWarehouseCommand`, `UpdateWarehouseCommand`, `DeleteWarehouseCommand` + handlers + validator; migration `AddWarehousePermissionsSeed` | feature/US-14.2-TASK-1-4-warehouse-management | 🔴 | |
-| TASK-14.2.2 | `WarehouseEndpoints.cs` — `POST`, `PUT /{id}`, `DELETE /{id}` at `/api/v1/warehouses`; register in `EndpointExtensions` | feature/US-14.2-TASK-1-4-warehouse-management | 🔴 | GET already exists in InventoryEndpoints |
-| TASK-14.2.3 | `WarehouseModels.cs`, `IWarehouseHttpService`, `WarehouseHttpService`; `WarehouseList.razor` at `/admin/almacenes`; `WarehouseForm.razor` at `/admin/almacenes/nuevo` + `/{Id:guid}/editar`; register in `Program.cs`; ~15 localization keys | feature/US-14.2-TASK-1-4-warehouse-management | 🔴 | |
-| TASK-14.2.4 | Unit tests: `CreateWarehouseCommandHandlerTests` (3), `UpdateWarehouseCommandHandlerTests` (2), `DeleteWarehouseCommandHandlerTests` (3) | feature/US-14.2-TASK-1-4-warehouse-management | 🔴 | |
+| TASK-14.2.1 | Extend `IInventoryRepository` with warehouse CRUD methods; implement in `InventoryRepository`; `CreateWarehouseCommand`, `UpdateWarehouseCommand`, `DeleteWarehouseCommand` + handlers + validator; migration `AddWarehousePermissionsSeed` | feature/US-14.2-TASK-1-4-warehouse-management | 🟢 | Migration 20260618192240; GUIDs f1111111-...-111{1-4} |
+| TASK-14.2.2 | `WarehouseEndpoints.cs` — `POST`, `PUT /{id}`, `DELETE /{id}` at `/api/v1/warehouses`; register in `EndpointExtensions` | feature/US-14.2-TASK-1-4-warehouse-management | 🟢 | GET already exists in InventoryEndpoints |
+| TASK-14.2.3 | `WarehouseModels.cs`, `IWarehouseHttpService`, `WarehouseHttpService`; `WarehouseList.razor` at `/admin/almacenes`; `WarehouseForm.razor` at `/admin/almacenes/nuevo` + `/{Id:guid}/editar`; register in `Program.cs`; ~15 localization keys | feature/US-14.2-TASK-1-4-warehouse-management | 🟢 | |
+| TASK-14.2.4 | Unit tests: `CreateWarehouseCommandHandlerTests` (3), `UpdateWarehouseCommandHandlerTests` (2), `DeleteWarehouseCommandHandlerTests` (3) | feature/US-14.2-TASK-1-4-warehouse-management | 🟢 | 8 tests — 279 Application Tests total |
 
 **Acceptance Criteria:**
 - [ ] Admin can list all warehouses with type, default badge, and inventory item count
@@ -87,7 +87,7 @@
 | Story | Priority | SP | Status |
 |-------|----------|----|--------|
 | US-14.1: User Management | P0 Critical | 8 | 🟢 Complete |
-| US-14.2: Warehouse Management | P1 High | 5 | 🔴 Not Started |
+| US-14.2: Warehouse Management | P1 High | 5 | 🟢 Complete |
 | US-14.3: Roles Viewer | P2 Medium | 3 | 🔴 Not Started |
 | **Total** | | **16** | 🟡 In Progress |
 

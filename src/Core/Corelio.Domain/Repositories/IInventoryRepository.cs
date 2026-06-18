@@ -36,4 +36,12 @@ public interface IInventoryRepository
     void AddInventoryItem(InventoryItem item);
     void UpdateInventoryItem(InventoryItem item);
     void AddTransaction(InventoryTransaction transaction);
+
+    // Warehouse CRUD
+    Task AddWarehouseAsync(Warehouse warehouse, CancellationToken cancellationToken = default);
+    void UpdateWarehouse(Warehouse warehouse);
+    void DeleteWarehouse(Warehouse warehouse);
+    Task<Warehouse?> GetWarehouseByIdAsync(Guid id, CancellationToken cancellationToken = default);
+    Task<bool> WarehouseHasInventoryAsync(Guid id, CancellationToken cancellationToken = default);
+    Task UnsetDefaultWarehouseAsync(CancellationToken cancellationToken = default);
 }
