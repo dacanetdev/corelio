@@ -90,6 +90,7 @@ public static class DependencyInjection
         services.AddScoped<ISalesReportQueryService, SalesReportQueryService>();
         services.AddScoped<IInventoryValuationQueryService, InventoryValuationQueryService>();
         services.AddScoped<IPurchaseSummaryQueryService, PurchaseSummaryQueryService>();
+        services.AddScoped<IDashboardSummaryService, DashboardSummaryService>();
 
         // Register CFDI services
         services.AddScoped<ICertificateService, DatabaseCertificateService>();
@@ -206,6 +207,7 @@ public static class DependencyInjection
         builder.Services.AddScoped<ISalesReportQueryService, SalesReportQueryService>();
         builder.Services.AddScoped<IInventoryValuationQueryService, InventoryValuationQueryService>();
         builder.Services.AddScoped<IPurchaseSummaryQueryService, PurchaseSummaryQueryService>();
+        builder.Services.AddScoped<IDashboardSummaryService, DashboardSummaryService>();
 
         // Register CFDI services
         builder.Services.AddScoped<ICertificateService, DatabaseCertificateService>();

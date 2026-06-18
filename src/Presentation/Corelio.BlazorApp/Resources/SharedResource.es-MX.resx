@@ -1901,4 +1901,24 @@
   <data name="NoPurchasesInPeriod" xml:space="preserve">
     <value>No hay órdenes de compra en el período seleccionado.</value>
   </data>
+
+  <!-- Reports Dashboard KPIs -->
+  <data name="TodaysSales" xml:space="preserve">
+    <value>Ventas Hoy</value>
+  </data>
+  <data name="TodaysTransactions" xml:space="preserve">
+    <value>transacciones</value>
+  </data>
+  <data name="CriticalStock" xml:space="preserve">
+    <value>Stock Crítico</value>
+  </data>
+  <data name="PendingPOs" xml:space="preserve">
+    <value>OC Pendientes</value>
+  </data>
+  <data name="LastUpdated" xml:space="preserve">
+    <value>Última actualización</value>
+  </data>
+  <data name="LoadingDashboard" xml:space="preserve">
+    <value>Cargando datos del tablero...</value>
+  </data>
 </root>
