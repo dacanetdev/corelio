@@ -46,10 +46,10 @@
         </MudItem>
 
         <MudItem xs="12" md="4">
-            <MudCard Elevation="2" Style="opacity: 0.6">
+            <MudCard Elevation="2" Class="cursor-pointer" @onclick='() => Nav.NavigateTo("/reportes/compras")'>
                 <MudCardContent>
                     <MudStack AlignItems="AlignItems.Center" Spacing="2">
-                        <MudIcon Icon="@Icons.Material.Rounded.ShoppingCart" Color="Color.Secondary" Size="Size.Large" />
+                        <MudIcon Icon="@Icons.Material.Rounded.ShoppingCart" Color="Color.Success" Size="Size.Large" />
                         <MudText Typo="Typo.h6">@L["PurchaseReport"]</MudText>
                         <MudText Typo="Typo.body2" Color="Color.Secondary" Align="Align.Center">
                             Resumen de compras por proveedor, estado de órdenes y cantidades pendientes.
@@ -57,7 +57,7 @@
                     </MudStack>
                 </MudCardContent>
                 <MudCardActions>
-                    <MudChip T="string" Color="Color.Default" Size="Size.Small">Próximamente</MudChip>
+                    <MudButton Variant="Variant.Text" Color="Color.Success" FullWidth="true">Ver Reporte</MudButton>
                 </MudCardActions>
             </MudCard>
         </MudItem>

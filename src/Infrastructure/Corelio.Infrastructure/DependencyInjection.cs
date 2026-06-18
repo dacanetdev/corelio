@@ -84,10 +84,12 @@ public static class DependencyInjection
         services.AddScoped<ISaleReceiptService, SaleReceiptService>();
         services.AddScoped<ISalesReportExportService, SalesReportExportService>();
         services.AddScoped<IInventoryReportExportService, InventoryReportExportService>();
+        services.AddScoped<IPurchaseReportExportService, PurchaseReportExportService>();
 
         // Register report query services
         services.AddScoped<ISalesReportQueryService, SalesReportQueryService>();
         services.AddScoped<IInventoryValuationQueryService, InventoryValuationQueryService>();
+        services.AddScoped<IPurchaseSummaryQueryService, PurchaseSummaryQueryService>();
 
         // Register CFDI services
         services.AddScoped<ICertificateService, DatabaseCertificateService>();
@@ -198,10 +200,12 @@ public static class DependencyInjection
         builder.Services.AddScoped<ISaleReceiptService, SaleReceiptService>();
         builder.Services.AddScoped<ISalesReportExportService, SalesReportExportService>();
         builder.Services.AddScoped<IInventoryReportExportService, InventoryReportExportService>();
+        builder.Services.AddScoped<IPurchaseReportExportService, PurchaseReportExportService>();
 
         // Register report query services
         builder.Services.AddScoped<ISalesReportQueryService, SalesReportQueryService>();
         builder.Services.AddScoped<IInventoryValuationQueryService, InventoryValuationQueryService>();
+        builder.Services.AddScoped<IPurchaseSummaryQueryService, PurchaseSummaryQueryService>();
 
         // Register CFDI services
         builder.Services.AddScoped<ICertificateService, DatabaseCertificateService>();

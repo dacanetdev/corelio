@@ -69,15 +69,15 @@
 ## User Story 13.3: Purchase Summary Report
 **As a store owner, I want a purchase summary report showing spending by supplier, order status breakdown, and received-vs-pending quantities per period so that I can evaluate supplier relationships and track outstanding deliveries.**
 
-**Status:** 🔴 Not Started
+**Status:** 🟢 Complete
 
 | Task ID | Task | Branch | Status | Notes |
 |---------|------|--------|--------|-------|
-| TASK-13.3.1 | `GetPurchaseSummaryReportQuery` + handler — aggregate `PurchaseOrders` + `PurchaseOrderItems` + `Suppliers`; compute: total spent (Approved+PartiallyReceived+Received orders), order count by status, top suppliers by amount, received vs ordered quantities per product; filter params: `DateFrom`, `DateTo`, `SupplierId?`, `Status?` | - | 🔴 | Returns `PurchaseSummaryReportDto`; `AsNoTracking()` |
-| TASK-13.3.2 | `PurchaseReportEndpoints.cs` — `GET /api/v1/reports/purchases` + `GET /api/v1/reports/purchases/export?format=pdf\|csv` | - | 🔴 | `reports.purchases.view` permission; reuses migration from TASK-13.1.2 |
-| TASK-13.3.3 | `PurchaseReportPdfExporter` — QuestPDF: period header, KPI row (total orders, total amount, pending deliveries), spending-by-supplier table, order status breakdown table, received-vs-pending table per product | - | 🔴 | Follows InvoicePdfService layout patterns |
-| TASK-13.3.4 | `PurchaseSummaryReport.razor` at `/reportes/compras` — date range + supplier filters, KPI cards (total orders, total amount, pending orders), `MudChart` bar for spending by supplier (top 5), `MudDataGrid` for received-vs-pending per product, status breakdown chips with counts, export buttons | - | 🔴 | Top-5 suppliers bar chart; remaining suppliers shown in table below |
-| TASK-13.3.5 | Unit tests for `GetPurchaseSummaryReportQuery` handler | - | 🔴 | 5 tests: date range filter, supplier filter, status-only pending orders excluded from total spent, zero orders returns empty, spending by supplier ranking |
+| TASK-13.3.1 | `GetPurchaseSummaryReportQuery` + handler — aggregate `PurchaseOrders` + `PurchaseOrderItems` + `Suppliers`; compute: total spent (Approved+PartiallyReceived+Received orders), order count by status, top suppliers by amount, received vs ordered quantities per product; filter params: `DateFrom`, `DateTo`, `SupplierId?`, `Status?` | feature/US-13.3-TASK-1-5-purchase-summary-report | 🟢 | `PurchaseSummaryQueryService`; two EF queries to avoid cartesian product; memory grouping for by-supplier and by-status |
+| TASK-13.3.2 | `PurchaseReportEndpoints.cs` — `GET /api/v1/reports/purchases` + `GET /api/v1/reports/purchases/export?format=pdf\|csv` | feature/US-13.3-TASK-1-5-purchase-summary-report | 🟢 | `reports.view`/`reports.export` permissions; status param accepted as `int?` and cast to enum |
+| TASK-13.3.3 | `PurchaseReportDocument.cs` (QuestPDF A4) + `PurchaseReportExportService.cs` (PDF + CSV) | feature/US-13.3-TASK-1-5-purchase-summary-report | 🟢 | KPI row, spending-by-supplier table, status breakdown, conditional product receipts section |
+| TASK-13.3.4 | `PurchaseSummaryReport.razor` at `/reportes/compras` — date range + supplier filters, KPI cards, bar chart top-5 suppliers, status breakdown table, product receipts table, export buttons | feature/US-13.3-TASK-1-5-purchase-summary-report | 🟢 | Dashboard card now clickable; COMPRAS report nav link added to REPORTES section |
+| TASK-13.3.5 | 6 unit tests in `PurchaseSummaryReportTests.cs` | feature/US-13.3-TASK-1-5-purchase-summary-report | 🟢 | Empty range, spending status filter, pending delivery count, supplier grouping+sort, supplier filter, Spanish status names |
 
 **Acceptance Criteria:**
 - [ ] Report shows total orders, total amount spent, and count of pending deliveries for the selected period
@@ -120,7 +120,7 @@
 |-------|----------|----|--------|
 | US-13.1: Daily Sales Report | P0 Critical | 8 | 🟢 Complete |
 | US-13.2: Inventory Valuation Report | P0 Critical | 8 | 🟢 Complete |
-| US-13.3: Purchase Summary Report | P1 High | 6 | 🔴 Not Started |
+| US-13.3: Purchase Summary Report | P1 High | 6 | 🟢 Complete |
 | US-13.4: Reports Dashboard & Navigation | P1 High | 4 | 🔴 Not Started |
 | **Total** | | **26** | |
 

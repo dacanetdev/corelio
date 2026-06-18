@@ -1,0 +1,281 @@
+@page "/reportes/compras"
+@using Corelio.BlazorApp.Models.Reports
+@using Corelio.BlazorApp.Resources
+@using Corelio.BlazorApp.Services.Reports
+@using Microsoft.Extensions.Localization
+@using MudBlazor
+@using System.Globalization
+@inject IPurchaseReportHttpService ReportService
+@inject IJSRuntime JS
+@inject IStringLocalizer<SharedResource> L
+@inject ISnackbar Snackbar
+
+<PageTitle>@L["PurchaseReport"] - Corelio</PageTitle>
+
+<MudContainer MaxWidth="MaxWidth.ExtraLarge" Class="mt-4">
+    <MudStack Row="true" AlignItems="AlignItems.Center" Justify="Justify.SpaceBetween" Class="mb-4">
+        <div>
+            <MudText Typo="Typo.h5" GutterBottom="false">@L["PurchaseReport"]</MudText>
+            <MudText Typo="Typo.body2" Color="Color.Secondary">
+                @L["ReportPeriod"]: @(_dateFrom?.ToString("dd/MM/yyyy", _esMx)) — @(_dateTo?.ToString("dd/MM/yyyy", _esMx))
+            </MudText>
+        </div>
+        <MudStack Row="true" Spacing="1">
+            <MudButton Variant="Variant.Outlined"
+                       StartIcon="@Icons.Material.Rounded.PictureAsPdf"
+                       Color="Color.Error"
+                       OnClick="@(() => ExportReport("pdf"))"
+                       Disabled="_exporting">
+                @L["ExportPdf"]
+            </MudButton>
+            <MudButton Variant="Variant.Outlined"
+                       StartIcon="@Icons.Material.Rounded.TableChart"
+                       Color="Color.Success"
+                       OnClick="@(() => ExportReport("csv"))"
+                       Disabled="_exporting">
+                @L["ExportCsv"]
+            </MudButton>
+        </MudStack>
+    </MudStack>
+
+    <MudPaper Elevation="1" Class="pa-4 mb-4">
+        <MudGrid>
+            <MudItem xs="12" md="4">
+                <MudDatePicker Label="@L["DateFrom"]"
+                               Date="_dateFrom"
+                               DateChanged="OnDateFromChanged"
+                               DateFormat="dd/MM/yyyy"
+                               Culture="@_esMx"
+                               Clearable="false" />
+            </MudItem>
+            <MudItem xs="12" md="4">
+                <MudDatePicker Label="@L["DateTo"]"
+                               Date="_dateTo"
+                               DateChanged="OnDateToChanged"
+                               DateFormat="dd/MM/yyyy"
+                               Culture="@_esMx"
+                               Clearable="false" />
+            </MudItem>
+            <MudItem xs="12" md="4" Class="d-flex align-center">
+                <MudButton Variant="Variant.Filled"
+                           Color="Color.Primary"
+                           StartIcon="@Icons.Material.Rounded.Refresh"
+                           OnClick="LoadReport"
+                           FullWidth="true">
+                    @L["Refresh"]
+                </MudButton>
+            </MudItem>
+        </MudGrid>
+    </MudPaper>
+
+    @if (_loading)
+    {
+        <MudText Class="mb-2">@L["GeneratingReport"]</MudText>
+        <MudProgressLinear Indeterminate="true" Color="Color.Primary" />
+    }
+    else if (_errorMessage is not null)
+    {
+        <MudAlert Severity="Severity.Error" Class="mb-4">@_errorMessage</MudAlert>
+    }
+    else if (_report is not null)
+    {
+        <MudGrid Class="mb-4">
+            <MudItem xs="12" md="4">
+                <MudPaper Elevation="2" Class="pa-4 text-center">
+                    <MudText Typo="Typo.caption" Color="Color.Secondary">@L["TotalOrders"]</MudText>
+                    <MudText Typo="Typo.h5">@_report.TotalOrders</MudText>
+                </MudPaper>
+            </MudItem>
+            <MudItem xs="12" md="4">
+                <MudPaper Elevation="2" Class="pa-4 text-center">
+                    <MudText Typo="Typo.caption" Color="Color.Secondary">@L["TotalSpent"]</MudText>
+                    <MudText Typo="Typo.h5" Color="Color.Primary">@_report.TotalAmountSpent.ToString("C", _esMx)</MudText>
+                </MudPaper>
+            </MudItem>
+            <MudItem xs="12" md="4">
+                <MudPaper Elevation="2" Class="pa-4 text-center">
+                    <MudText Typo="Typo.caption" Color="Color.Secondary">@L["PendingDeliveries"]</MudText>
+                    <MudText Typo="Typo.h5" Color="Color.Warning">@_report.PendingDeliveries</MudText>
+                </MudPaper>
+            </MudItem>
+        </MudGrid>
+
+        @if (_report.TotalOrders == 0)
+        {
+            <MudAlert Severity="Severity.Info">@L["NoPurchasesInPeriod"]</MudAlert>
+        }
+        else
+        {
+            <MudGrid>
+                <MudItem xs="12" md="7">
+                    <MudPaper Elevation="1" Class="pa-4 mb-4">
+                        <MudText Typo="Typo.h6" GutterBottom="true">@L["BySupplier"]</MudText>
+                        @if (_supplierChartData.Length > 0)
+                        {
+                            <MudChart ChartType="ChartType.Bar"
+                                      ChartSeries="_supplierSeries"
+                                      XAxisLabels="_supplierLabels"
+                                      Width="100%" Height="220px" />
+                        }
+                        <MudTable Items="_report.BySupplier" Dense="true" Hover="true" Class="mt-2">
+                            <HeaderContent>
+                                <MudTh>Proveedor</MudTh>
+                                <MudTh Style="text-align:right">Órdenes</MudTh>
+                                <MudTh Style="text-align:right">Total</MudTh>
+                            </HeaderContent>
+                            <RowTemplate>
+                                <MudTd>@context.SupplierName</MudTd>
+                                <MudTd Style="text-align:right">@context.OrderCount</MudTd>
+                                <MudTd Style="text-align:right">@context.TotalAmount.ToString("C", _esMx)</MudTd>
+                            </RowTemplate>
+                        </MudTable>
+                    </MudPaper>
+                </MudItem>
+
+                <MudItem xs="12" md="5">
+                    <MudPaper Elevation="1" Class="pa-4 mb-4">
+                        <MudText Typo="Typo.h6" GutterBottom="true">@L["ByStatus"]</MudText>
+                        <MudTable Items="_report.ByStatus" Dense="true" Hover="true">
+                            <HeaderContent>
+                                <MudTh>Estatus</MudTh>
+                                <MudTh Style="text-align:right">Órdenes</MudTh>
+                                <MudTh Style="text-align:right">Total</MudTh>
+                            </HeaderContent>
+                            <RowTemplate>
+                                <MudTd>@context.StatusName</MudTd>
+                                <MudTd Style="text-align:right">@context.OrderCount</MudTd>
+                                <MudTd Style="text-align:right">@context.TotalAmount.ToString("C", _esMx)</MudTd>
+                            </RowTemplate>
+                        </MudTable>
+                    </MudPaper>
+                </MudItem>
+
+                @if (_report.ProductReceipts.Count > 0)
+                {
+                    <MudItem xs="12">
+                        <MudPaper Elevation="1" Class="pa-4 mb-4">
+                            <MudText Typo="Typo.h6" GutterBottom="true">@L["ProductReceipts"]</MudText>
+                            <MudTable Items="_report.ProductReceipts" Dense="true" Hover="true" SortLabel="Ordenar por">
+                                <HeaderContent>
+                                    <MudTh><MudTableSortLabel SortBy="new Func<ProductReceiptModel, object>(x => x.ProductName)">Producto</MudTableSortLabel></MudTh>
+                                    <MudTh>SKU</MudTh>
+                                    <MudTh Style="text-align:right"><MudTableSortLabel SortBy="new Func<ProductReceiptModel, object>(x => x.OrderedQuantity)">Ordenado</MudTableSortLabel></MudTh>
+                                    <MudTh Style="text-align:right"><MudTableSortLabel SortBy="new Func<ProductReceiptModel, object>(x => x.ReceivedQuantity)">Recibido</MudTableSortLabel></MudTh>
+                                    <MudTh Style="text-align:right"><MudTableSortLabel SortBy="new Func<ProductReceiptModel, object>(x => x.PendingQuantity)">Pendiente</MudTableSortLabel></MudTh>
+                                </HeaderContent>
+                                <RowTemplate>
+                                    <MudTd>@context.ProductName</MudTd>
+                                    <MudTd>@context.ProductSku</MudTd>
+                                    <MudTd Style="text-align:right">@context.OrderedQuantity.ToString("0.##")</MudTd>
+                                    <MudTd Style="text-align:right">@context.ReceivedQuantity.ToString("0.##")</MudTd>
+                                    <MudTd Style="text-align:right">
+                                        <MudText Color="@(context.PendingQuantity > 0 ? Color.Warning : Color.Success)">
+                                            @context.PendingQuantity.ToString("0.##")
+                                        </MudText>
+                                    </MudTd>
+                                </RowTemplate>
+                            </MudTable>
+                        </MudPaper>
+                    </MudItem>
+                }
+            </MudGrid>
+        }
+    }
+</MudContainer>
+
+@code {
+    private static readonly CultureInfo _esMx = CultureInfo.GetCultureInfo("es-MX");
+
+    private DateTime? _dateFrom = DateTime.Today.AddDays(-30);
+    private DateTime? _dateTo = DateTime.Today;
+
+    private bool _loading;
+    private bool _exporting;
+    private string? _errorMessage;
+    private PurchaseSummaryReportModel? _report;
+
+    private double[] _supplierChartData = [];
+    private string[] _supplierLabels = [];
+    private List<ChartSeries> _supplierSeries = [];
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadReport();
+    }
+
+    private Task OnDateFromChanged(DateTime? date)
+    {
+        _dateFrom = date;
+        return Task.CompletedTask;
+    }
+
+    private Task OnDateToChanged(DateTime? date)
+    {
+        _dateTo = date;
+        return Task.CompletedTask;
+    }
+
+    private async Task LoadReport()
+    {
+        _loading = true;
+        _errorMessage = null;
+        _report = null;
+
+        var from = _dateFrom ?? DateTime.Today.AddDays(-30);
+        var to = _dateTo ?? DateTime.Today;
+
+        var result = await ReportService.GetPurchaseSummaryReportAsync(from, to);
+
+        if (result.IsSuccess)
+        {
+            _report = result.Value!;
+            BuildChartData();
+        }
+        else
+        {
+            _errorMessage = result.Error ?? L["ErrorLoadingReport"];
+        }
+
+        _loading = false;
+    }
+
+    private void BuildChartData()
+    {
+        if (_report is null)
+        {
+            return;
+        }
+
+        var top5 = _report.BySupplier.Take(5).ToList();
+        _supplierChartData = top5.Select(s => (double)s.TotalAmount).ToArray();
+        _supplierLabels = top5.Select(s => s.SupplierName.Length > 12
+            ? s.SupplierName[..12] + "…"
+            : s.SupplierName).ToArray();
+        _supplierSeries = [new ChartSeries { Name = "Total Compras", Data = _supplierChartData }];
+    }
+
+    private async Task ExportReport(string format)
+    {
+        _exporting = true;
+
+        var from = _dateFrom ?? DateTime.Today.AddDays(-30);
+        var to = _dateTo ?? DateTime.Today;
+        var dateLabel = $"{from:yyyyMMdd}-{to:yyyyMMdd}";
+
+        var result = await ReportService.ExportPurchaseReportAsync(format, from, to);
+
+        if (result.IsSuccess && result.Value is not null)
+        {
+            var base64 = Convert.ToBase64String(result.Value);
+            var mimeType = format == "pdf" ? "application/pdf" : "text/csv";
+            var extension = format == "pdf" ? "pdf" : "csv";
+            await JS.InvokeVoidAsync("downloadFile", base64, $"Compras_{dateLabel}.{extension}", mimeType);
+        }
+        else
+        {
+            Snackbar.Add(result.Error ?? L["ErrorExportingReport"], Severity.Error);
+        }
+
+        _exporting = false;
+    }
+}
