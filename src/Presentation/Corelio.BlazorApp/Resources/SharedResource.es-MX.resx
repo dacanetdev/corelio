@@ -1880,4 +1880,25 @@
   <data name="Refresh" xml:space="preserve">
     <value>Actualizar</value>
   </data>
+  <data name="TotalOrders" xml:space="preserve">
+    <value>Total Órdenes</value>
+  </data>
+  <data name="TotalSpent" xml:space="preserve">
+    <value>Total Gastado</value>
+  </data>
+  <data name="PendingDeliveries" xml:space="preserve">
+    <value>Entregas Pendientes</value>
+  </data>
+  <data name="BySupplier" xml:space="preserve">
+    <value>Gasto por Proveedor</value>
+  </data>
+  <data name="ByStatus" xml:space="preserve">
+    <value>Desglose por Estatus</value>
+  </data>
+  <data name="ProductReceipts" xml:space="preserve">
+    <value>Recibido vs. Pendiente</value>
+  </data>
+  <data name="NoPurchasesInPeriod" xml:space="preserve">
+    <value>No hay órdenes de compra en el período seleccionado.</value>
+  </data>
 </root>
