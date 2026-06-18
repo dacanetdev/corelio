@@ -23,4 +23,10 @@ public interface IRoleRepository
     /// <param name="cancellationToken">Cancellation token.</param>
     /// <returns>The role if found, otherwise null.</returns>
     Task<Role?> GetByIdAsync(Guid roleId, CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// Gets all roles visible to the given tenant, including their permissions.
+    /// Returns system roles (TenantId == null) plus any tenant-specific roles.
+    /// </summary>
+    Task<List<Role>> GetAllWithPermissionsAsync(Guid? tenantId, CancellationToken cancellationToken = default);
 }

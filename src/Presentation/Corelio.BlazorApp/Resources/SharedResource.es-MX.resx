@@ -1988,4 +1988,5 @@
   <data name="Permissions" xml:space="preserve"><value>Permisos</value></data>
   <data name="NoRolesFound" xml:space="preserve"><value>No se encontraron roles</value></data>
   <data name="ErrorLoadingRoles" xml:space="preserve"><value>Error al cargar los roles</value></data>
+  <data name="NoPermissionsAssigned" xml:space="preserve"><value>Sin permisos asignados</value></data>
 </root>

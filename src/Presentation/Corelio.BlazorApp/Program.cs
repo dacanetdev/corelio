@@ -14,6 +14,7 @@ using Corelio.BlazorApp.Services.Pricing;
 using Corelio.BlazorApp.Services.Products;
 using Corelio.BlazorApp.Services.Suppliers;
 using Corelio.BlazorApp.Services.PurchaseOrders;
+using Corelio.BlazorApp.Services.Roles;
 using Corelio.BlazorApp.Services.Users;
 using Corelio.BlazorApp.Services.Warehouses;
 using Corelio.BlazorApp.Services.Reports;
@@ -137,6 +138,9 @@ builder.Services.AddScoped<IUserHttpService, UserHttpService>();
 
 // Add Warehouse management service
 builder.Services.AddScoped<IWarehouseHttpService, WarehouseHttpService>();
+
+// Add Role viewer service
+builder.Services.AddScoped<IRoleHttpService, RoleHttpService>();
 
 // Add Reports services
 builder.Services.AddScoped<IDashboardHttpService, DashboardHttpService>();

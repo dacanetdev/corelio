@@ -3,7 +3,7 @@
 **Goal:** Deliver a tenant Administration module so store owners can manage users (employees, roles, access), warehouses, and view role definitions — all from the Blazor UI without needing direct API access.
 
 **Duration:** ~3-4 days estimated
-**Status:** 🟡 In Progress
+**Status:** 🟢 Complete
 **Started:** 2026-06-18
 **Total Story Points:** 16 pts
 
@@ -64,13 +64,13 @@
 ## User Story 14.3: Roles Viewer
 **As an administrator, I want to view the available roles and their permission sets so I know what access level to assign when creating or editing users.**
 
-**Status:** 🔴 Not Started
+**Status:** 🟢 Complete
 
 | Task ID | Task | Branch | Status | Notes |
 |---------|------|--------|--------|-------|
-| TASK-14.3.1 | Extend `IRoleRepository` with `GetAllWithPermissionsAsync`; implement in `RoleRepository`; `RoleDto`, `GetRolesQuery` + handler | feature/US-14.3-TASK-1-3-roles-viewer | 🔴 | |
-| TASK-14.3.2 | `RoleEndpoints.cs` — `GET /api/v1/roles` (requires `users.view`); register in `EndpointExtensions` | feature/US-14.3-TASK-1-3-roles-viewer | 🔴 | |
-| TASK-14.3.3 | `RoleModels.cs`, `IRoleHttpService`, `RoleHttpService`; `RoleList.razor` at `/admin/roles`; add Roles link to ADMINISTRACIÓN nav section; ~10 localization keys | feature/US-14.3-TASK-1-3-roles-viewer | 🔴 | |
+| TASK-14.3.1 | Extend `IRoleRepository` with `GetAllWithPermissionsAsync`; implement in `RoleRepository`; `RoleDto`, `GetRolesQuery` + handler | feature/US-14.3-TASK-1-3-roles-viewer | 🟢 | RoleDto + PermissionSummaryDto; query includes permissions via eager load |
+| TASK-14.3.2 | `RoleEndpoints.cs` — `GET /api/v1/roles` (requires `users.view`); register in `EndpointExtensions` | feature/US-14.3-TASK-1-3-roles-viewer | 🟢 | |
+| TASK-14.3.3 | `RoleModels.cs`, `IRoleHttpService`, `RoleHttpService`; `RoleList.razor` at `/admin/roles`; Roles link already in nav from US-14.1.4; 1 new localization key | feature/US-14.3-TASK-1-3-roles-viewer | 🟢 | Expansion panels show permissions as chips grouped by module |
 
 **Acceptance Criteria:**
 - [ ] Admin can view all available roles (system roles visible to all tenants)
@@ -88,8 +88,8 @@
 |-------|----------|----|--------|
 | US-14.1: User Management | P0 Critical | 8 | 🟢 Complete |
 | US-14.2: Warehouse Management | P1 High | 5 | 🟢 Complete |
-| US-14.3: Roles Viewer | P2 Medium | 3 | 🔴 Not Started |
-| **Total** | | **16** | 🟡 In Progress |
+| US-14.3: Roles Viewer | P2 Medium | 3 | 🟢 Complete |
+| **Total** | | **16** | 🟢 Complete |
 
 **Recommended execution order:** US-14.1 → US-14.2 → US-14.3
 
