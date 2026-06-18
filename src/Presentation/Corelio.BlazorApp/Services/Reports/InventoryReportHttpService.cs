@@ -23,8 +23,8 @@ public class InventoryReportHttpService(
         try
         {
             var queryParams = new List<string>();
-            if (warehouseId.HasValue) queryParams.Add($"warehouseId={warehouseId.Value}");
-            if (categoryId.HasValue) queryParams.Add($"categoryId={categoryId.Value}");
+            if (warehouseId.HasValue) { queryParams.Add($"warehouseId={warehouseId.Value}"); }
+            if (categoryId.HasValue) { queryParams.Add($"categoryId={categoryId.Value}"); }
 
             var url = queryParams.Count > 0 ? $"{BaseUrl}?{string.Join("&", queryParams)}" : BaseUrl;
             var response = await httpClient.GetAsync(url, cancellationToken);
@@ -57,8 +57,8 @@ public class InventoryReportHttpService(
         try
         {
             var queryParams = new List<string> { $"format={format}" };
-            if (warehouseId.HasValue) queryParams.Add($"warehouseId={warehouseId.Value}");
-            if (categoryId.HasValue) queryParams.Add($"categoryId={categoryId.Value}");
+            if (warehouseId.HasValue) { queryParams.Add($"warehouseId={warehouseId.Value}"); }
+            if (categoryId.HasValue) { queryParams.Add($"categoryId={categoryId.Value}"); }
 
             var url = $"{BaseUrl}/export?{string.Join("&", queryParams)}";
             var response = await httpClient.GetAsync(url, cancellationToken);

@@ -20,7 +20,8 @@ public class GetWarehousesQueryHandler(
         var dtos = warehouses.Select(w => new WarehouseDto(
             w.Id,
             w.Name,
-            w.IsDefault)).ToList();
+            w.IsDefault,
+            w.Type)).ToList();
 
         return Result<List<WarehouseDto>>.Success(dtos);
     }

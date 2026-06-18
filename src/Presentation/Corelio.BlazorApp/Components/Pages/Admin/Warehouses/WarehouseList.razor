@@ -1,0 +1,186 @@
+@page "/admin/almacenes"
+@using Corelio.BlazorApp.Models.Warehouses
+@using Corelio.BlazorApp.Resources
+@using Corelio.BlazorApp.Services.Warehouses
+@using Microsoft.Extensions.Localization
+@using MudBlazor
+@inject IWarehouseHttpService WarehouseService
+@inject IStringLocalizer<SharedResource> L
+@inject ISnackbar Snackbar
+@inject NavigationManager Nav
+
+<PageTitle>@L["Warehouses"] - Corelio</PageTitle>
+
+<MudContainer MaxWidth="MaxWidth.Large" Class="mt-4">
+    <MudStack Row="true" AlignItems="AlignItems.Center" Justify="Justify.SpaceBetween" Class="mb-4">
+        <div>
+            <MudText Typo="Typo.h5" GutterBottom="false">@L["Warehouses"]</MudText>
+            <MudText Typo="Typo.body2" Color="Color.Secondary">@L["WarehouseListDescription"]</MudText>
+        </div>
+        <MudButton Variant="Variant.Filled" Color="Color.Primary"
+                   StartIcon="@Icons.Material.Rounded.Add"
+                   Href="/admin/almacenes/nuevo">
+            @L["CreateWarehouse"]
+        </MudButton>
+    </MudStack>
+
+    @if (_loading)
+    {
+        <MudProgressLinear Indeterminate="true" Color="Color.Primary" />
+    }
+    else if (_error is not null)
+    {
+        <MudAlert Severity="Severity.Error">@_error</MudAlert>
+    }
+    else if (_warehouses.Count == 0)
+    {
+        <MudPaper Elevation="0" Class="pa-8 text-center">
+            <MudIcon Icon="@Icons.Material.Rounded.Warehouse" Color="Color.Secondary" Size="Size.Large" />
+            <MudText Typo="Typo.h6" Class="mt-2">@L["NoWarehousesFound"]</MudText>
+        </MudPaper>
+    }
+    else
+    {
+        <MudTable Items="_warehouses" Hover="true" Breakpoint="Breakpoint.Sm" Dense="true" Striped="true">
+            <HeaderContent>
+                <MudTh>@L["Name"]</MudTh>
+                <MudTh>@L["WarehouseType"]</MudTh>
+                <MudTh>@L["Status"]</MudTh>
+                <MudTh>@L["Actions"]</MudTh>
+            </HeaderContent>
+            <RowTemplate>
+                <MudTd DataLabel="@L["Name"]">
+                    <MudStack Row="true" AlignItems="AlignItems.Center" Spacing="1">
+                        <MudText Typo="Typo.body2" Class="fw-medium">@context.Name</MudText>
+                        @if (context.IsDefault)
+                        {
+                            <MudChip T="string" Size="Size.Small" Color="Color.Primary">@L["WarehouseMain"]</MudChip>
+                        }
+                    </MudStack>
+                </MudTd>
+                <MudTd DataLabel="@L["WarehouseType"]">
+                    <MudChip T="string" Size="Size.Small" Color="Color.Default" Variant="Variant.Outlined">
+                        @GetTypeLabel(context.Type)
+                    </MudChip>
+                </MudTd>
+                <MudTd DataLabel="@L["Status"]">
+                    @if (context.IsDefault)
+                    {
+                        <MudText Color="Color.Primary">@L["IsDefaultWarehouse"]</MudText>
+                    }
+                    else
+                    {
+                        <MudText Color="Color.Secondary">@L["WarehouseSecondary"]</MudText>
+                    }
+                </MudTd>
+                <MudTd DataLabel="@L["Actions"]">
+                    <MudIconButton Icon="@Icons.Material.Rounded.Edit" Size="Size.Small"
+                                   Href="@($"/admin/almacenes/{context.Id}/editar")" />
+                    @if (!context.IsDefault)
+                    {
+                        <MudIconButton Icon="@Icons.Material.Rounded.Delete" Size="Size.Small"
+                                       Color="Color.Error"
+                                       OnClick="@(() => ConfirmDelete(context))" />
+                    }
+                </MudTd>
+            </RowTemplate>
+        </MudTable>
+    }
+</MudContainer>
+
+@* Delete confirmation dialog *@
+<MudDialog @bind-Visible="_showDeleteDialog">
+    <TitleContent>@L["DeleteWarehouse"]</TitleContent>
+    <DialogContent>
+        <MudText>@L["DeleteWarehouseConfirmation"]</MudText>
+        @if (_warehouseToDelete is not null)
+        {
+            <MudText Class="mt-2"><strong>@_warehouseToDelete.Name</strong></MudText>
+        }
+    </DialogContent>
+    <DialogActions>
+        <MudButton OnClick="@(() => _showDeleteDialog = false)">@L["Cancel"]</MudButton>
+        <MudButton Color="Color.Error" Variant="Variant.Filled"
+                   OnClick="DoDelete" Disabled="_deleting">
+            @if (_deleting)
+            {
+                <MudProgressCircular Size="Size.Small" Indeterminate="true" />
+            }
+            else
+            {
+                @L["Delete"]
+            }
+        </MudButton>
+    </DialogActions>
+</MudDialog>
+
+@code {
+    private List<WarehouseListModel> _warehouses = [];
+    private bool _loading = true;
+    private string? _error;
+    private bool _showDeleteDialog;
+    private bool _deleting;
+    private WarehouseListModel? _warehouseToDelete;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadWarehouses();
+    }
+
+    private async Task LoadWarehouses()
+    {
+        _loading = true;
+        _error = null;
+
+        var result = await WarehouseService.GetWarehousesAsync();
+
+        if (result.IsSuccess && result.Value is not null)
+        {
+            _warehouses = result.Value;
+        }
+        else
+        {
+            _error = result.Error ?? L["ErrorLoadingWarehouses"];
+        }
+
+        _loading = false;
+    }
+
+    private void ConfirmDelete(WarehouseListModel warehouse)
+    {
+        _warehouseToDelete = warehouse;
+        _showDeleteDialog = true;
+    }
+
+    private async Task DoDelete()
+    {
+        if (_warehouseToDelete is null) { return; }
+
+        _deleting = true;
+        var result = await WarehouseService.DeleteWarehouseAsync(_warehouseToDelete.Id);
+
+        if (result.IsSuccess)
+        {
+            Snackbar.Add(L["WarehouseDeletedSuccessfully"], Severity.Success);
+            _showDeleteDialog = false;
+            _warehouseToDelete = null;
+            await LoadWarehouses();
+        }
+        else
+        {
+            Snackbar.Add(result.Error ?? L["ErrorDeletingWarehouse"], Severity.Error);
+        }
+
+        _deleting = false;
+    }
+
+    private string GetTypeLabel(string type) => type?.ToLowerInvariant() switch
+    {
+        "main" => L["WarehouseMain"],
+        "secondary" => L["WarehouseSecondary"],
+        "retail" => L["WarehouseRetail"],
+        "virtual" => L["WarehouseVirtual"],
+        "consignment" => L["WarehouseConsignment"],
+        _ => type ?? string.Empty
+    };
+}

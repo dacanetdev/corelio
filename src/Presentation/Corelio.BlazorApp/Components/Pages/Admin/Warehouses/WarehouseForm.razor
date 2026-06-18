@@ -1,0 +1,142 @@
+@page "/admin/almacenes/nuevo"
+@page "/admin/almacenes/{Id:guid}/editar"
+@using Corelio.BlazorApp.Models.Warehouses
+@using Corelio.BlazorApp.Resources
+@using Corelio.BlazorApp.Services.Warehouses
+@using Microsoft.Extensions.Localization
+@using MudBlazor
+@inject IWarehouseHttpService WarehouseService
+@inject IStringLocalizer<SharedResource> L
+@inject ISnackbar Snackbar
+@inject NavigationManager Nav
+
+<PageTitle>@(Id.HasValue ? L["EditWarehouse"] : L["CreateWarehouse"]) - Corelio</PageTitle>
+
+<MudContainer MaxWidth="MaxWidth.Small" Class="mt-4">
+    <MudStack Row="true" AlignItems="AlignItems.Center" Class="mb-4">
+        <MudIconButton Icon="@Icons.Material.Rounded.ArrowBack" Href="/admin/almacenes" />
+        <MudText Typo="Typo.h5">@(Id.HasValue ? L["EditWarehouse"] : L["CreateWarehouse"])</MudText>
+    </MudStack>
+
+    @if (_loading)
+    {
+        <MudProgressLinear Indeterminate="true" Color="Color.Primary" />
+    }
+    else
+    {
+        <MudPaper Elevation="1" Class="pa-4">
+            <MudForm @ref="_form" @bind-IsValid="_isValid">
+                <MudGrid Spacing="2">
+                    <MudItem xs="12">
+                        <MudTextField @bind-Value="_model.Name"
+                                      Label="@L["Name"]"
+                                      Required="true"
+                                      RequiredError="@L["NameRequired"]" />
+                    </MudItem>
+                    <MudItem xs="12">
+                        <MudSelect @bind-Value="_model.Type"
+                                   Label="@L["WarehouseType"]"
+                                   Required="true">
+                            <MudSelectItem Value="@("main")">@L["WarehouseMain"]</MudSelectItem>
+                            <MudSelectItem Value="@("secondary")">@L["WarehouseSecondary"]</MudSelectItem>
+                            <MudSelectItem Value="@("retail")">@L["WarehouseRetail"]</MudSelectItem>
+                            <MudSelectItem Value="@("virtual")">@L["WarehouseVirtual"]</MudSelectItem>
+                            <MudSelectItem Value="@("consignment")">@L["WarehouseConsignment"]</MudSelectItem>
+                        </MudSelect>
+                    </MudItem>
+                    <MudItem xs="12">
+                        <MudSwitch @bind-Value="_model.IsDefault"
+                                   Label="@L["IsDefaultWarehouse"]"
+                                   Color="Color.Primary" />
+                    </MudItem>
+                </MudGrid>
+            </MudForm>
+        </MudPaper>
+
+        <MudStack Row="true" Justify="Justify.FlexEnd" Spacing="2" Class="mt-4">
+            <MudButton Variant="Variant.Text" Href="/admin/almacenes">@L["Cancel"]</MudButton>
+            <MudButton Variant="Variant.Filled" Color="Color.Primary"
+                       OnClick="Save" Disabled="_saving">
+                @if (_saving)
+                {
+                    <MudProgressCircular Size="Size.Small" Indeterminate="true" />
+                }
+                else
+                {
+                    @L["Save"]
+                }
+            </MudButton>
+        </MudStack>
+    }
+</MudContainer>
+
+@code {
+    [Parameter] public Guid? Id { get; set; }
+
+    private WarehouseFormModel _model = new();
+    private MudForm _form = null!;
+    private bool _isValid;
+    private bool _loading;
+    private bool _saving;
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (Id.HasValue)
+        {
+            _loading = true;
+            // Load existing warehouse from list to prefill
+            var listResult = await WarehouseService.GetWarehousesAsync();
+            if (listResult.IsSuccess && listResult.Value is not null)
+            {
+                var existing = listResult.Value.FirstOrDefault(w => w.Id == Id.Value);
+                if (existing is not null)
+                {
+                    _model = new WarehouseFormModel
+                    {
+                        Name = existing.Name,
+                        Type = existing.Type,
+                        IsDefault = existing.IsDefault
+                    };
+                }
+            }
+            _loading = false;
+        }
+    }
+
+    private async Task Save()
+    {
+        await _form.Validate();
+        if (!_isValid) { return; }
+
+        _saving = true;
+
+        if (Id.HasValue)
+        {
+            var result = await WarehouseService.UpdateWarehouseAsync(Id.Value, _model);
+            if (result.IsSuccess)
+            {
+                Snackbar.Add(L["WarehouseUpdatedSuccessfully"], Severity.Success);
+                Nav.NavigateTo("/admin/almacenes");
+            }
+            else
+            {
+                Snackbar.Add(result.Error ?? L["ErrorUpdatingWarehouse"], Severity.Error);
+            }
+        }
+        else
+        {
+            var result = await WarehouseService.CreateWarehouseAsync(_model);
+            if (result.IsSuccess)
+            {
+                Snackbar.Add(L["WarehouseCreatedSuccessfully"], Severity.Success);
+                Nav.NavigateTo("/admin/almacenes");
+            }
+            else
+            {
+                Snackbar.Add(result.Error ?? L["ErrorCreatingWarehouse"], Severity.Error);
+            }
+        }
+
+        _saving = false;
+    }
+}

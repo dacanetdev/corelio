@@ -142,7 +142,7 @@ public class UserHttpService(AuthenticatedHttpClient httpClient, ILogger<UserHtt
     {
         try
         {
-            var response = await httpClient.PutAsync($"{BaseUrl}/{id}/deactivate", null, cancellationToken);
+            var response = await httpClient.PutAsync($"{BaseUrl}/{id}/deactivate", cancellationToken);
 
             if (response.IsSuccessStatusCode)
             {
@@ -163,7 +163,7 @@ public class UserHttpService(AuthenticatedHttpClient httpClient, ILogger<UserHtt
     {
         try
         {
-            var response = await httpClient.PutAsync($"{BaseUrl}/{id}/activate", null, cancellationToken);
+            var response = await httpClient.PutAsync($"{BaseUrl}/{id}/activate", cancellationToken);
 
             if (response.IsSuccessStatusCode)
             {

@@ -136,4 +136,43 @@ public class InventoryRepository(ApplicationDbContext context) : IInventoryRepos
     {
         context.InventoryTransactions.Add(transaction);
     }
+
+    public async Task AddWarehouseAsync(Warehouse warehouse, CancellationToken cancellationToken = default)
+    {
+        await context.Warehouses.AddAsync(warehouse, cancellationToken);
+    }
+
+    public void UpdateWarehouse(Warehouse warehouse)
+    {
+        context.Warehouses.Update(warehouse);
+    }
+
+    public void DeleteWarehouse(Warehouse warehouse)
+    {
+        context.Warehouses.Remove(warehouse);
+    }
+
+    public async Task<Warehouse?> GetWarehouseByIdAsync(Guid id, CancellationToken cancellationToken = default)
+    {
+        return await context.Warehouses
+            .FirstOrDefaultAsync(w => w.Id == id, cancellationToken);
+    }
+
+    public async Task<bool> WarehouseHasInventoryAsync(Guid id, CancellationToken cancellationToken = default)
+    {
+        return await context.InventoryItems
+            .AnyAsync(i => i.WarehouseId == id, cancellationToken);
+    }
+
+    public async Task UnsetDefaultWarehouseAsync(CancellationToken cancellationToken = default)
+    {
+        var defaultWarehouse = await context.Warehouses
+            .FirstOrDefaultAsync(w => w.IsDefault, cancellationToken);
+
+        if (defaultWarehouse is not null)
+        {
+            defaultWarehouse.IsDefault = false;
+            context.Warehouses.Update(defaultWarehouse);
+        }
+    }
 }

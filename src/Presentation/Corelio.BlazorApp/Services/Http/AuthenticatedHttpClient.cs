@@ -80,6 +80,15 @@ public class AuthenticatedHttpClient(HttpClient httpClient, ITokenService tokenS
     }
 
     /// <summary>
+    /// Sends a PUT request with no body and automatic authorization header.
+    /// </summary>
+    public async Task<HttpResponseMessage> PutAsync(string requestUri, CancellationToken cancellationToken = default)
+    {
+        await AddAuthorizationHeaderAsync();
+        return await httpClient.PutAsync(requestUri, content: null, cancellationToken);
+    }
+
+    /// <summary>
     /// Sends a DELETE request with automatic authorization header.
     /// </summary>
     public async Task<HttpResponseMessage> DeleteAsync(string requestUri, CancellationToken cancellationToken = default)
