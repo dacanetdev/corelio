@@ -45,4 +45,10 @@ public interface IUserRepository
     /// </summary>
     /// <param name="user">The user to update.</param>
     void Update(User user);
+
+    /// <summary>
+    /// Gets a paged list of users for the current tenant with optional search and status filter.
+    /// </summary>
+    Task<(List<User> Users, int TotalCount)> GetPagedAsync(
+        int page, int size, string? search, bool? isActive, CancellationToken cancellationToken = default);
 }

@@ -51,4 +51,39 @@ public class UserRepository(ApplicationDbContext context) : IUserRepository
     {
         context.Users.Update(user);
     }
+
+    public async Task<(List<User> Users, int TotalCount)> GetPagedAsync(
+        int page, int size, string? search, bool? isActive, CancellationToken cancellationToken = default)
+    {
+        var query = context.Users
+            .Include(u => u.UserRoles)
+                .ThenInclude(ur => ur.Role)
+            .AsNoTracking()
+            .AsQueryable();
+
+        if (!string.IsNullOrWhiteSpace(search))
+        {
+            var term = search.ToLower();
+            query = query.Where(u =>
+                EF.Functions.ILike(u.Email, $"%{term}%") ||
+                EF.Functions.ILike(u.FirstName, $"%{term}%") ||
+                EF.Functions.ILike(u.LastName, $"%{term}%"));
+        }
+
+        if (isActive.HasValue)
+        {
+            query = query.Where(u => u.IsActive == isActive.Value);
+        }
+
+        var totalCount = await query.CountAsync(cancellationToken);
+
+        var users = await query
+            .OrderBy(u => u.FirstName)
+            .ThenBy(u => u.LastName)
+            .Skip((page - 1) * size)
+            .Take(size)
+            .ToListAsync(cancellationToken);
+
+        return (users, totalCount);
+    }
 }

@@ -1921,4 +1921,70 @@
   <data name="LoadingDashboard" xml:space="preserve">
     <value>Cargando datos del tablero...</value>
   </data>
+  <!-- Sprint 14: Administration Module -->
+  <!-- US-14.1: User Management -->
+  <data name="Users" xml:space="preserve"><value>Usuarios</value></data>
+  <data name="User" xml:space="preserve"><value>Usuario</value></data>
+  <data name="UserListDescription" xml:space="preserve"><value>Administra los usuarios y sus roles de acceso en tu empresa</value></data>
+  <data name="CreateUser" xml:space="preserve"><value>Nuevo Usuario</value></data>
+  <data name="EditUser" xml:space="preserve"><value>Editar Usuario</value></data>
+  <data name="DeactivateUser" xml:space="preserve"><value>Desactivar Usuario</value></data>
+  <data name="ActivateUser" xml:space="preserve"><value>Activar Usuario</value></data>
+  <data name="SearchUsers" xml:space="preserve"><value>Buscar usuarios...</value></data>
+  <data name="NoUsersFound" xml:space="preserve"><value>No se encontraron usuarios</value></data>
+  <data name="NoUsersDescription" xml:space="preserve"><value>Crea el primer usuario para comenzar</value></data>
+  <data name="LastLogin" xml:space="preserve"><value>Último Acceso</value></data>
+  <data name="AssignRoles" xml:space="preserve"><value>Asignar Roles</value></data>
+  <data name="RolesHelperText" xml:space="preserve"><value>Selecciona uno o más roles para el usuario</value></data>
+  <data name="PersonalInfo" xml:space="preserve"><value>Información Personal</value></data>
+  <data name="EmploymentInfo" xml:space="preserve"><value>Información Laboral</value></data>
+  <data name="EmployeeCode" xml:space="preserve"><value>Código de Empleado</value></data>
+  <data name="HireDate" xml:space="preserve"><value>Fecha de Ingreso</value></data>
+  <data name="UserActive" xml:space="preserve"><value>Usuario Activo</value></data>
+  <data name="Mobile" xml:space="preserve"><value>Celular</value></data>
+  <data name="DeactivateUserConfirmation" xml:space="preserve"><value>¿Estás seguro de que deseas desactivar este usuario? El usuario no podrá iniciar sesión hasta que sea reactivado.</value></data>
+  <data name="Deactivate" xml:space="preserve"><value>Desactivar</value></data>
+  <data name="UserCreatedSuccessfully" xml:space="preserve"><value>Usuario creado exitosamente</value></data>
+  <data name="UserUpdatedSuccessfully" xml:space="preserve"><value>Usuario actualizado exitosamente</value></data>
+  <data name="UserDeactivated" xml:space="preserve"><value>Usuario desactivado exitosamente</value></data>
+  <data name="UserActivated" xml:space="preserve"><value>Usuario activado exitosamente</value></data>
+  <data name="ErrorLoadingUsers" xml:space="preserve"><value>Error al cargar los usuarios</value></data>
+  <data name="ErrorLoadingUser" xml:space="preserve"><value>Error al cargar el usuario</value></data>
+  <data name="ErrorCreatingUser" xml:space="preserve"><value>Error al crear el usuario</value></data>
+  <data name="ErrorUpdatingUser" xml:space="preserve"><value>Error al actualizar el usuario</value></data>
+  <data name="ErrorDeactivatingUser" xml:space="preserve"><value>Error al desactivar el usuario</value></data>
+  <data name="ErrorActivatingUser" xml:space="preserve"><value>Error al activar el usuario</value></data>
+  <data name="ErrorAssigningRoles" xml:space="preserve"><value>Error al asignar los roles</value></data>
+  <!-- US-14.2: Warehouse Management -->
+  <data name="Warehouses" xml:space="preserve"><value>Almacenes</value></data>
+  <data name="Warehouse" xml:space="preserve"><value>Almacén</value></data>
+  <data name="WarehouseListDescription" xml:space="preserve"><value>Administra los almacenes y ubicaciones de inventario</value></data>
+  <data name="CreateWarehouse" xml:space="preserve"><value>Nuevo Almacén</value></data>
+  <data name="EditWarehouse" xml:space="preserve"><value>Editar Almacén</value></data>
+  <data name="DeleteWarehouse" xml:space="preserve"><value>Eliminar Almacén</value></data>
+  <data name="DeleteWarehouseConfirmation" xml:space="preserve"><value>¿Estás seguro de que deseas eliminar este almacén?</value></data>
+  <data name="WarehouseType" xml:space="preserve"><value>Tipo</value></data>
+  <data name="IsDefaultWarehouse" xml:space="preserve"><value>Almacén Principal (para POS)</value></data>
+  <data name="NoWarehousesFound" xml:space="preserve"><value>No se encontraron almacenes</value></data>
+  <data name="WarehouseMain" xml:space="preserve"><value>Principal</value></data>
+  <data name="WarehouseSecondary" xml:space="preserve"><value>Secundario</value></data>
+  <data name="WarehouseRetail" xml:space="preserve"><value>Tienda</value></data>
+  <data name="WarehouseVirtual" xml:space="preserve"><value>Virtual</value></data>
+  <data name="WarehouseConsignment" xml:space="preserve"><value>Consignación</value></data>
+  <data name="WarehouseCreatedSuccessfully" xml:space="preserve"><value>Almacén creado exitosamente</value></data>
+  <data name="WarehouseUpdatedSuccessfully" xml:space="preserve"><value>Almacén actualizado exitosamente</value></data>
+  <data name="WarehouseDeletedSuccessfully" xml:space="preserve"><value>Almacén eliminado exitosamente</value></data>
+  <data name="ErrorLoadingWarehouses" xml:space="preserve"><value>Error al cargar los almacenes</value></data>
+  <data name="ErrorCreatingWarehouse" xml:space="preserve"><value>Error al crear el almacén</value></data>
+  <data name="ErrorUpdatingWarehouse" xml:space="preserve"><value>Error al actualizar el almacén</value></data>
+  <data name="ErrorDeletingWarehouse" xml:space="preserve"><value>Error al eliminar el almacén</value></data>
+  <!-- US-14.3: Roles Viewer -->
+  <data name="Roles" xml:space="preserve"><value>Roles</value></data>
+  <data name="Role" xml:space="preserve"><value>Rol</value></data>
+  <data name="RoleListDescription" xml:space="preserve"><value>Consulta los roles disponibles y los permisos que otorgan</value></data>
+  <data name="SystemRole" xml:space="preserve"><value>Rol del Sistema</value></data>
+  <data name="CustomRole" xml:space="preserve"><value>Rol Personalizado</value></data>
+  <data name="Permissions" xml:space="preserve"><value>Permisos</value></data>
+  <data name="NoRolesFound" xml:space="preserve"><value>No se encontraron roles</value></data>
+  <data name="ErrorLoadingRoles" xml:space="preserve"><value>Error al cargar los roles</value></data>
 </root>

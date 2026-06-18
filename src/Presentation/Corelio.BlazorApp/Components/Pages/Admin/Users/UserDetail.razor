@@ -1,0 +1,215 @@
+@page "/admin/usuarios/{Id:guid}"
+@using Corelio.BlazorApp.Models.Users
+@using Corelio.BlazorApp.Resources
+@using Corelio.BlazorApp.Services.Users
+@using Microsoft.Extensions.Localization
+@using MudBlazor
+@inject IUserHttpService UserService
+@inject IStringLocalizer<SharedResource> L
+@inject ISnackbar Snackbar
+@inject NavigationManager Nav
+
+<PageTitle>@L["EditUser"] - Corelio</PageTitle>
+
+<MudContainer MaxWidth="MaxWidth.Large" Class="mt-4">
+    <MudStack Row="true" AlignItems="AlignItems.Center" Class="mb-4">
+        <MudIconButton Icon="@Icons.Material.Rounded.ArrowBack" Href="/admin/usuarios" />
+        <MudText Typo="Typo.h5">@L["EditUser"]</MudText>
+    </MudStack>
+
+    @if (_loading)
+    {
+        <MudProgressLinear Indeterminate="true" Color="Color.Primary" />
+    }
+    else if (_loadError is not null)
+    {
+        <MudAlert Severity="Severity.Error">@_loadError</MudAlert>
+    }
+    else
+    {
+        <MudForm @ref="_form" @bind-IsValid="_isValid">
+            <MudGrid Spacing="3">
+                <MudItem xs="12">
+                    <MudPaper Elevation="1" Class="pa-4">
+                        <MudText Typo="Typo.h6" Class="mb-4">@L["PersonalInfo"]</MudText>
+                        <MudGrid Spacing="2">
+                            <MudItem xs="12" sm="6">
+                                <MudTextField @bind-Value="_model.FirstName"
+                                              Label="@L["FirstName"]"
+                                              Required="true"
+                                              RequiredError="@L["FirstNameRequired"]" />
+                            </MudItem>
+                            <MudItem xs="12" sm="6">
+                                <MudTextField @bind-Value="_model.LastName"
+                                              Label="@L["LastName"]"
+                                              Required="true"
+                                              RequiredError="@L["LastNameRequired"]" />
+                            </MudItem>
+                            <MudItem xs="12">
+                                <MudTextField Value="_email" Label="@L["Email"]"
+                                              ReadOnly="true" Disabled="true" />
+                            </MudItem>
+                            <MudItem xs="12" sm="6">
+                                <MudTextField @bind-Value="_model.Phone"
+                                              Label="@L["Phone"]" />
+                            </MudItem>
+                            <MudItem xs="12" sm="6">
+                                <MudTextField @bind-Value="_model.Mobile"
+                                              Label="@L["Mobile"]" />
+                            </MudItem>
+                        </MudGrid>
+                    </MudPaper>
+                </MudItem>
+
+                <MudItem xs="12">
+                    <MudPaper Elevation="1" Class="pa-4">
+                        <MudText Typo="Typo.h6" Class="mb-4">@L["EmploymentInfo"]</MudText>
+                        <MudGrid Spacing="2">
+                            <MudItem xs="12" sm="6">
+                                <MudTextField @bind-Value="_model.Position"
+                                              Label="@L["Position"]" />
+                            </MudItem>
+                            <MudItem xs="12" sm="6">
+                                <MudTextField @bind-Value="_model.EmployeeCode"
+                                              Label="@L["EmployeeCode"]" />
+                            </MudItem>
+                            <MudItem xs="12" sm="6">
+                                <MudDatePicker @bind-Date="_hireDatePicker"
+                                               Label="@L["HireDate"]"
+                                               DateFormat="dd/MM/yyyy"
+                                               Culture="@(new System.Globalization.CultureInfo("es-MX"))"
+                                               Clearable="true" />
+                            </MudItem>
+                            <MudItem xs="12" sm="6">
+                                <MudSwitch @bind-Value="_model.IsActive"
+                                           Label="@L["UserActive"]"
+                                           Color="Color.Primary" />
+                            </MudItem>
+                        </MudGrid>
+                    </MudPaper>
+                </MudItem>
+
+                <MudItem xs="12">
+                    <MudPaper Elevation="1" Class="pa-4">
+                        <MudText Typo="Typo.h6" Class="mb-4">@L["AssignRoles"]</MudText>
+                        <MudSelect T="string" MultiSelection="true"
+                                   SelectedValues="_selectedRoles"
+                                   SelectedValuesChanged="OnRolesChanged"
+                                   Label="@L["Roles"]"
+                                   AdornmentIcon="@Icons.Material.Rounded.Badge"
+                                   HelperText="@L["RolesHelperText"]">
+                            @foreach (var role in _availableRoles)
+                            {
+                                <MudSelectItem T="string" Value="@role">@role</MudSelectItem>
+                            }
+                        </MudSelect>
+                    </MudPaper>
+                </MudItem>
+            </MudGrid>
+        </MudForm>
+
+        <MudStack Row="true" Justify="Justify.FlexEnd" Spacing="2" Class="mt-4">
+            <MudButton Variant="Variant.Text" Href="/admin/usuarios">@L["Cancel"]</MudButton>
+            <MudButton Variant="Variant.Filled" Color="Color.Primary"
+                       OnClick="Save" Disabled="_saving">
+                @if (_saving)
+                {
+                    <MudProgressCircular Size="Size.Small" Indeterminate="true" />
+                }
+                else
+                {
+                    @L["Save"]
+                }
+            </MudButton>
+        </MudStack>
+    }
+</MudContainer>
+
+@code {
+    [Parameter] public Guid Id { get; set; }
+
+    private UserFormModel _model = new();
+    private string _email = string.Empty;
+    private DateTime? _hireDatePicker;
+    private IEnumerable<string> _selectedRoles = [];
+    private MudForm _form = null!;
+    private bool _isValid;
+    private bool _loading = true;
+    private bool _saving;
+    private string? _loadError;
+
+    private static readonly string[] _availableRoles =
+        ["Owner", "Administrator", "Cashier", "InventoryManager", "Accountant", "Seller"];
+
+    protected override async Task OnInitializedAsync()
+    {
+        var result = await UserService.GetUserByIdAsync(Id);
+
+        if (result.IsSuccess && result.Value is not null)
+        {
+            var user = result.Value;
+            _email = user.Email;
+            _model = new UserFormModel
+            {
+                FirstName = user.FirstName,
+                LastName = user.LastName,
+                Phone = user.Phone,
+                Mobile = user.Mobile,
+                Position = user.Position,
+                EmployeeCode = user.EmployeeCode,
+                HireDate = user.HireDate,
+                IsActive = user.IsActive,
+                RoleCodes = user.Roles
+            };
+            _hireDatePicker = user.HireDate.HasValue
+                ? user.HireDate.Value.ToDateTime(TimeOnly.MinValue)
+                : null;
+            _selectedRoles = [.. user.Roles];
+        }
+        else
+        {
+            _loadError = result.Error ?? L["ErrorLoadingUser"];
+        }
+
+        _loading = false;
+    }
+
+    private void OnRolesChanged(IEnumerable<string> roles)
+    {
+        _selectedRoles = roles;
+        _model.RoleCodes = roles.ToArray();
+    }
+
+    private async Task Save()
+    {
+        await _form.Validate();
+        if (!_isValid) { return; }
+
+        _model.HireDate = _hireDatePicker.HasValue
+            ? DateOnly.FromDateTime(_hireDatePicker.Value)
+            : null;
+
+        _saving = true;
+
+        // Update profile
+        var updateResult = await UserService.UpdateUserAsync(Id, _model);
+        if (!updateResult.IsSuccess)
+        {
+            Snackbar.Add(updateResult.Error ?? L["ErrorUpdatingUser"], Severity.Error);
+            _saving = false;
+            return;
+        }
+
+        // Assign roles
+        var rolesResult = await UserService.AssignRolesAsync(Id, _model.RoleCodes);
+        if (!rolesResult.IsSuccess)
+        {
+            Snackbar.Add(rolesResult.Error ?? L["ErrorAssigningRoles"], Severity.Error);
+            _saving = false;
+            return;
+        }
+
+        Snackbar.Add(L["UserUpdatedSuccessfully"], Severity.Success);
+        Nav.NavigateTo("/admin/usuarios");
+    }
+}

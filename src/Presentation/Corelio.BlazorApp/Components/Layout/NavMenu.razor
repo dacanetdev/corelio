@@ -85,6 +85,20 @@
         @L["PurchaseReport"]
     </MudNavLink>
 
+    <div class="sidebar-section-label">ADMINISTRACIÓN</div>
+
+    <MudNavLink Href="/admin/usuarios" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Rounded.ManageAccounts">
+        @L["Users"]
+    </MudNavLink>
+
+    <MudNavLink Href="/admin/almacenes" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Rounded.Warehouse">
+        @L["Warehouses"]
+    </MudNavLink>
+
+    <MudNavLink Href="/admin/roles" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Rounded.AdminPanelSettings">
+        @L["Roles"]
+    </MudNavLink>
+
     <div class="sidebar-section-label">FACTURACIÓN</div>
 
     <MudNavLink Href="/facturas" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Rounded.ReceiptLong">

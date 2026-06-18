@@ -1,0 +1,388 @@
+@page "/admin/usuarios"
+@using Corelio.BlazorApp.Models.Users
+@using Corelio.BlazorApp.Models.Authentication
+@using Corelio.BlazorApp.Resources
+@using Corelio.BlazorApp.Services.Authentication
+@using Corelio.BlazorApp.Services.Users
+@using Microsoft.Extensions.Localization
+@using MudBlazor
+@inject IUserHttpService UserService
+@inject IAuthService AuthService
+@inject IStringLocalizer<SharedResource> L
+@inject ISnackbar Snackbar
+@inject NavigationManager Nav
+@inject IDialogService DialogService
+
+<PageTitle>@L["Users"] - Corelio</PageTitle>
+
+<MudContainer MaxWidth="MaxWidth.ExtraLarge" Class="mt-4">
+    <MudStack Row="true" AlignItems="AlignItems.Center" Justify="Justify.SpaceBetween" Class="mb-4">
+        <div>
+            <MudText Typo="Typo.h5" GutterBottom="false">@L["Users"]</MudText>
+            <MudText Typo="Typo.body2" Color="Color.Secondary">@L["UserListDescription"]</MudText>
+        </div>
+        <MudButton Variant="Variant.Filled" Color="Color.Primary"
+                   StartIcon="@Icons.Material.Rounded.PersonAdd"
+                   OnClick="OpenCreateDialog">
+            @L["CreateUser"]
+        </MudButton>
+    </MudStack>
+
+    <MudPaper Elevation="1" Class="pa-4 mb-4">
+        <MudStack Row="true" Spacing="2">
+            <MudTextField @bind-Value="_searchTerm"
+                          Placeholder="@L["SearchUsers"]"
+                          Adornment="Adornment.Start"
+                          AdornmentIcon="@Icons.Material.Rounded.Search"
+                          Immediate="true"
+                          DebounceInterval="300"
+                          OnDebounceIntervalElapsed="OnSearchChanged"
+                          Style="flex:1" />
+            <MudSelect T="bool?" @bind-Value="_isActiveFilter"
+                       Label="@L["Status"]"
+                       Style="width:160px"
+                       Clearable="true"
+                       ClearIcon="@Icons.Material.Rounded.Clear"
+                       ValueChanged="OnFilterChanged">
+                <MudSelectItem T="bool?" Value="true">@L["Active"]</MudSelectItem>
+                <MudSelectItem T="bool?" Value="false">@L["Inactive"]</MudSelectItem>
+            </MudSelect>
+        </MudStack>
+    </MudPaper>
+
+    @if (_loading)
+    {
+        <MudProgressLinear Indeterminate="true" Color="Color.Primary" Class="mb-4" />
+    }
+    else if (_error is not null)
+    {
+        <MudAlert Severity="Severity.Error" Class="mb-4">@_error</MudAlert>
+    }
+    else if (_users.Count == 0)
+    {
+        <MudPaper Elevation="0" Class="pa-8 text-center">
+            <MudIcon Icon="@Icons.Material.Rounded.PeopleOutline" Color="Color.Secondary" Size="Size.Large" />
+            <MudText Typo="Typo.h6" Class="mt-2">@L["NoUsersFound"]</MudText>
+            <MudText Color="Color.Secondary">@L["NoUsersDescription"]</MudText>
+        </MudPaper>
+    }
+    else
+    {
+        <MudTable Items="_users" Hover="true" Breakpoint="Breakpoint.Sm" Dense="true" Striped="true">
+            <HeaderContent>
+                <MudTh>@L["Name"]</MudTh>
+                <MudTh>@L["Email"]</MudTh>
+                <MudTh>@L["Position"]</MudTh>
+                <MudTh>@L["Roles"]</MudTh>
+                <MudTh>@L["LastLogin"]</MudTh>
+                <MudTh>@L["Status"]</MudTh>
+                <MudTh>@L["Actions"]</MudTh>
+            </HeaderContent>
+            <RowTemplate>
+                <MudTd DataLabel="@L["Name"]">
+                    <MudText Typo="Typo.body2" Class="fw-medium">@context.FullName</MudText>
+                </MudTd>
+                <MudTd DataLabel="@L["Email"]">@context.Email</MudTd>
+                <MudTd DataLabel="@L["Position"]">@(context.Position ?? "—")</MudTd>
+                <MudTd DataLabel="@L["Roles"]">
+                    <MudStack Row="true" Spacing="1" Wrap="Wrap.Wrap">
+                        @foreach (var role in context.Roles)
+                        {
+                            <MudChip T="string" Size="Size.Small" Color="Color.Primary" Variant="Variant.Outlined">@role</MudChip>
+                        }
+                    </MudStack>
+                </MudTd>
+                <MudTd DataLabel="@L["LastLogin"]">
+                    @(context.LastLoginAt.HasValue
+                        ? context.LastLoginAt.Value.ToLocalTime().ToString("dd/MM/yyyy HH:mm")
+                        : "—")
+                </MudTd>
+                <MudTd DataLabel="@L["Status"]">
+                    <MudChip T="string" Size="Size.Small"
+                             Color="@(context.IsActive ? Color.Success : Color.Default)">
+                        @(context.IsActive ? L["Active"] : L["Inactive"])
+                    </MudChip>
+                </MudTd>
+                <MudTd DataLabel="@L["Actions"]">
+                    <MudIconButton Icon="@Icons.Material.Rounded.Edit" Size="Size.Small"
+                                   Href="@($"/admin/usuarios/{context.Id}")" />
+                    @if (context.IsActive)
+                    {
+                        <MudIconButton Icon="@Icons.Material.Rounded.PersonOff" Size="Size.Small"
+                                       Color="Color.Warning"
+                                       OnClick="@(() => ConfirmDeactivate(context))" />
+                    }
+                    else
+                    {
+                        <MudIconButton Icon="@Icons.Material.Rounded.PersonAdd" Size="Size.Small"
+                                       Color="Color.Success"
+                                       OnClick="@(() => ActivateUser(context))" />
+                    }
+                </MudTd>
+            </RowTemplate>
+        </MudTable>
+
+        <MudStack Row="true" AlignItems="AlignItems.Center" Justify="Justify.SpaceBetween" Class="mt-4">
+            <MudText Typo="Typo.body2" Color="Color.Secondary">
+                @L["ShowingResults"] @((_currentPage - 1) * _pageSize + 1)–@Math.Min(_currentPage * _pageSize, _totalCount) @L["Of"] @_totalCount
+            </MudText>
+            <MudPagination Count="_totalPages" Selected="_currentPage" SelectedChanged="OnPageChanged" />
+        </MudStack>
+    }
+</MudContainer>
+
+@* Deactivate Confirmation Dialog *@
+<MudDialog @bind-Visible="_showDeactivateDialog">
+    <TitleContent>@L["DeactivateUser"]</TitleContent>
+    <DialogContent>
+        <MudText>@L["DeactivateUserConfirmation"]</MudText>
+        @if (_userToDeactivate is not null)
+        {
+            <MudText Class="mt-2"><strong>@_userToDeactivate.FullName</strong></MudText>
+        }
+    </DialogContent>
+    <DialogActions>
+        <MudButton OnClick="@(() => _showDeactivateDialog = false)">@L["Cancel"]</MudButton>
+        <MudButton Color="Color.Warning" Variant="Variant.Filled"
+                   OnClick="DoDeactivate" Disabled="_processing">
+            @if (_processing)
+            {
+                <MudProgressCircular Size="Size.Small" Indeterminate="true" />
+            }
+            else
+            {
+                @L["Deactivate"]
+            }
+        </MudButton>
+    </DialogActions>
+</MudDialog>
+
+@* Create User Dialog *@
+<MudDialog @bind-Visible="_showCreateDialog">
+    <TitleContent>@L["CreateUser"]</TitleContent>
+    <DialogContent>
+        <MudForm @ref="_createForm" @bind-IsValid="_createFormValid">
+            <MudGrid Spacing="2">
+                <MudItem xs="12" sm="6">
+                    <MudTextField @bind-Value="_createModel.FirstName"
+                                  Label="@L["FirstName"]"
+                                  Required="true"
+                                  RequiredError="@L["FirstNameRequired"]" />
+                </MudItem>
+                <MudItem xs="12" sm="6">
+                    <MudTextField @bind-Value="_createModel.LastName"
+                                  Label="@L["LastName"]"
+                                  Required="true"
+                                  RequiredError="@L["LastNameRequired"]" />
+                </MudItem>
+                <MudItem xs="12">
+                    <MudTextField @bind-Value="_createModel.Email"
+                                  Label="@L["Email"]"
+                                  InputType="InputType.Email"
+                                  Required="true"
+                                  RequiredError="@L["EmailRequired"]" />
+                </MudItem>
+                <MudItem xs="12" sm="6">
+                    <MudTextField @bind-Value="_createModel.Password"
+                                  Label="@L["Password"]"
+                                  InputType="InputType.Password"
+                                  Required="true"
+                                  RequiredError="@L["PasswordRequired"]" />
+                </MudItem>
+                <MudItem xs="12" sm="6">
+                    <MudTextField @bind-Value="_createModel.ConfirmPassword"
+                                  Label="@L["ConfirmPassword"]"
+                                  InputType="InputType.Password"
+                                  Required="true"
+                                  RequiredError="@L["PasswordRequired"]" />
+                </MudItem>
+                <MudItem xs="12">
+                    <MudSelect T="string" MultiSelection="true"
+                               SelectedValues="_selectedRoles"
+                               SelectedValuesChanged="OnRolesChanged"
+                               Label="@L["Roles"]"
+                               AdornmentIcon="@Icons.Material.Rounded.Badge">
+                        @foreach (var role in _availableRoles)
+                        {
+                            <MudSelectItem T="string" Value="@role">@role</MudSelectItem>
+                        }
+                    </MudSelect>
+                </MudItem>
+            </MudGrid>
+        </MudForm>
+    </DialogContent>
+    <DialogActions>
+        <MudButton OnClick="@(() => _showCreateDialog = false)">@L["Cancel"]</MudButton>
+        <MudButton Color="Color.Primary" Variant="Variant.Filled"
+                   OnClick="CreateUser" Disabled="_creating">
+            @if (_creating)
+            {
+                <MudProgressCircular Size="Size.Small" Indeterminate="true" />
+            }
+            else
+            {
+                @L["Save"]
+            }
+        </MudButton>
+    </DialogActions>
+</MudDialog>
+
+@code {
+    private List<UserListModel> _users = [];
+    private bool _loading = true;
+    private string? _error;
+    private string _searchTerm = string.Empty;
+    private bool? _isActiveFilter;
+    private int _currentPage = 1;
+    private int _pageSize = 20;
+    private int _totalCount;
+    private int _totalPages = 1;
+
+    private bool _showDeactivateDialog;
+    private bool _processing;
+    private UserListModel? _userToDeactivate;
+
+    private bool _showCreateDialog;
+    private bool _creating;
+    private bool _createFormValid;
+    private MudForm _createForm = null!;
+    private CreateUserFormModel _createModel = new();
+    private IEnumerable<string> _selectedRoles = [];
+
+    private static readonly string[] _availableRoles =
+        ["Owner", "Administrator", "Cashier", "InventoryManager", "Accountant", "Seller"];
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadUsers();
+    }
+
+    private async Task LoadUsers()
+    {
+        _loading = true;
+        _error = null;
+
+        var result = await UserService.GetUsersAsync(_currentPage, _pageSize, _searchTerm, _isActiveFilter);
+
+        if (result.IsSuccess && result.Value is not null)
+        {
+            _users = result.Value.Items;
+            _totalCount = result.Value.TotalCount;
+            _totalPages = result.Value.TotalPages;
+        }
+        else
+        {
+            _error = result.Error ?? L["ErrorLoadingUsers"];
+        }
+
+        _loading = false;
+    }
+
+    private async Task OnSearchChanged()
+    {
+        _currentPage = 1;
+        await LoadUsers();
+    }
+
+    private async Task OnFilterChanged(bool? value)
+    {
+        _isActiveFilter = value;
+        _currentPage = 1;
+        await LoadUsers();
+    }
+
+    private async Task OnPageChanged(int page)
+    {
+        _currentPage = page;
+        await LoadUsers();
+    }
+
+    private void ConfirmDeactivate(UserListModel user)
+    {
+        _userToDeactivate = user;
+        _showDeactivateDialog = true;
+    }
+
+    private async Task DoDeactivate()
+    {
+        if (_userToDeactivate is null) { return; }
+
+        _processing = true;
+        var result = await UserService.DeactivateUserAsync(_userToDeactivate.Id);
+
+        if (result.IsSuccess)
+        {
+            Snackbar.Add(L["UserDeactivated"], Severity.Success);
+            _showDeactivateDialog = false;
+            _userToDeactivate = null;
+            await LoadUsers();
+        }
+        else
+        {
+            Snackbar.Add(result.Error ?? L["ErrorDeactivatingUser"], Severity.Error);
+        }
+
+        _processing = false;
+    }
+
+    private async Task ActivateUser(UserListModel user)
+    {
+        var result = await UserService.ActivateUserAsync(user.Id);
+
+        if (result.IsSuccess)
+        {
+            Snackbar.Add(L["UserActivated"], Severity.Success);
+            await LoadUsers();
+        }
+        else
+        {
+            Snackbar.Add(result.Error ?? L["ErrorActivatingUser"], Severity.Error);
+        }
+    }
+
+    private void OpenCreateDialog()
+    {
+        _createModel = new CreateUserFormModel();
+        _selectedRoles = [];
+        _showCreateDialog = true;
+    }
+
+    private void OnRolesChanged(IEnumerable<string> roles)
+    {
+        _selectedRoles = roles;
+        _createModel.RoleCodes = roles.ToArray();
+    }
+
+    private async Task CreateUser()
+    {
+        await _createForm.Validate();
+        if (!_createFormValid) { return; }
+
+        _creating = true;
+
+        var request = new RegisterRequest
+        {
+            Email = _createModel.Email,
+            Password = _createModel.Password,
+            ConfirmPassword = _createModel.ConfirmPassword,
+            FirstName = _createModel.FirstName,
+            LastName = _createModel.LastName,
+            Roles = [.. _createModel.RoleCodes]
+        };
+
+        var result = await AuthService.RegisterAsync(request);
+
+        if (result.IsSuccess)
+        {
+            Snackbar.Add(L["UserCreatedSuccessfully"], Severity.Success);
+            _showCreateDialog = false;
+            await LoadUsers();
+        }
+        else
+        {
+            Snackbar.Add(result.Error ?? L["ErrorCreatingUser"], Severity.Error);
+        }
+
+        _creating = false;
+    }
+}
