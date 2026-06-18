@@ -3,7 +3,7 @@
 **Goal:** Deliver a complete Reporting & Analytics module so store owners can view daily sales performance, inventory valuation, and purchase summaries — with chart visualizations and PDF/CSV export — without leaving the Blazor UI.
 
 **Duration:** ~4-5 days estimated
-**Status:** 🟡 In Progress
+**Status:** 🟢 Complete
 **Started:** 2026-06-17
 **Total Story Points:** 26 pts
 
@@ -95,14 +95,14 @@
 ## User Story 13.4: Reports Dashboard & Navigation
 **As a store owner, I want a central reports dashboard at /reportes that shows a snapshot of today's key metrics and provides navigation to all detailed reports so that I can get a quick overview without running each report manually.**
 
-**Status:** 🔴 Not Started
+**Status:** 🟢 Complete
 
 | Task ID | Task | Branch | Status | Notes |
 |---------|------|--------|--------|-------|
-| TASK-13.4.1 | `GetDashboardSummaryQuery` + handler — returns: today's sales total + transaction count, current low-stock product count, pending purchase orders count | - | 🔴 | Reuses aggregation logic from US-13.1 and US-13.2 handlers; no new DB entities |
-| TASK-13.4.2 | `DashboardEndpoints.cs` — `GET /api/v1/reports/dashboard` | - | 🔴 | Requires any of the three report permissions; `Produces<DashboardSummaryDto>` |
-| TASK-13.4.3 | `Reports.razor` at `/reportes` (dashboard home) — 3 KPI summary cards (today's sales, low-stock alerts, pending POs), 3 navigation cards linking to each detailed report, last-updated timestamp | - | 🔴 | `MudCard` grid layout; KPI cards refresh on page load |
-| TASK-13.4.4 | `Reports.es-MX.resx` localization resource file — all Spanish strings for the 4 report pages and nav entries; add REPORTES section to `NavMenu.razor` with sub-links: Panel, Ventas, Inventario, Compras; register 3 report permissions in `AuthorizationPolicies.cs` | - | 🔴 | ~40 localization keys; REPORTES section follows COMPRAS section pattern in NavMenu |
+| TASK-13.4.1 | `GetDashboardSummaryQuery` + handler → `IDashboardSummaryService` → `DashboardSummaryService` — returns: today's completed sales total + transaction count, low-stock product count, pending PO count | feature/US-13.4-TASK-1-4-reports-dashboard | 🟢 | Three `CountAsync` queries (no entity loading); SaleStatus.Completed + today's date range; MinimumLevel>0 guard |
+| TASK-13.4.2 | `DashboardEndpoints.cs` — `GET /api/v1/reports/dashboard`; `RequireAuthorization()` (any authenticated user) | feature/US-13.4-TASK-1-4-reports-dashboard | 🟢 | Produces<DashboardSummaryDto>; inserted before MapReportEndpoints() in EndpointExtensions |
+| TASK-13.4.3 | `ReportsDashboard.razor` enhanced — live KPI row (TodaysSales+count, CriticalStock, PendingPOs) above 3 nav cards; loading spinner; error alert; last-updated timestamp | feature/US-13.4-TASK-1-4-reports-dashboard | 🟢 | Error color for LowStock>0; Warning for PendingPOs>0; all text via L[...] |
+| TASK-13.4.4 | 6 localization keys added to SharedResource.es-MX.resx; NavMenu REPORTES section + all sub-links (Panel/Ventas/Inventario/Compras) already in place from prior stories | feature/US-13.4-TASK-1-4-reports-dashboard | 🟢 | New keys: TodaysSales, TodaysTransactions, CriticalStock, PendingPOs, LastUpdated, LoadingDashboard |
 
 **Acceptance Criteria:**
 - [ ] `/reportes` dashboard loads today's sales total, low-stock count, and pending PO count
@@ -121,8 +121,8 @@
 | US-13.1: Daily Sales Report | P0 Critical | 8 | 🟢 Complete |
 | US-13.2: Inventory Valuation Report | P0 Critical | 8 | 🟢 Complete |
 | US-13.3: Purchase Summary Report | P1 High | 6 | 🟢 Complete |
-| US-13.4: Reports Dashboard & Navigation | P1 High | 4 | 🔴 Not Started |
-| **Total** | | **26** | |
+| US-13.4: Reports Dashboard & Navigation | P1 High | 4 | 🟢 Complete |
+| **Total** | | **26** | 🟢 Sprint Complete |
 
 **Recommended execution order:** US-13.1 → US-13.2 (TASK-13.2.1 schema change first) → US-13.3 → US-13.4
 

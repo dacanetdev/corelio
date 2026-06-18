@@ -1,8 +1,12 @@
 @page "/reportes"
 @using Corelio.BlazorApp.Resources
+@using Corelio.BlazorApp.Models.Reports
+@using Corelio.BlazorApp.Services.Reports
 @using Microsoft.Extensions.Localization
 @using MudBlazor
+@using System.Globalization
 @inject IStringLocalizer<SharedResource> L
+@inject IDashboardHttpService DashboardService
 @inject NavigationManager Nav
 
 <PageTitle>@L["Reports"] - Corelio</PageTitle>
@@ -10,6 +14,72 @@
 <MudContainer MaxWidth="MaxWidth.Large" Class="mt-4">
     <MudText Typo="Typo.h5" GutterBottom="true">@L["ReportDashboard"]</MudText>
 
+    @if (_error != null)
+    {
+        <MudAlert Severity="Severity.Error" Class="mb-4">@_error</MudAlert>
+    }
+
+    @* KPI summary row *@
+    <MudPaper Elevation="1" Class="pa-4 mb-6">
+        @if (_loading)
+        {
+            <MudStack Row="true" AlignItems="AlignItems.Center" Justify="Justify.Center" Spacing="2">
+                <MudProgressCircular Indeterminate="true" Size="Size.Small" Color="Color.Primary" />
+                <MudText Typo="Typo.body2" Color="Color.Secondary">@L["LoadingDashboard"]</MudText>
+            </MudStack>
+        }
+        else if (_summary != null)
+        {
+            <MudGrid>
+                <MudItem xs="12" sm="4">
+                    <MudStack AlignItems="AlignItems.Center" Spacing="1">
+                        <MudIcon Icon="@Icons.Material.Rounded.AttachMoney" Color="Color.Primary" Size="Size.Medium" />
+                        <MudText Typo="Typo.subtitle2" Color="Color.Secondary">@L["TodaysSales"]</MudText>
+                        <MudText Typo="Typo.h6">
+                            @_summary.TodaysSalesTotal.ToString("C", new CultureInfo("es-MX"))
+                        </MudText>
+                        <MudText Typo="Typo.caption" Color="Color.Secondary">
+                            @_summary.TodaysTransactionCount @L["TodaysTransactions"]
+                        </MudText>
+                    </MudStack>
+                </MudItem>
+
+                <MudItem xs="12" sm="4">
+                    <MudStack AlignItems="AlignItems.Center" Spacing="1">
+                        <MudIcon Icon="@Icons.Material.Rounded.Warning"
+                                 Color="@(_summary.LowStockProductCount > 0 ? Color.Error : Color.Secondary)"
+                                 Size="Size.Medium" />
+                        <MudText Typo="Typo.subtitle2" Color="Color.Secondary">@L["CriticalStock"]</MudText>
+                        <MudText Typo="Typo.h6"
+                                 Color="@(_summary.LowStockProductCount > 0 ? Color.Error : Color.Default)">
+                            @_summary.LowStockProductCount
+                        </MudText>
+                        <MudText Typo="Typo.caption" Color="Color.Secondary">@L["Products"]</MudText>
+                    </MudStack>
+                </MudItem>
+
+                <MudItem xs="12" sm="4">
+                    <MudStack AlignItems="AlignItems.Center" Spacing="1">
+                        <MudIcon Icon="@Icons.Material.Rounded.ShoppingBag"
+                                 Color="@(_summary.PendingPurchaseOrderCount > 0 ? Color.Warning : Color.Secondary)"
+                                 Size="Size.Medium" />
+                        <MudText Typo="Typo.subtitle2" Color="Color.Secondary">@L["PendingPOs"]</MudText>
+                        <MudText Typo="Typo.h6"
+                                 Color="@(_summary.PendingPurchaseOrderCount > 0 ? Color.Warning : Color.Default)">
+                            @_summary.PendingPurchaseOrderCount
+                        </MudText>
+                        <MudText Typo="Typo.caption" Color="Color.Secondary">@L["PurchaseOrders"]</MudText>
+                    </MudStack>
+                </MudItem>
+            </MudGrid>
+
+            <MudText Typo="Typo.caption" Color="Color.Secondary" Align="Align.Right" Class="mt-2">
+                @L["LastUpdated"]: @_summary.GeneratedAt.ToLocalTime().ToString("dd/MM/yyyy HH:mm:ss")
+            </MudText>
+        }
+    </MudPaper>
+
+    @* Report navigation cards *@
     <MudGrid>
         <MudItem xs="12" md="4">
             <MudCard Elevation="2" Class="cursor-pointer" @onclick='() => Nav.NavigateTo("/reportes/ventas")'>
@@ -63,3 +133,25 @@
         </MudItem>
     </MudGrid>
 </MudContainer>
+
+@code {
+    private DashboardSummaryModel? _summary;
+    private bool _loading = true;
+    private string? _error;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var result = await DashboardService.GetDashboardSummaryAsync();
+
+        if (result.IsSuccess)
+        {
+            _summary = result.Value;
+        }
+        else
+        {
+            _error = result.Error;
+        }
+
+        _loading = false;
+    }
+}
