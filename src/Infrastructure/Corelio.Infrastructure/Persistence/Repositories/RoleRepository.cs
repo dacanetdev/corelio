@@ -32,4 +32,16 @@ public class RoleRepository(ApplicationDbContext context) : IRoleRepository
     {
         return await context.Roles.FindAsync([roleId], cancellationToken);
     }
+
+    public async Task<List<Role>> GetAllWithPermissionsAsync(Guid? tenantId, CancellationToken cancellationToken = default)
+    {
+        return await context.Roles
+            .AsNoTracking()
+            .Include(r => r.RolePermissions)
+                .ThenInclude(rp => rp.Permission)
+            .Where(r => r.TenantId == null || r.TenantId == tenantId)
+            .OrderByDescending(r => r.IsSystemRole)
+            .ThenBy(r => r.Name)
+            .ToListAsync(cancellationToken);
+    }
 }
